@@ -1,0 +1,46 @@
+<template>
+  <div class="locale-switcher">
+    <select v-on:change="setLocale" v-model="selectedLanguage">
+      <option v-for="(value, locale) in this.languages" :value="locale" :key="locale">
+        {{ value }}
+      </option>
+    </select>
+  </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import language from '../language'
+
+var activeLocale = language.current
+
+export default {
+  data () {
+    return {
+      languages: language.languages,
+      selectedLanguage: activeLocale
+    }
+  },
+  methods: {
+    setLocale () {
+      let locale = this.selectedLanguage
+      if (locale in this.$i18n.messages) {
+        Vue.config.lang = locale
+        this.activeLocale = locale
+        this.$i18n.locale = locale
+        localStorage.setItem('lang', locale)
+      } else {
+        this.$http.get(`http://localhost/server/public/translations/${locale}.json`).then((res) => {
+          return res.json()
+        }).then((json) => {
+          this.$i18n.setLocaleMessage(locale, json)
+          Vue.config.lang = locale
+          this.activeLocale = locale
+          this.$i18n.locale = locale
+          localStorage.setItem('lang', locale)
+        })
+      }
+    }
+  }
+}
+</script>
