@@ -1,24 +1,36 @@
 <template>
-  <div id="app" v-if="!this.loading">
-    <languageSwitcher/>
-    <img src="/static/img/logos/muonium_H_01.png">
-    <router-view/>
-  </div>
+  <body v-show="!this.loading">
+    <header>
+      <div id="logo">
+        <router-link to="/">
+          <img src="/static/img/logos/muonium_H_01.png" :title="$t('Global.home')" :alt="$t('Global.home')">
+        </router-link>
+      </div>
+      <language-selector/>
+      <a href="Logout" class="logout" :title="$t('Global.logout')" v-if="this.token">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+      </a>
+    </header>
+    <div id="main">
+      <router-view/>
+    </div>
+  </body>
 </template>
 
 <script>
 import Vue from 'vue'
 import language from './language'
-import languageSwitcher from './components/language_switcher'
+import languageSelector from './components/language_selector'
 
 export default {
   name: 'App',
   components: {
-    languageSwitcher
+    languageSelector
   },
   data () {
     return {
-      loading: true
+      loading: true,
+      token: sessionStorage.getItem('token')
     }
   },
   methods: {
@@ -42,13 +54,5 @@ export default {
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style src="./assets/css/2018/style.css"></style>
+<style src="./assets/css/2018/dark.css"></style>

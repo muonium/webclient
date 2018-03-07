@@ -1,5 +1,5 @@
 <template>
-  <div class="locale-switcher">
+  <div id="language-selector">
     <select v-on:change="setLocale" v-model="selectedLanguage">
       <option v-for="(value, locale) in this.languages" :value="locale" :key="locale">
         {{ value }}

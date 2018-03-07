@@ -3,12 +3,14 @@ import VueResource from 'vue-resource'
 import App from './App'
 import router from './router'
 import VueI18n from 'vue-i18n'
+import vueHeadful from 'vue-headful'
 
 Vue.config.productionTip = false
 
 Vue.use(VueResource)
 Vue.use(VueI18n)
-Vue.http.options.root = 'http://localhost/server'
+Vue.component('vue-headful', vueHeadful)
+Vue.http.options.root = 'http://127.0.0.1/server'
 
 // Token management middleware
 Vue.http.interceptors.push(function (request, next) {
