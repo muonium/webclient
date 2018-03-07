@@ -1,7 +1,7 @@
 <template>
   <div id="app" v-if="!this.loading">
     <languageSwitcher/>
-    <img src="./assets/logo.png">
+    <img src="/static/img/logos/muonium_H_01.png">
     <router-view/>
   </div>
 </template>
