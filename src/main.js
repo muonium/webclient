@@ -7,8 +7,31 @@ import VueI18n from 'vue-i18n'
 Vue.config.productionTip = false
 
 Vue.use(VueResource)
-
 Vue.use(VueI18n)
+Vue.http.options.root = 'http://localhost/server'
+
+// Token management middleware
+Vue.http.interceptors.push(function (request, next) {
+  // Request processing
+  let token = sessionStorage.getItem('token')
+  if (token !== null && request.url.indexOf('.json') === -1) {
+    // If a token is stored and requested file is not a json, then, send the token
+    request.headers['Authorization'] = 'Bearer: ' + token
+  }
+
+  return function (resp) {
+    // Response processing
+    if (request.url.indexOf('.json') === -1) {
+      if (typeof resp.body.token !== 'undefined' && resp.body.token !== null && resp.body.token !== token) {
+        sessionStorage.setItem('token', resp.body.token)
+      }
+
+      if (typeof resp.body.message !== 'undefined' && resp.body.message === 'removeToken') {
+        sessionStorage.removeItem('token')
+      }
+    }
+  }
+})
 
 const i18n = new VueI18n({
   locale: null,
