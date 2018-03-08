@@ -38,7 +38,8 @@ Vue.http.interceptors.push(function (request, next) {
 const i18n = new VueI18n({
   locale: null,
   fallbackLocale: 'en',
-  messages: {}
+  messages: {},
+  silentTranslationWarn: true
 })
 
 /* eslint-disable no-new */

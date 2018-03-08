@@ -4,7 +4,8 @@
       title="Muonium"
     />
     <router-link to="/Login">Login</router-link>
-    <router-link to="/Register">Register</router-link>
+    <router-link to="/Register">Register</router-link><br>
+    token: {{ this.$parent.token }}
   </div>
 </template>
 

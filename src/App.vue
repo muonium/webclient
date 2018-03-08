@@ -7,7 +7,7 @@
         </router-link>
       </div>
       <language-selector/>
-      <a href="Logout" class="logout" :title="$t('Global.logout')" v-if="this.token">
+      <a href="#" class="logout" :title="$t('Global.logout')" v-if="this.token" @click.prevent="logout">
         <i class="fa fa-sign-out" aria-hidden="true"></i>
       </a>
     </header>
@@ -43,6 +43,13 @@ export default {
           Vue.config.lang = lang
         }
       })
+    },
+    logout () {
+      this.token = null
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('cek')
+      sessionStorage.removeItem('kek')
+      this.$router.push('/Login')
     }
   },
   created () {

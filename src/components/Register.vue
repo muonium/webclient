@@ -61,6 +61,11 @@ export default {
   name: 'Register',
   data () {
     return {}
+  },
+  created () {
+    if (this.$parent.token) {
+      this.$router.push('/')
+    }
   }
 }
 </script>
