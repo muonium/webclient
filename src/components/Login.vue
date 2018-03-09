@@ -9,17 +9,17 @@
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" :placeholder="$t('Login.username')" v-model="fields.username" required autofocus>
+        <input type="text" id="field_username" :placeholder="$t('Login.username')" v-model="fields.username" required autofocus>
         <label class="fa fa-user" for="field_username" aria-hidden="true"></label>
       </p>
 
       <p class="input-large">
-        <input type="password" :placeholder="$t('Register.password')" v-model="fields.password" required>
+        <input type="password" id="field_password" :placeholder="$t('Register.password')" v-model="fields.password" required>
         <label class="fa fa-lock" for="field_password" aria-hidden="true"></label>
       </p>
 
       <p class="input-large">
-        <input type="password" :placeholder="$t('Register.passphrase')" v-model="fields.passphrase" required>
+        <input type="password" id="field_passphrase" :placeholder="$t('Register.passphrase')" v-model="fields.passphrase" required>
         <label class="fa fa-lock" for="field_passphrase" aria-hidden="true"></label>
       </p>
 
@@ -82,6 +82,7 @@ export default {
               this.err_msg = 'Login.badPassphrase'
             }
             if (!fail) {
+              this.success_msg = 'Login.success'
               sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
               sessionStorage.setItem('cek', cek) // we store locally the CEK
               this.$parent.token = res.body.token
