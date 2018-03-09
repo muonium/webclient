@@ -24,11 +24,11 @@
       </p>
 
       <div class="bloc-links">
-        <router-link to="LostPass" class="mono blue">{{ $t('Login.forgot') }}</router-link>
+        <router-link to="lostPass" class="mono blue">{{ $t('Login.forgot') }}</router-link>
         <input type="submit" class="btn btn-required" :value="$t('Login.signin')" :disabled="!isComplete">
       </div>
 
-      <router-link to="/Register" class="mono center">{{ $t('Login.register') }}</router-link>
+      <router-link to="/register" class="mono center">{{ $t('Login.register') }}</router-link>
 
       <p class="red" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
       <p class="green" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
@@ -98,8 +98,7 @@ export default {
             if (res.body.message === 'badPass') {
               this.err_msg = 'User.badPass'
             } else if (res.body.message === 'validate') {
-              // TODO: validate
-              this.err_msg = 'User.badPass'
+              this.$router.push({path: '/validate', query: {uid: res.body.data, status: 'send'}})
             }
           }
         })

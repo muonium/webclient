@@ -45,7 +45,7 @@
       </fieldset>
 
       <div class="bloc-links">
-        <router-link to="/Login" class="mono blue">{{ $t('Register.alreadyregistered') }}</router-link>
+        <router-link to="/login" class="mono blue">{{ $t('Register.alreadyregistered') }}</router-link>
         <input type="submit" class="btn btn-required" :value="$t('Global.register')" :disabled="!isComplete">
       </div>
 
@@ -117,8 +117,7 @@ export default {
         }).then((res) => {
           this.loading = false
           this.success_msg = 'Register.ok'
-          // TODO: redirect to validate instead login
-          this.$router.push('/Login') // all is good -> redirect the user
+          this.$router.push({path: '/validate', query: {uid: res.body.data, status: 'sent'}}) // all is good -> redirect the user
         }, (res) => {
           this.loading = false
           this.err_msg = 'Error.default'
