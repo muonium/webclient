@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
+import LostPass from '@/components/LostPass'
 import Validate from '@/components/Validate'
 import PageNotFound from '@/components/PageNotFound'
 
@@ -25,6 +26,11 @@ export default new Router({
       path: '/register',
       name: 'Register',
       component: Register
+    },
+    {
+      path: '/lostPass',
+      name: 'LostPass',
+      component: LostPass
     },
     {
       path: '/validate/:uid',

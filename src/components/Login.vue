@@ -5,7 +5,7 @@
     />
     <div class="info green" v-if="this.val">{{ $t('Validate.done') }}</div>
 
-    <form class="form-login" method="post" v-on:submit.prevent="sendForm">
+    <form class="form-login" method="post" v-on:submit.prevent="sendForm" v-if="login_form">
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
@@ -29,11 +29,20 @@
       </div>
 
       <router-link to="/register" class="mono center">{{ $t('Login.register') }}</router-link>
-
-      <p class="red" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
-      <p class="green" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
-      <img src="../assets/img/index/loader.svg" class="loader" v-if="loading">
     </form>
+
+    <form method="post" v-else>
+      <h1>{{ $t('Global.login') }}</h1>
+
+      <p class="input-large">
+        <input type="text" name="code" class="noicon" :placeholder="$t('Login.codeMail')" v-model="code" required>
+      </p>
+      <input type="submit" class="btn" :value="$t('Global.submit')">
+    </form>
+
+    <p class="red" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
+    <p class="green" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
+    <img src="../assets/img/index/loader.svg" class="loader" v-if="loading">
   </div>
 </template>
 
@@ -50,6 +59,9 @@ export default {
       loading: false,
       err_msg: null,
       success_msg: null,
+      login_form: true,
+      uid: null,
+      code: '',
       fields: {
         username: '',
         password: '',
@@ -66,9 +78,12 @@ export default {
         this.$http.post('session', {username: this.fields.username, password: muiHash(this.fields.password)}).then((res) => {
           this.loading = false
           if (res.body.message === 'doubleAuth') {
-            // TODO: Redirect to form
+            this.login_form = false
+            this.uid = res.body.data
           } else if (res.body.message === 'wait') {
-            // TODO: Redirect to form
+            this.login_form = false
+            this.uid = res.body.data
+            this.err_msg = 'Validate.wait'
           } else if (res.body.data !== null && typeof res.body.data.cek !== 'undefined') {
             let cek = decodeURIComponent(res.body.data.cek)
             let fail = false
@@ -78,7 +93,7 @@ export default {
             } catch (e) { // the passphrase is wrong
               console.log(e.message)
               fail = true
-              sessionStorage.removeItem('token')
+              sessionStorage.clear()
               this.err_msg = 'Login.badPassphrase'
             }
             if (!fail) {
@@ -104,6 +119,50 @@ export default {
         })
       } else {
         this.err_msg = 'Register.form'
+      }
+    },
+    sendCode () {
+      if (this.code.length > 0 && this.uid !== null) {
+        this.success_msg = null
+        this.err_msg = null
+        this.loading = true
+        this.$http.post('session/authcode', {uid: this.uid, password: muiHash(this.fields.password), code: this.code}).then((res) => {
+          this.loading = false
+          if (res.body.data !== null && typeof res.body.data.cek !== 'undefined') {
+            let cek = decodeURIComponent(res.body.data.cek)
+            let fail = false
+            try { // we try to decrypt the CEK with the passphrase
+              cek = base64.decode(cek) // the CEK is base64encoded in the database, then we decode it
+              cek = sjcl.decrypt(this.fields.passphrase, cek) // the CEK is now a JSON, we decrypt it
+            } catch (e) { // the passphrase is wrong
+              console.log(e.message)
+              fail = true
+              sessionStorage.clear()
+              this.err_msg = 'Login.badPassphrase'
+            }
+            if (!fail) {
+              this.success_msg = 'Login.success'
+              sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
+              sessionStorage.setItem('cek', cek) // we store locally the CEK
+              this.$parent.token = res.body.token
+              this.$router.push('/') // all is good -> redirect the user
+            }
+          } else {
+            this.err_msg = 'Error.default'
+          }
+        }, (res) => {
+          this.loading = false
+          this.err_msg = 'Error.default'
+          if (res.body.code === 401) {
+            if (res.body.message === 'badPass') {
+              this.err_msg = 'User.badPass'
+            } else if (res.body.message === 'badCode') {
+              this.err_msg = 'Login.invalidCode'
+            } else if (res.body.message === 'validate') {
+              this.$router.push({path: '/validate', params: {uid: this.uid}})
+            }
+          }
+        })
       }
     }
   },

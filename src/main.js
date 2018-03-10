@@ -29,7 +29,7 @@ Vue.http.interceptors.push(function (request, next) {
       }
 
       if (typeof resp.body.message !== 'undefined' && resp.body.message === 'removeToken') {
-        sessionStorage.removeItem('token')
+        sessionStorage.clear()
       }
     }
   }

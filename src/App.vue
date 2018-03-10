@@ -46,9 +46,7 @@ export default {
     },
     logout () {
       this.token = null
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('cek')
-      sessionStorage.removeItem('kek')
+      sessionStorage.clear()
       this.$router.push('/Login')
     }
   },
