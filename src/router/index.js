@@ -27,8 +27,13 @@ export default new Router({
       component: Register
     },
     {
-      path: '/validate',
+      path: '/validate/:uid',
       name: 'Validate',
+      component: Validate
+    },
+    {
+      path: '/validate/:uid/:key',
+      name: 'ValidateKey',
       component: Validate
     },
     {

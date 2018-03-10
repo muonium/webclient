@@ -5,7 +5,7 @@
     />
     <h1>{{ $t('Global.validate') }}</h1>
 
-    {{ $t(this.message) }}<br>
+    <div>{{ $t(this.message) }}</div>
     <a href="#" @click.prevent="refresh">{{ $t('Global.refresh') }}</a>
   </div>
 </template>
@@ -16,12 +16,13 @@ export default {
   data () {
     return {
       status: null,
-      message: 'Validate.message'
+      message: 'Global.loading'
     }
   },
   methods: {
     refresh () {
-      this.$router.go('#' + this.$router.currentRoute.fullPath)
+      window.location = window.location.href.split('?')[0]
+      window.location.reload()
     }
   },
   created () {
@@ -29,17 +30,41 @@ export default {
       this.$router.push('/')
     }
 
-    if (typeof this.$route.query.status !== 'undefined') {
-      this.status = this.$route.query.status
-    }
-    switch (this.status) {
-      case 'send':
-        break
-      case 'sent':
+    if (typeof this.$route.params.key !== 'undefined') {
+      // Try to validate
+      this.$http.post('validate/key', {'uid': this.$route.params.uid, 'key': this.$route.params.key}).then((res) => {
+        // Account is validated
+        this.$router.push({path: '/login', query: {validation: 'ok'}})
+      }, (res) => {
+        // Error
+        this.message = 'Error.default'
+        switch (res.body.message) {
+          case 'differentKey':
+            this.message = 'Validate.message'
+            break
+          case 'alreadyValidated':
+            this.$router.push('/login')
+        }
+      })
+    } else {
+      // Send a validation mail
+      if (typeof this.$route.query.status !== 'undefined' && this.$route.query.status === 'sent') {
+        // Already sent
         this.message = 'Global.mail_sent'
-        break
-      case 'wait':
-        this.message = 'Validate.wait'
+      } else {
+        this.$http.post('validate/mail', {'uid': this.$route.params.uid}).then((res) => {
+          this.message = 'Error.default'
+          switch (res.body.message) {
+            case 'sent':
+              this.message = 'Global.mail_sent'
+              break
+            case 'wait':
+              this.message = 'Validate.wait'
+          }
+        }, (res) => {
+          this.$router.push('/login') // Account already validated
+        })
+      }
     }
   }
 }

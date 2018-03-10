@@ -98,7 +98,7 @@ export default {
             if (res.body.message === 'badPass') {
               this.err_msg = 'User.badPass'
             } else if (res.body.message === 'validate') {
-              this.$router.push({path: '/validate', query: {uid: res.body.data, status: 'send'}})
+              this.$router.push({path: '/validate', params: {uid: res.body.data}})
             }
           }
         })
@@ -122,6 +122,10 @@ export default {
   created () {
     if (this.$parent.token) {
       this.$router.push('/')
+    }
+
+    if (typeof this.$route.query.validation !== 'undefined') {
+      this.val = true
     }
   }
 }
