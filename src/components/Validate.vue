@@ -15,7 +15,6 @@ export default {
   name: 'Validate',
   data () {
     return {
-      status: null,
       message: 'Global.loading'
     }
   },

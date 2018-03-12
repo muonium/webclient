@@ -33,6 +33,11 @@ export default new Router({
       component: LostPass
     },
     {
+      path: '/lostPass/:uid/:key',
+      name: 'LostPassKey',
+      component: LostPass
+    },
+    {
       path: '/validate/:uid',
       name: 'Validate',
       component: Validate
