@@ -6,6 +6,7 @@ import Login from '@/components/Login'
 import Register from '@/components/Register'
 import LostPass from '@/components/LostPass'
 import Validate from '@/components/Validate'
+import Folder from '@/components/Folder'
 import PageNotFound from '@/components/PageNotFound'
 
 Vue.use(Router)
@@ -46,6 +47,16 @@ export default new Router({
       path: '/validate/:uid/:key',
       name: 'ValidateKey',
       component: Validate
+    },
+    {
+      path: '/u',
+      name: 'Folder',
+      component: Folder
+    },
+    {
+      path: '/u/:folder_id',
+      name: 'FolderId',
+      component: Folder
     },
     {
       path: '*',

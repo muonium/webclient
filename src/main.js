@@ -18,7 +18,7 @@ Vue.http.interceptors.push(function (request, next) {
   let token = sessionStorage.getItem('token')
   if (token !== null && request.url.indexOf('.json') === -1) {
     // If a token is stored and requested file is not a json, then, send the token
-    request.headers['Authorization'] = 'Bearer: ' + token
+    request.headers.set('Authorization', 'Bearer ' + token)
   }
 
   return function (resp) {

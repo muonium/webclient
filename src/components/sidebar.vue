@@ -2,9 +2,9 @@
   <div class="sidebar">
     <ul>
       <li>
-        <a href="User">
+        <router-link :to="'/u/' + this.$parent.folder_id">
           <i class="fa fa-file" aria-hidden="true"></i>
-        </a>
+        </router-link>
       </li>
       <li>
         <a href="User#trash">
@@ -17,14 +17,14 @@
         </a>
       </li>
       <li>
-        <a href="Bug">
+        <router-link to="/bug">
           <i class="fa fa-bug" aria-hidden="true"></i>
-        </a>
+        </router-link>
       </li>
       <li>
-        <a href="Profile">
+        <router-link to="/profile">
           <i class="fa fa-cog" aria-hidden="true"></i>
-        </a>
+        </router-link>
       </li>
     </ul>
   </div>

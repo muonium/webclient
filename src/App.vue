@@ -12,7 +12,9 @@
       </a>
     </header>
     <div id="main">
+      <sidebar v-if="this.sidebar"/>
       <router-view/>
+      <selection v-if="this.selection"/>
     </div>
   </body>
 </template>
@@ -21,16 +23,22 @@
 import Vue from 'vue'
 import language from './language'
 import languageSelector from './components/language_selector'
+import sidebar from './components/sidebar'
+import selection from './components/selection'
 
 export default {
   name: 'App',
   components: {
-    languageSelector
+    languageSelector,
+    sidebar,
+    selection
   },
   data () {
     return {
       loading: true,
-      token: sessionStorage.getItem('token')
+      token: sessionStorage.getItem('token'),
+      sidebar: false,
+      selection: false
     }
   },
   methods: {

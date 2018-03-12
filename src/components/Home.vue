@@ -3,7 +3,6 @@
     <vue-headful
       title="Muonium"
     />
-    token: {{ this.$parent.token }}
   </div>
 </template>
 
@@ -16,6 +15,8 @@ export default {
   created () {
     if (!this.$parent.isLogged()) {
       this.$parent.logout()
+    } else {
+      this.$router.push('/u/0')
     }
   }
 }
