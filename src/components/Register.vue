@@ -1,6 +1,7 @@
 <template>
   <div class="container-small">
     <vue-headful
+      v-if="!this.$parent.loading"
       :title="$t('Global.register')"
     />
     <form class="form-register" method="post" v-on:submit.prevent="sendForm">
@@ -163,7 +164,7 @@ export default {
     }
   },
   created () {
-    if (this.$parent.token) {
+    if (this.$parent.isLogged()) {
       this.$router.push('/')
     }
   }

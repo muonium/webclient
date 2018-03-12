@@ -3,15 +3,21 @@
     <vue-headful
       title="Muonium"
     />
-    <router-link to="/login">Login</router-link>
-    <router-link to="/register">Register</router-link><br>
     token: {{ this.$parent.token }}
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  data () {
+    return {}
+  },
+  created () {
+    if (!this.$parent.isLogged()) {
+      this.$parent.logout()
+    }
+  }
 }
 </script>
 

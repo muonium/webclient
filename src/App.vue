@@ -44,10 +44,17 @@ export default {
         }
       })
     },
+    isLogged () {
+      if (this.token !== null && sessionStorage.getItem('cek') !== null && sessionStorage.getItem('kek') !== null) {
+        return true
+      }
+      sessionStorage.clear()
+      return false
+    },
     logout () {
       this.token = null
       sessionStorage.clear()
-      this.$router.push('/Login')
+      this.$router.push('/login')
     }
   },
   created () {

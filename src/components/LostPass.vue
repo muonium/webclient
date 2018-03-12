@@ -1,6 +1,7 @@
 <template>
   <div class="container-small">
     <vue-headful
+      v-if="!this.$parent.loading"
       :title="$t('Login.forgot')"
     />
     <h1>{{ $t('Login.forgot') }}</h1>
@@ -116,7 +117,7 @@ export default {
     }
   },
   created () {
-    if (this.$parent.token) {
+    if (this.$parent.isLogged()) {
       this.$router.push('/')
     }
 
