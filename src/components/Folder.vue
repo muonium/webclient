@@ -37,7 +37,7 @@
           <tr class="folder" v-for="folder in this.folder.folders" :key="folder.id"
             :id="'d'+ folder.id"
             :name="folder.name"
-            :title="folder.size"
+            :title="showSize(folder.size)"
             :data-folder="folder.parent"
             :data-path="folder.path"
             :data-title="folder.name"
@@ -56,6 +56,32 @@
             </td>
             <td></td>
             <td></td>
+            <td><a href="#" class="btn btn-actions"></a></td>
+          </tr>
+          <tr class="break"></tr>
+          <tr v-for="file in this.folder.files" :key="file.id"
+            :class="'file' + file.size < 0 ? ' red' : ''"
+            :id="'f' + file.id"
+            :title="showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + getDate(file.lastmod)"
+            :data-folder="file.folder_id"
+            :data-path="file.path"
+            :data-title="file.name"
+            :data-shared="file.is_shared ? 1 : 0"
+            :data-url="'/dl/?' + setURL(file.id)"
+            draggable="true"
+          >
+            <!-- @click="Selection.addFile()" -->
+            <!-- @dblclick="Selection.dl()" -->
+            <td>
+              <input type="checkbox" :id="'sel_f' + file.id">
+              <label :for="'sel_f' + file.id"></label>
+            </td>
+            <td></td>
+            <td>
+              <strong>{{ file.name }}</strong>
+            </td>
+            <td>{{ showSize(file.size) }}</td>
+            <td>{{ getDate(file.lastmod) }}</td>
             <td><a href="#" class="btn btn-actions"></a></td>
           </tr>
         </table>
@@ -87,6 +113,24 @@ export default {
       }, (res) => {
         console.log('Error while opening a folder')
       })
+    },
+    showSize (size, precision = 2) { // size => size in bytes
+      size = parseInt(size)
+      if (isNaN(size) || size <= 0) {
+        return 0
+      }
+      if (this.$i18n.locale === null || typeof this.$i18n.messages[this.$i18n.locale] === 'undefined' || typeof this.$i18n.messages[this.$i18n.locale].Units === 'undefined') {
+        return size
+      }
+      let base = Math.log(size) / Math.log(1000)
+      let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
+      return Math.pow(1000, base - Math.floor(base)).toFixed(precision) + ' ' + suffixes[Math.floor(base)]
+    },
+    setURL (id) {
+      return id
+    },
+    getDate (timestamp) {
+      return timestamp
     }
   },
   beforeCreate () {
