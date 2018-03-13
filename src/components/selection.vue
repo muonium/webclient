@@ -19,7 +19,7 @@
 
       <div class="story">
         <p class="mono keep">
-          <strong>{{ $t('Story.keep') }}</strong>
+          <strong v-html="$t('Story.keep')"></strong>
         </p>
         <hr>
         <p class="join">{{ $t('Story.join') }}</p>
