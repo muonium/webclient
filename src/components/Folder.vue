@@ -41,6 +41,7 @@
             :data-folder="folder.parent"
             :data-path="folder.path"
             :data-title="folder.name"
+            @click="trigger('SelectionAddFolder', folder.id)"
             @dblclick="open(folder.id)"
             draggable="true"
           >
@@ -67,7 +68,8 @@
             :data-path="file.path"
             :data-title="file.name"
             :data-shared="file.is_shared ? 1 : 0"
-            :data-url="'/dl/?' + setURL(file.id)"
+            :data-url="file.url"
+            @click="trigger('SelectionAddFile', file.id)"
             draggable="true"
           >
             <!-- @click="Selection.addFile()" -->
@@ -95,6 +97,9 @@
 </template>
 
 <script>
+import moment from 'moment'
+import bus from '../bus'
+
 export default {
   name: 'Folder',
   data () {
@@ -106,6 +111,7 @@ export default {
   },
   methods: {
     open (folderId) {
+      this.$router.push('/u/' + folderId)
       this.$http.post('folders/open', {folder_id: folderId, trash: (this.trash ? 1 : 0)}).then((res) => {
         console.log(res.body.data)
         this.folder_id = folderId
@@ -126,11 +132,15 @@ export default {
       let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
       return Math.pow(1000, base - Math.floor(base)).toFixed(precision) + ' ' + suffixes[Math.floor(base)]
     },
-    setURL (id) {
-      return id
-    },
     getDate (timestamp) {
-      return timestamp
+      let format = this.$t('Dates.date') + ' ' + this.$t('Dates.time')
+      if (format === 'Dates.date Dates.time') {
+        format = 'YYYY-MM-DD HH:mm'
+      }
+      return moment(timestamp * 1000).format(format)
+    },
+    trigger (event) {
+      bus.$emit.apply(bus, arguments)
     }
   },
   beforeCreate () {
@@ -148,6 +158,10 @@ export default {
     }
 
     this.open(this.folder_id)
+  },
+  destroyed () {
+    this.$parent.sidebar = false
+    this.$parent.selection = false
   }
 }
 </script>

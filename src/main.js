@@ -28,7 +28,7 @@ Vue.http.interceptors.push(function (request, next) {
         sessionStorage.setItem('token', resp.body.token)
       }
 
-      if (typeof resp.body.message !== 'undefined' && resp.body.message === 'removeToken') {
+      if (resp.body.code === 401 || (typeof resp.body.message !== 'undefined' && resp.body.message === 'removeToken')) {
         sessionStorage.clear()
       }
     }

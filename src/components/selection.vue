@@ -51,8 +51,57 @@
 </template>
 
 <script>
+import bus from '../bus'
+
 export default {
-  name: 'selection'
+  name: 'selection',
+  data () {
+    return {
+      files: [],
+      folders: [],
+      multiple: false
+    }
+  },
+  methods: {
+    addFile (id) {
+      if (this.files.indexOf(id) === -1) {
+        console.log('add file')
+        this.files.push(id)
+        document.querySelector('#f' + id).classList.add('selected')
+      } else {
+        this.removeFile(id)
+      }
+    },
+    addFolder (id) {
+      if (this.folders.indexOf(id) === -1) {
+        console.log('add folder')
+        this.folders.push(id)
+        document.querySelector('#d' + id).classList.add('selected')
+      } else {
+        this.removeFolder(id)
+      }
+    },
+    removeFile (id) {
+      console.log('remove file')
+      let pos = this.files.indexOf(id)
+      if (pos !== -1) {
+        this.$delete(this.files, pos)
+        document.querySelector('#f' + id).classList.remove('selected')
+      }
+    },
+    removeFolder (id) {
+      console.log('remove folder')
+      let pos = this.folders.indexOf(id)
+      if (pos !== -1) {
+        this.$delete(this.folders, pos)
+        document.querySelector('#d' + id).classList.remove('selected')
+      }
+    }
+  },
+  created () {
+    bus.$on('SelectionAddFile', (id) => this.addFile(id))
+    bus.$on('SelectionAddFolder', (id) => this.addFolder(id))
+  }
 }
 </script>
 
