@@ -63,20 +63,40 @@ export default {
     }
   },
   methods: {
-    addFile (id) {
+    addFile (id, e) {
+      if (typeof e === 'object' && e !== null) {
+        if (e.target.classList.contains('btn-actions')) {
+          return false
+        }
+        if (e.target.tagName === 'LABEL' || (e.target.tagName === 'TD' && e.target.classList.contains('file_checkbox'))) {
+          e = 'ctrl' // Click on label/checkbox: behave like 'ctrl' key is pressed
+        }
+      }
+      //
       if (this.files.indexOf(id) === -1) {
         console.log('add file')
         this.files.push(id)
         document.querySelector('#f' + id).classList.add('selected')
+        document.querySelector('#sel_f' + id).checked = true
       } else {
         this.removeFile(id)
       }
     },
-    addFolder (id) {
+    addFolder (id, e) {
+      if (typeof e === 'object' && e !== null) {
+        if (e.target.classList.contains('btn-actions')) {
+          return false
+        }
+        if (e.target.tagName === 'LABEL' || (e.target.tagName === 'TD' && e.target.classList.contains('file_checkbox'))) {
+          e = 'ctrl' // Click on label/checkbox: behave like 'ctrl' key is pressed
+        }
+      }
+      //
       if (this.folders.indexOf(id) === -1) {
         console.log('add folder')
         this.folders.push(id)
         document.querySelector('#d' + id).classList.add('selected')
+        document.querySelector('#sel_d' + id).checked = true
       } else {
         this.removeFolder(id)
       }
@@ -87,6 +107,7 @@ export default {
       if (pos !== -1) {
         this.$delete(this.files, pos)
         document.querySelector('#f' + id).classList.remove('selected')
+        document.querySelector('#sel_f' + id).checked = false
       }
     },
     removeFolder (id) {
@@ -95,12 +116,13 @@ export default {
       if (pos !== -1) {
         this.$delete(this.folders, pos)
         document.querySelector('#d' + id).classList.remove('selected')
+        document.querySelector('#sel_d' + id).checked = false
       }
     }
   },
   created () {
-    bus.$on('SelectionAddFile', (id) => this.addFile(id))
-    bus.$on('SelectionAddFolder', (id) => this.addFolder(id))
+    bus.$on('SelectionAddFile', (id, e) => this.addFile(id, e))
+    bus.$on('SelectionAddFolder', (id, e) => this.addFolder(id, e))
   }
 }
 </script>

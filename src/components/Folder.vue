@@ -41,12 +41,12 @@
             :data-folder="folder.parent"
             :data-path="folder.path"
             :data-title="folder.name"
-            @click="trigger('SelectionAddFolder', folder.id)"
-            @dblclick="open(folder.id)"
+            @click.prevent="trigger('SelectionAddFolder', folder.id, $event)"
+            @dblclick.prevent="open(folder.id)"
             draggable="true"
           >
             <!-- @click="Selection.addFolder()" -->
-            <td>
+            <td class="file_checkbox">
               <input type="checkbox" :id="'sel_d'+ folder.id">
               <label :for="'sel_d'+ folder.id"></label>
             </td>
@@ -69,12 +69,12 @@
             :data-title="file.name"
             :data-shared="file.is_shared ? 1 : 0"
             :data-url="file.url"
-            @click="trigger('SelectionAddFile', file.id)"
+            @click.prevent="trigger('SelectionAddFile', file.id, $event)"
             draggable="true"
           >
             <!-- @click="Selection.addFile()" -->
             <!-- @dblclick="Selection.dl()" -->
-            <td>
+            <td class="folder_checkbox">
               <input type="checkbox" :id="'sel_f' + file.id">
               <label :for="'sel_f' + file.id"></label>
             </td>
@@ -113,7 +113,6 @@ export default {
     open (folderId) {
       this.$router.push('/u/' + folderId)
       this.$http.post('folders/open', {folder_id: folderId, trash: (this.trash ? 1 : 0)}).then((res) => {
-        console.log(res.body.data)
         this.folder_id = folderId
         this.folder = res.body.data
       }, (res) => {
@@ -152,6 +151,15 @@ export default {
     if (!this.$parent.isLogged()) {
       this.$parent.logout()
     }
+
+    bus.$on('FolderOpenCurrent', () => {
+      this.trash = false
+      this.open(this.folder_id)
+    })
+    bus.$on('FolderOpenTrash', () => {
+      this.trash = true
+      this.open(this.folder_id)
+    })
 
     if (typeof this.$route.params.folder_id !== 'undefined') {
       this.folder_id = this.$route.params.folder_id
