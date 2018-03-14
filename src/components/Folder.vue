@@ -27,7 +27,9 @@
         </a>
         <table id="tree">
           <tr id="tree_head">
-            <th width="44px"><input type="checkbox" id="sel_all"><label for="sel_all"></label></th>
+            <th width="44px">
+              <input type="checkbox" id="sel_all" @click="selAll"><label for="sel_all"></label>
+            </th>
             <th></th>
             <th>Name</th>
             <th>Size</th>
@@ -61,7 +63,7 @@
           </tr>
           <tr class="break"></tr>
           <tr v-for="file in this.folder.files" :key="file.id"
-            :class="'file' + file.size < 0 ? ' red' : ''"
+            :class="'file' + (file.size < 0 ? ' red' : '')"
             :id="'f' + file.id"
             :title="showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + getDate(file.lastmod)"
             :data-folder="file.folder_id"
@@ -113,11 +115,19 @@ export default {
     open (folderId) {
       this.$router.push('/u/' + folderId)
       this.$http.post('folders/open', {folder_id: folderId, trash: (this.trash ? 1 : 0)}).then((res) => {
+        bus.$emit('SelectionRemoveAll')
         this.folder_id = folderId
         this.folder = res.body.data
       }, (res) => {
         console.log('Error while opening a folder')
       })
+    },
+    selAll (e) {
+      if (e.target.checked) {
+        bus.$emit('SelectionAddAll')
+      } else {
+        bus.$emit('SelectionRemoveAll')
+      }
     },
     showSize (size, precision = 2) { // size => size in bytes
       size = parseInt(size)
@@ -138,6 +148,24 @@ export default {
       }
       return moment(timestamp * 1000).format(format)
     },
+    keyListener (e) {
+      if (e.ctrlKey) {
+        switch (e.keyCode) {
+          case 68: // D
+            e.preventDefault()
+            this.$parent.logout()
+            break
+          case 65: // A
+            e.preventDefault()
+            bus.$emit('SelectionAddAll')
+            break
+          case 73: // I
+            e.preventDefault()
+            bus.$emit('SelectionInvert')
+            break
+        }
+      }
+    },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
     }
@@ -150,7 +178,10 @@ export default {
   created () {
     if (!this.$parent.isLogged()) {
       this.$parent.logout()
+      return false
     }
+
+    document.addEventListener('keyup', this.keyListener)
 
     bus.$on('FolderOpenCurrent', () => {
       this.trash = false
@@ -167,9 +198,13 @@ export default {
 
     this.open(this.folder_id)
   },
-  destroyed () {
+  beforeDestroy () {
+    document.removeEventListener('keyup', this.keyListener)
     this.$parent.sidebar = false
     this.$parent.selection = false
+
+    bus.$off('FolderOpenCurrent')
+    bus.$off('FolderOpenTrash')
   }
 }
 </script>

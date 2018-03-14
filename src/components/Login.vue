@@ -182,6 +182,7 @@ export default {
   created () {
     if (this.$parent.isLogged()) {
       this.$router.push('/')
+      return false
     }
 
     if (typeof this.$route.query.validation !== 'undefined') {

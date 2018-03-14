@@ -64,6 +64,9 @@ export default {
   },
   methods: {
     addFile (id, e) {
+      // Called when a file is clicked, try to add it to selection (or remove it)
+      id = parseInt(id)
+      if (isNaN(id)) return false
       if (typeof e === 'object' && e !== null) {
         if (e.target.classList.contains('btn-actions')) {
           return false
@@ -72,17 +75,29 @@ export default {
           e = 'ctrl' // Click on label/checkbox: behave like 'ctrl' key is pressed
         }
       }
-      //
-      if (this.files.indexOf(id) === -1) {
-        console.log('add file')
-        this.files.push(id)
-        document.querySelector('#f' + id).classList.add('selected')
-        document.querySelector('#sel_f' + id).checked = true
-      } else {
-        this.removeFile(id)
+
+      if (document.querySelector('#f' + id)) {
+        if (this.multiple || (e !== null && (e === 'ctrl' || e.ctrlKey))) {
+          // Multiple selection
+          let pos = this.files.indexOf(id)
+          if (pos === -1) {
+            this.files.push(id)
+            this.addSelected('f' + id)
+          } else {
+            this.removeFile(id)
+          }
+        } else {
+          // Single selection
+          this.removeAll()
+          this.files.push(id)
+          this.addSelected('f' + id)
+        }
       }
     },
     addFolder (id, e) {
+      // Called when a folder is clicked, try to add it to selection (or remove it)
+      id = parseInt(id)
+      if (isNaN(id)) return false
       if (typeof e === 'object' && e !== null) {
         if (e.target.classList.contains('btn-actions')) {
           return false
@@ -91,38 +106,125 @@ export default {
           e = 'ctrl' // Click on label/checkbox: behave like 'ctrl' key is pressed
         }
       }
-      //
-      if (this.folders.indexOf(id) === -1) {
-        console.log('add folder')
-        this.folders.push(id)
-        document.querySelector('#d' + id).classList.add('selected')
-        document.querySelector('#sel_d' + id).checked = true
-      } else {
-        this.removeFolder(id)
+
+      if (document.querySelector('#d' + id)) {
+        if (this.multiple || (e !== null && (e === 'ctrl' || e.ctrlKey))) {
+          // Multiple selection
+          let pos = this.folders.indexOf(id)
+          if (pos === -1) {
+            this.folders.push(id)
+            this.addSelected('d' + id)
+          } else {
+            this.removeFolder(id)
+          }
+        } else {
+          // Single selection
+          this.removeAll()
+          this.folders.push(id)
+          this.addSelected('d' + id)
+        }
       }
     },
+    addSelected (id) {
+      // Add "selected" class to a file/folder
+      let el = document.querySelector('#' + id)
+      if (el) {
+        el.classList.add('selected')
+        el.querySelector('#sel_' + id).checked = true
+        document.querySelector('#sel_all').checked = false
+      }
+    },
+    addAll () {
+      // Select all files/folders
+      let files = document.querySelectorAll('#mui .file')
+      let folders = document.querySelectorAll('#mui .folder')
+      for (let i = 0; i < files.length; i++) {
+        let id = parseInt(files[i].id.substr(1))
+        if (!isNaN(id) && this.files.indexOf(id) === -1) {
+          this.addFile(id, 'ctrl')
+        }
+      }
+      for (let j = 0; j < folders.length; j++) {
+        let id = parseInt(folders[j].id.substr(1))
+        if (!isNaN(id) && this.folders.indexOf(id) === -1) {
+          this.addFolder(id, 'ctrl')
+        }
+      }
+      document.querySelector('#sel_all').checked = true
+    },
     removeFile (id) {
-      console.log('remove file')
+      // Remove a file from selection
+      id = parseInt(id)
+      if (isNaN(id)) return false
       let pos = this.files.indexOf(id)
       if (pos !== -1) {
         this.$delete(this.files, pos)
-        document.querySelector('#f' + id).classList.remove('selected')
-        document.querySelector('#sel_f' + id).checked = false
+        this.removeSelected('f' + id)
       }
     },
     removeFolder (id) {
-      console.log('remove folder')
+      // Remove a folder from selection
+      id = parseInt(id)
+      if (isNaN(id)) return false
       let pos = this.folders.indexOf(id)
       if (pos !== -1) {
         this.$delete(this.folders, pos)
-        document.querySelector('#d' + id).classList.remove('selected')
-        document.querySelector('#sel_d' + id).checked = false
+        this.removeSelected('d' + id)
+      }
+    },
+    removeFiles () {
+      // Remove selected files from selection
+      for (let file of this.files) {
+        this.removeSelected('f' + file)
+      }
+      this.files = []
+    },
+    removeFolders () {
+      // Remove selected folders from selection
+      for (let folder of this.folders) {
+        this.removeSelected('d' + folder)
+      }
+      this.folders = []
+    },
+    removeSelected (id) {
+      // Remove selected file/folder from selection
+      let el = document.querySelector('#' + id)
+      if (el) {
+        el.classList.remove('selected')
+        el.querySelector('#sel_' + id).checked = false
+        document.querySelector('#sel_all').checked = false
+      }
+    },
+    removeAll () {
+      // Remove selected files/folders from selection
+      this.removeFiles()
+      this.removeFolders()
+    },
+    invert () {
+      // Invert selection
+      let files = document.querySelectorAll('#mui .file')
+      let folders = document.querySelectorAll('#mui .folder')
+      for (let i = 0; i < files.length; i++) {
+        this.addFile(files[i].id.substr(1), 'ctrl')
+      }
+      for (let j = 0; j < folders.length; j++) {
+        this.addFolder(folders[j].id.substr(1), 'ctrl')
       }
     }
   },
   created () {
     bus.$on('SelectionAddFile', (id, e) => this.addFile(id, e))
     bus.$on('SelectionAddFolder', (id, e) => this.addFolder(id, e))
+    bus.$on('SelectionAddAll', this.addAll)
+    bus.$on('SelectionRemoveAll', this.removeAll)
+    bus.$on('SelectionInvert', this.invert)
+  },
+  beforeDestroy () {
+    bus.$off('SelectionAddFile')
+    bus.$off('SelectionAddFolder')
+    bus.$off('SelectionAddAll')
+    bus.$off('SelectionRemoveAll')
+    bus.$off('SelectionInvert')
   }
 }
 </script>
