@@ -7,7 +7,7 @@
     width: 100%; max-width: 100%;
     -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
     bottom: 55px;
-    display: none;
+    display: block;
 	cursor: default;
 }
 

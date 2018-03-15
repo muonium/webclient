@@ -1,6 +1,6 @@
 <template>
   <div id="messageBoxContainer">
-    <div class="MessageBox" :style="getStyle(index)" v-for="(box, index) in this.boxes" :key="'box-' + index">
+    <div class="MessageBox" :style="getStyle(index)" v-for="(box, index) in this.boxes" :key="'box-' + index" :data-index="index">
       <div class="MessageBoxClose" @click="close(index)">x</div>
       <div class="MessageBoxTitle" v-if="box.title">{{ box.title }}</div>
       <div class="MessageBoxTxt" v-if="box.txt">{{ box.txt }}</div>
@@ -9,9 +9,9 @@
         <p class="input-large" v-for="(input, index) in box.inputs" :key="'input-' + index">
           <input
             v-bind="attributes(input)"
-            v-on:click="typeof input.clickEvent !== 'undefined' ? input.clickEvent : null"
-            v-on:keyup="typeof input.keyUpEvent !== 'undefined' ? input.keyUpEvent : null"
-            v-on:keypress="typeof input.keyPressEvent !== 'undefined' ? input.keyPressEvent : null"
+            v-on:click="typeof input.clickEvent !== 'undefined' ? input.clickEvent($event) : null"
+            v-on:keyup="typeof input.keyUpEvent !== 'undefined' ? input.keyUpEvent($event) : null"
+            v-on:keypress="typeof input.keyPressEvent !== 'undefined' ? input.keyPressEvent($event) : null"
           >
           <label :class="input.icon" :for="typeof input.id !== 'undefined' ? input.id : ''" v-if="input.icon"></label>
         </p>
@@ -19,7 +19,7 @@
       <div class="MessageBoxBtns" v-if="box.btns">
         <input
           v-bind="attributes(btn)"
-          @click="typeof btn.clickEvent !== 'undefined' ? btn.clickEvent : null"
+          @click="typeof btn.clickEvent !== 'undefined' ? btn.clickEvent($event) : null"
           v-for="(btn, index) in box.btns"
           :key="'btn-' + index"
         >
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import bus from '../bus'
+// import bus from '../bus'
 
 export default {
   name: 'messageBox',
@@ -44,20 +44,31 @@ export default {
         top: 150,
         left: 350,
         width: 400,
-        height: 150
+        height: 180
       }
       this.boxes.push(data)
     },
     close (index) {
       this.$delete(this.boxes, index)
     },
+    getIndexFromEvent (e) {
+      if (e.path) {
+        for (let i of e.path) {
+          if (typeof i.classList !== 'undefined' && i.classList.contains('MessageBox')) {
+            let index = i.getAttribute('data-index')
+            if (index !== null && index !== '' && !isNaN(parseInt(index))) {
+              return parseInt(index)
+            }
+          }
+        }
+      }
+      return false
+    },
     getStyle (index) {
       let style = {}
       for (const s of Object.keys(this.boxes[index].style)) {
         style[s] = this.boxes[index].style[s] + 'px'
       }
-      style['z-index'] = 999;
-      style['display'] = 'block';
       return style
     },
     attributes (input) {

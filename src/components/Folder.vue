@@ -129,6 +129,29 @@ export default {
       })
     },
     add () {
+      let validate = (e) => {
+        let exclude = '/\\:*?<>|"'
+        if (e.type === 'keypress' && e.keyCode !== 13) {
+          let key = e.key ? e.key : String.fromCharCode(e.keyCode)
+          if (exclude.indexOf(key) === -1) {
+            return true
+          }
+          return false
+        }
+        if (e.type === 'click' || e.keyCode === 13) { // Send
+          let index = this.$refs.messageBox.getIndexFromEvent(e)
+          if (index !== false) {
+            let name = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="folder_name"]').value
+            this.$refs.messageBox.close(index)
+            this.$http.post('folders/add', {name: name, folder_id: this.folder_id}).then((res) => {
+              this.open(this.folder_id)
+            }, (res) => {
+              console.log('Exists')
+            })
+          }
+        }
+        return true
+      }
       this.$refs.messageBox.add({
         title: this.$t('RightClick.nFolder'),
         inputs: [
@@ -136,17 +159,23 @@ export default {
             type: 'text',
             name: 'folder_name',
             id: 'nFolder',
-    				placeholder: this.$t('User.foldername'),
-    				autocomplete: 'off',
-            icon: 'fa fa-folder-o'
+            placeholder: this.$t('User.foldername'),
+            autocomplete: 'off',
+            icon: 'fa fa-folder-o',
+            keyPressEvent (e) {
+              if (!validate(e)) {
+                e.preventDefault()
+              }
+            }
           }
         ],
         btns: [
           {
             type: 'button',
+            class: 'btn',
             value: 'OK',
-            clickEvent () {
-              alert('a')
+            clickEvent (e) {
+              validate(e)
             }
           }
         ]
@@ -179,21 +208,27 @@ export default {
       return moment(timestamp * 1000).format(format)
     },
     keyListener (e) {
+      let fired = true
       if (e.ctrlKey) {
         switch (e.keyCode) {
           case 68: // D
-            e.preventDefault()
             this.$parent.logout()
             break
           case 65: // A
-            e.preventDefault()
             bus.$emit('SelectionAddAll')
             break
           case 73: // I
-            e.preventDefault()
             bus.$emit('SelectionInvert')
             break
+          default:
+            fired = false
         }
+      } else {
+        fired = false
+      }
+
+      if (fired) {
+        e.preventDefault()
       }
     },
     trigger (event) {
@@ -211,7 +246,7 @@ export default {
       return false
     }
 
-    document.addEventListener('keyup', this.keyListener)
+    document.addEventListener('keydown', this.keyListener)
 
     bus.$on('FolderOpenCurrent', () => {
       this.trash = false
@@ -230,7 +265,7 @@ export default {
     this.open(this.folder_id)
   },
   beforeDestroy () {
-    document.removeEventListener('keyup', this.keyListener)
+    document.removeEventListener('keydown', this.keyListener)
     this.$parent.sidebar = false
     this.$parent.selection = false
 
