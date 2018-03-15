@@ -95,15 +95,21 @@
         {{ $t('Global.loading') }}
       </div>
     </section>
+
+    <messageBox ref="messageBox"/>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
 import bus from '../bus'
+import messageBox from './messageBox'
 
 export default {
   name: 'Folder',
+  components: {
+    messageBox
+  },
   data () {
     return {
       folder_id: 0,
@@ -120,6 +126,30 @@ export default {
         this.folder = res.body.data
       }, (res) => {
         console.log('Error while opening a folder')
+      })
+    },
+    add () {
+      this.$refs.messageBox.add({
+        title: this.$t('RightClick.nFolder'),
+        inputs: [
+          {
+            type: 'text',
+            name: 'folder_name',
+            id: 'nFolder',
+    				placeholder: this.$t('User.foldername'),
+    				autocomplete: 'off',
+            icon: 'fa fa-folder-o'
+          }
+        ],
+        btns: [
+          {
+            type: 'button',
+            value: 'OK',
+            clickEvent () {
+              alert('a')
+            }
+          }
+        ]
       })
     },
     selAll (e) {
@@ -191,6 +221,7 @@ export default {
       this.trash = true
       this.open(this.folder_id)
     })
+    bus.$on('FolderAdd', this.add)
 
     if (typeof this.$route.params.folder_id !== 'undefined') {
       this.folder_id = this.$route.params.folder_id
@@ -205,6 +236,7 @@ export default {
 
     bus.$off('FolderOpenCurrent')
     bus.$off('FolderOpenTrash')
+    bus.$off('FolderAdd')
   }
 }
 </script>

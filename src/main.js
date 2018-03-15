@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VueI18n)
 Vue.component('vue-headful', vueHeadful)
-Vue.http.options.root = 'http://127.0.0.1/server'
+Vue.http.options.root = 'http://192.168.1.16/server'
 
 // Token management middleware
 Vue.http.interceptors.push(function (request, next) {

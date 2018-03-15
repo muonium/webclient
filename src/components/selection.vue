@@ -8,7 +8,7 @@
           <i class="fa fa-upload" aria-hidden="true"></i>
         </a>
 
-        <a href="#" id="create_btn" class="blue block" onclick="Folders.create(event)" :title="$t('RightClick.nFolder')">
+        <a href="#" id="create_btn" class="blue block" @click="trigger('FolderAdd')" :title="$t('RightClick.nFolder')">
           <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
         </a>
 
@@ -210,6 +210,9 @@ export default {
       for (let j = 0; j < folders.length; j++) {
         this.addFolder(folders[j].id.substr(1), 'ctrl')
       }
+    },
+    trigger (event) {
+      bus.$emit.apply(bus, arguments)
     }
   },
   created () {
