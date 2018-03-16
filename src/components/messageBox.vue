@@ -115,12 +115,12 @@ export default {
     }
   },
   created () {
-    document.onmouseup = this.dragStop
-    document.onmousemove = this.dragMove
+    window.addEventListener('mouseup', this.dragStop)
+    window.addEventListener('mousemove', this.dragMove)
   },
   beforeDestroy () {
-    document.onmouseup = null
-    document.onmousemove = null
+    window.removeEventListener('mouseup', this.dragStop)
+    window.removeEventListener('mousemove', this.dragMove)
   }
 }
 </script>

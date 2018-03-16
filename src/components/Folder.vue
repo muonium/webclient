@@ -1,5 +1,8 @@
 <template>
-  <div class="container-max" @click="trigger('SelectionRemoveAll')">
+  <div class="container-max"
+    @click="trigger('SelectionRemoveAll')"
+    @contextmenu="trigger('BoxOpen', null, 0)"
+  >
     <vue-headful
       title="Muonium"
     />
@@ -45,6 +48,7 @@
             :data-title="folder.name"
             @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
             @dblclick.stop.prevent="open(folder.id)"
+            @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2)"
             draggable="true"
           >
             <!-- @click="Selection.addFolder()" -->
@@ -72,6 +76,7 @@
             :data-shared="file.is_shared ? 1 : 0"
             :data-url="file.url"
             @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
+            @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1)"
             draggable="true"
           >
             <!-- @click="Selection.addFile()" -->
@@ -97,18 +102,20 @@
     </section>
 
     <messageBox ref="messageBox"/>
+    <box ref="box"/>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
 import bus from '../bus'
+import box from './box'
 import messageBox from './messageBox'
 
 export default {
   name: 'Folder',
   components: {
-    messageBox
+    messageBox, box
   },
   data () {
     return {
@@ -122,6 +129,7 @@ export default {
       this.$router.push('/u/' + folderId)
       this.$http.post('folders/open', {folder_id: folderId, trash: (this.trash ? 1 : 0)}).then((res) => {
         bus.$emit('SelectionRemoveAll')
+        bus.$emit('BoxClose')
         this.folder_id = folderId
         this.folder = res.body.data
       }, (res) => {
