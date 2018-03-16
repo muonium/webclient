@@ -1,6 +1,12 @@
 <template>
   <div id="messageBoxContainer">
-    <div class="MessageBox" :style="getStyle(index)" v-for="(box, index) in this.boxes" :key="'box-' + index" :data-index="index">
+    <div
+      class="MessageBox"
+      v-for="(box, index) in this.boxes"
+      :key="'box-' + index"
+      :data-index="index"
+      v-on:mousedown="dragStart(index, $event)"
+    >
       <div class="MessageBoxClose" @click="close(index)">x</div>
       <div class="MessageBoxTitle" v-if="box.title">{{ box.title }}</div>
       <div class="MessageBoxTxt" v-if="box.txt">{{ box.txt }}</div>
@@ -29,27 +35,60 @@
 </template>
 
 <script>
-// import bus from '../bus'
-
 export default {
   name: 'messageBox',
   data () {
     return {
-      boxes: []
+      boxes: [],
+      drag: null,
+      headerHeight: 0,
+      diffLeft: 0,
+      diffTop: 0
     }
   },
   methods: {
     add (data) {
-      data.style = {
-        top: 150,
-        left: 350,
-        width: 400,
-        height: 180
-      }
       this.boxes.push(data)
     },
     close (index) {
       this.$delete(this.boxes, index)
+    },
+    dragStart (index, e) {
+      if (['input', 'button', 'textarea', 'a'].indexOf(e.target.tagName.toLowerCase()) === -1) {
+        let el = document.querySelector('.MessageBox[data-index="' + index + '"]')
+        if (el) {
+          this.headerHeight = document.querySelector('header').offsetHeight
+          let rect = el.getBoundingClientRect()
+          this.drag = parseInt(index)
+          this.diffLeft = e.pageX - Math.round(rect.left)
+          this.diffTop = e.pageY - Math.round(rect.top)
+        }
+      }
+    },
+    dragMove (e) {
+      if (this.drag !== null) {
+        if (e.which === 1) {
+          let el = document.querySelector('.MessageBox[data-index="' + this.drag + '"]')
+          if (el) {
+            let left = e.pageX - this.diffLeft
+            let top = e.pageY - this.diffTop
+
+            if (left < 0) left = 5
+            if (left + el.clientWidth > document.body.clientWidth) left = document.body.clientWidth - el.clientWidth - 5
+            if (top < this.headerHeight) top = this.headerHeight + 5
+            if (top + el.clientHeight > document.body.clientHeight) top = document.body.clientHeight - el.clientHeight - 5
+
+            el.style.transform = 'none'
+            el.style.left = left + 'px'
+            el.style.top = top + 'px'
+          }
+        } else {
+          this.dragStop()
+        }
+      }
+    },
+    dragStop () {
+      this.drag = null
     },
     getIndexFromEvent (e) {
       if (e.path) {
@@ -64,13 +103,6 @@ export default {
       }
       return false
     },
-    getStyle (index) {
-      let style = {}
-      for (const s of Object.keys(this.boxes[index].style)) {
-        style[s] = this.boxes[index].style[s] + 'px'
-      }
-      return style
-    },
     attributes (input) {
       // Keep only HTML attributes to set in input
       let exclude = ['keypressevent', 'keyupevent', 'clickevent', 'icon']
@@ -81,6 +113,14 @@ export default {
         return res
       }, {})
     }
+  },
+  created () {
+    document.onmouseup = this.dragStop
+    document.onmousemove = this.dragMove
+  },
+  beforeDestroy () {
+    document.onmouseup = null
+    document.onmousemove = null
   }
 }
 </script>

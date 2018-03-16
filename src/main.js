@@ -29,7 +29,7 @@ Vue.http.interceptors.push(function (request, next) {
       }
 
       if (resp.body.code === 401 || (typeof resp.body.message !== 'undefined' && resp.body.message === 'removeToken')) {
-        sessionStorage.clear()
+        this.$root.$children[0].logout()
       }
     }
   }

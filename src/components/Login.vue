@@ -41,8 +41,8 @@
       <input type="submit" class="btn" :value="$t('Global.submit')">
     </form>
 
-    <p class="red" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
-    <p class="green" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
+    <p class="red return" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
+    <p class="green return" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
     <img src="../assets/img/index/loader.svg" class="loader" v-if="loading">
   </div>
 </template>

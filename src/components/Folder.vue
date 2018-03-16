@@ -1,5 +1,5 @@
 <template>
-  <div class="container-max">
+  <div class="container-max" @click="trigger('SelectionRemoveAll')">
     <vue-headful
       title="Muonium"
     />
@@ -28,7 +28,7 @@
         <table id="tree">
           <tr id="tree_head">
             <th width="44px">
-              <input type="checkbox" id="sel_all" @click="selAll"><label for="sel_all"></label>
+              <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
             </th>
             <th></th>
             <th>Name</th>
@@ -43,8 +43,8 @@
             :data-folder="folder.parent"
             :data-path="folder.path"
             :data-title="folder.name"
-            @click.prevent="trigger('SelectionAddFolder', folder.id, $event)"
-            @dblclick.prevent="open(folder.id)"
+            @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
+            @dblclick.stop.prevent="open(folder.id)"
             draggable="true"
           >
             <!-- @click="Selection.addFolder()" -->
@@ -71,7 +71,7 @@
             :data-title="file.name"
             :data-shared="file.is_shared ? 1 : 0"
             :data-url="file.url"
-            @click.prevent="trigger('SelectionAddFile', file.id, $event)"
+            @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
             draggable="true"
           >
             <!-- @click="Selection.addFile()" -->

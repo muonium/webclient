@@ -52,6 +52,14 @@ export default {
         }
       })
     },
+    isInInput (e) {
+      // Check if the event targets an input/textarea
+      let exclude = ['radio', 'checkbox', 'button', 'submit']
+      if (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && exclude.indexOf(e.target.type) === -1)) {
+        return true
+      }
+      return false
+    },
     isLogged () {
       if (this.token !== null && sessionStorage.getItem('cek') !== null && sessionStorage.getItem('kek') !== null) {
         return true
@@ -70,6 +78,10 @@ export default {
       this.loadLanguage('en')
     }
     this.loadLanguage(language.current, true)
+
+    window.oncontextmenu = (e) => { // Disable right click except in input, textarea
+      return this.isInInput(e)
+    }
   }
 }
 </script>

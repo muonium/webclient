@@ -34,8 +34,8 @@
       </div>
     </form>
 
-    <p class="red" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
-    <p class="green" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
+    <p class="red return" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
+    <p class="green return" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
   </div>
 </template>
 

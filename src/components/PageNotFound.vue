@@ -4,7 +4,7 @@
       v-if="!this.$parent.loading"
       :title="$t('Error.e404')"
     />
-    <p class="red">{{ $t('Error.e404') }}</p>
+    <p class="red return">{{ $t('Error.e404') }}</p>
   </div>
 </template>
 
