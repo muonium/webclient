@@ -1,7 +1,7 @@
 <template>
   <div class="container-max"
     @click="trigger('SelectionRemoveAll')"
-    @contextmenu="trigger('BoxOpen', null, 0)"
+    @contextmenu="trigger('BoxOpen', null, 0, $event)"
   >
     <vue-headful
       title="Muonium"
@@ -48,7 +48,7 @@
             :data-title="folder.name"
             @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
             @dblclick.stop.prevent="open(folder.id)"
-            @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2)"
+            @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
             draggable="true"
           >
             <!-- @click="Selection.addFolder()" -->
@@ -76,7 +76,7 @@
             :data-shared="file.is_shared ? 1 : 0"
             :data-url="file.url"
             @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
-            @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1)"
+            @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
             draggable="true"
           >
             <!-- @click="Selection.addFile()" -->

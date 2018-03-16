@@ -73,10 +73,10 @@ export default {
             let left = e.pageX - this.diffLeft
             let top = e.pageY - this.diffTop
 
-            if (left < 0) left = 5
-            if (left + el.clientWidth > document.body.clientWidth) left = document.body.clientWidth - el.clientWidth - 5
-            if (top < this.headerHeight) top = this.headerHeight + 5
-            if (top + el.clientHeight > document.body.clientHeight) top = document.body.clientHeight - el.clientHeight - 5
+            if (left < 5) left = 5
+            if (left + el.clientWidth > document.body.clientWidth - 5) left = document.body.clientWidth - el.clientWidth - 5
+            if (top < this.headerHeight + 5) top = this.headerHeight + 5
+            if (top + el.clientHeight > document.body.clientHeight - 5) top = document.body.clientHeight - el.clientHeight - 5
 
             el.style.transform = 'none'
             el.style.left = left + 'px'

@@ -1,5 +1,5 @@
 <template>
-  <div id="box" v-if="active">
+  <div id="box" :style="style">
     <div v-if="type === 0">
       <p @click="trigger('FolderAdd')">
         <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
@@ -27,39 +27,40 @@
         <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
       </p>
       <hr>
-      <!-- if(Trash.state == 0) { -->
-      <p onclick="Favorites.update(id)">
-        <i class="fa fa-star" aria-hidden="true"></i> {{ $t('RightClick.star') }}
-      </p>
-      <hr>
-      <p onclick="Move.cut(id)">
-        <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
-      </p>
-      <p onclick="Move.copy(id)">
-        <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
-      </p>
-      <p onclick="Move.trashMultiple(id)">
-        <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
-      </p>
-      <!-- } else { -->
-      <p onclick="Move.trashMultiple(id)">
-        <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
-      </p>
-      <p onclick="Rm.multiple(id)">
-        <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
-      </p>
-      <!-- } -->
+      <div v-if="!isInTrash()">
+        <p onclick="Favorites.update(id)">
+          <i class="fa fa-star" aria-hidden="true"></i> {{ $t('RightClick.star') }}
+        </p>
+        <hr>
+        <p onclick="Move.cut(id)">
+          <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+        </p>
+        <p onclick="Move.copy(id)">
+          <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+        </p>
+        <p onclick="Move.trashMultiple(id)">
+          <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+        </p>
+      </div>
+      <div v-else>
+        <p onclick="Move.trashMultiple(id)">
+          <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+        </p>
+        <p onclick="Rm.multiple(id)">
+          <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+        </p>
+      </div>
       <!-- if(Move.Files.length > 0 || Move.Folders.length > 0) { -->
       <hr>
       <p onclick="Move.paste()">
         <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
       </p>
-      <!-- if(Trash.state == 0) { -->
-      <hr>
-      <p onclick="Move.rename(id)">
-        <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
-      </p>
-      <!-- } -->
+      <div v-if="!isInTrash()">
+        <hr>
+        <p onclick="Move.rename(id)">
+          <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+        </p>
+      </div>
       <hr>
       <p onclick="Files.details(id)">
         <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
@@ -71,34 +72,36 @@
         <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('RightClick.open') }}
       </p>
       <hr>
-      <!-- if(Trash.state == 0) { -->
-      <p onclick="Move.cut(id)">
-        <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
-      </p>
-      <p onclick="Move.copy(id)">
-        <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
-      </p>
-      <p onclick="Move.trashMultiple(id)">
-        <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
-      </p>
-      <!-- } else { -->
-      <p onclick="Move.trashMultiple(id)">
-        <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
-      </p>
-      <p onclick="Rm.multiple(id)">
-        <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
-      </p>
+      <div v-if="!isInTrash()">
+        <p onclick="Move.cut(id)">
+          <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+        </p>
+        <p onclick="Move.copy(id)">
+          <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+        </p>
+        <p onclick="Move.trashMultiple(id)">
+          <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+        </p>
+      </div>
+      <div v-else>
+        <p onclick="Move.trashMultiple(id)">
+          <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+        </p>
+        <p onclick="Rm.multiple(id)">
+          <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+        </p>
+      </div>
       <!-- if(Move.Files.length > 0 || Move.Folders.length > 0) { -->
       <hr>
       <p onclick="Move.paste(id)">
         <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
       </p>
-      <!-- if(Trash.state == 0) { -->
-      <hr>
-      <p onclick="Move.rename(id)">
-        <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
-      </p>
-      <!-- } -->
+      <div v-if="!isInTrash()">
+        <hr>
+        <p onclick="Move.rename(id)">
+          <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+        </p>
+      </div>
       <hr>
       <p onclick="Folders.details(id)">
         <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
@@ -116,35 +119,61 @@ export default {
     return {
       type: 0, // 1: file, 2: folder, 0: somewhere else
       id: null,
-      active: false
+      css: {
+        top: '0px',
+        left: '0px',
+        visibility: 'visible',
+        display: 'none'
+      }
     }
   },
   methods: {
-    open (id, type) {
+    open (id, type, e) {
       this.id = id
       this.type = parseInt(type)
-      this.active = true
-
       if (type === 1) {
         bus.$emit('SelectionAddFile', id, null)
       } else if (type === 2) {
         bus.$emit('SelectionAddFolder', id, null)
       }
+
+      // We need to make Box 'visible' in order to calculate overflow
+      this.css.display = 'block'
+      this.css.visibility = 'hidden'
+
+      let x = e.clientX
+      let y = e.clientY
+      let el = document.querySelector('#box')
+      let headerHeight = document.querySelector('header').offsetHeight
+
+      if (x < 5) x = 5
+      if (x + el.clientWidth > document.body.clientWidth - 5) x = document.body.clientWidth - el.clientWidth - 5
+      if (y < headerHeight + 5) y = headerHeight + 5
+      if (y + el.clientHeight > document.body.clientHeight - 5) y = document.body.clientHeight - el.clientHeight - 5
+
+      this.css.top = y + 'px'
+      this.css.left = x + 'px'
+      this.css.visibility = 'visible'
+      this.css.transform = 'none'
     },
     close () {
-      this.active = false
+      this.type = 0
+      this.css.display = 'none'
+    },
+    isInTrash () {
+      return this.$parent.trash
     },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
     }
   },
   computed: {
-    trashState () {
-      return this.$parent.trash
+    style () {
+      return this.css
     }
   },
   created () {
-    bus.$on('BoxOpen', (id, type) => this.open(id, type))
+    bus.$on('BoxOpen', (id, type, e) => this.open(id, type, e))
     bus.$on('BoxClose', this.close)
     window.addEventListener('click', this.close)
   },
