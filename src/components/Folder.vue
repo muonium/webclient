@@ -111,6 +111,7 @@ import moment from 'moment'
 import bus from '../bus'
 import box from './box'
 import messageBox from './messageBox'
+import arrows from '../arrows'
 
 export default {
   name: 'Folder',
@@ -132,6 +133,7 @@ export default {
         bus.$emit('BoxClose')
         this.folder_id = folderId
         this.folder = res.body.data
+        arrows.reset()
       }, (res) => {
         console.log('Error while opening a folder')
       })
@@ -232,7 +234,16 @@ export default {
             fired = false
         }
       } else {
-        fired = false
+        switch (e.keyCode) {
+          case 38: // UP
+            arrows.up()
+            break
+          case 40: // DOWN
+            arrows.down()
+            break
+          default:
+            fired = false
+        }
       }
 
       if (fired) {
