@@ -7,6 +7,7 @@ import Register from '@/components/Register'
 import LostPass from '@/components/LostPass'
 import Validate from '@/components/Validate'
 import Folder from '@/components/Folder'
+import Bug from '@/components/Bug'
 import PageNotFound from '@/components/PageNotFound'
 
 Vue.use(Router)
@@ -57,6 +58,11 @@ export default new Router({
       path: '/u/:folder_id',
       name: 'FolderId',
       component: Folder
+    },
+    {
+      path: '/bug',
+      name: 'Bug',
+      component: Bug
     },
     {
       path: '*',

@@ -7,22 +7,22 @@
         </a>
       </li>
       <li>
-        <a href="#" @click.prevent="trigger('FolderOpenTrash')">
+        <a href="#" @click.prevent="trigger('FolderOpenTrash')" :title="$t('RightClick.trash')">
           <i class="fa fa-trash" aria-hidden="true"></i>
         </a>
       </li>
       <li>
-        <a href="#" @click.prevent="trigger('FolderOpenTransfers')">
+        <a href="#" @click.prevent="trigger('FolderOpenTransfers')" :title="$t('RightClick.trash')">
           <i class="fa fa-exchange" aria-hidden="true"></i>
         </a>
       </li>
       <li>
-        <router-link to="/bug">
+        <router-link to="/bug" :title="$t('Global.bug')">
           <i class="fa fa-bug" aria-hidden="true"></i>
         </router-link>
       </li>
       <li>
-        <router-link to="/profile">
+        <router-link to="/profile" :title="$t('UserMenu.settings')">
           <i class="fa fa-cog" aria-hidden="true"></i>
         </router-link>
       </li>

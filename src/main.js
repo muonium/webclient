@@ -25,6 +25,7 @@ Vue.http.interceptors.push(function (request, next) {
     // Response processing
     if (request.url.indexOf('.json') === -1) {
       if (typeof resp.body.token !== 'undefined' && resp.body.token !== null && resp.body.token !== token) {
+        console.log('update token')
         sessionStorage.setItem('token', resp.body.token)
       }
 
