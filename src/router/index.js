@@ -8,6 +8,7 @@ import LostPass from '@/components/LostPass'
 import Validate from '@/components/Validate'
 import Folder from '@/components/Folder'
 import Bug from '@/components/Bug'
+import Profile from '@/components/Profile'
 import PageNotFound from '@/components/PageNotFound'
 
 Vue.use(Router)
@@ -63,6 +64,11 @@ export default new Router({
       path: '/bug',
       name: 'Bug',
       component: Bug
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
     },
     {
       path: '*',
