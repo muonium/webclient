@@ -98,10 +98,10 @@
       <legend>{{ $t('Profile.otheroptions') }}</legend>
       <h3>{{ $t('Profile.theme') }}</h3>
       <p class="input-large">
-        <input type="radio" name="theme" id="light" @click="switchTheme('light')">
+        <input type="radio" name="theme" id="light" @click="switchTheme('light')" :checked="theme === 'light'">
         <label for="light">Light</label>
 
-        <input type="radio" name="theme" id="dark" @click="switchTheme('dark')">
+        <input type="radio" name="theme" id="dark" @click="switchTheme('dark')" :checked="theme === 'dark'">
         <label for="dark">Dark</label>
       </p>
     </fieldset>
@@ -124,6 +124,7 @@
         </p>
         <input type="submit" class="btn btn-required btn-warning" @click.prevent="confirmDelete" :value="$t('Profile.deleteAccount')" :disabled="!deleteCheckbox">
       </form>
+      <div v-if="this.confirmDeleteReturn">{{ $t('this.confirmDeleteReturn') }}</div>
     </fieldset>
   </div>
 </template>
@@ -142,6 +143,7 @@ export default {
       email: null,
       doubleAuth: false,
       deleteCheckbox: false,
+      theme: localStorage.getItem('theme') === 'dark' ? 'dark' : 'light',
       fields: {
         changeLogin: {
           login: ''
@@ -164,7 +166,8 @@ export default {
       changeMailReturn: null,
       changePasswordReturn: null,
       changeCekReturn: null,
-      changeAuthReturn: null
+      changeAuthReturn: null,
+      confirmDeleteReturn: null
     }
   },
   methods: {
@@ -239,7 +242,11 @@ export default {
         })
       }
     },
-    switchTheme () {},
+    switchTheme (theme) {
+      this.theme = theme
+      localStorage.setItem('theme', theme)
+      window.location.reload()
+    },
     changeAuth () {
       this.$http.post('user/changeAuth').then((res) => {
         this.changeAuthReturn = 'Profile.updateOk'
@@ -251,8 +258,10 @@ export default {
       if (confirm(this.$t('Profile.accountDeletionConfirm'))) {
         this.$http.delete('user').then((res) => {
           // Deleted
+          this.$parent.logout()
         }, (res) => {
           // Error
+          this.confirmDeleteReturn = 'Profile.updateErr'
         })
       }
     },
@@ -280,6 +289,7 @@ export default {
       this.doubleAuth = res.body.data.doubleAuth
     }, (res) => {
       // Error
+      this.$parent.logout()
     })
   }
 }

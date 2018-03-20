@@ -79,6 +79,12 @@ export default {
     }
     this.loadLanguage(language.current, true)
 
+    if (localStorage.getItem('theme') === 'dark') {
+      require('./assets/css/2018/dark.css')
+    } else {
+      require('./assets/css/2018/light.css')
+    }
+
     window.oncontextmenu = (e) => { // Disable right click except in input, textarea
       return this.isInInput(e)
     }
@@ -87,4 +93,3 @@ export default {
 </script>
 
 <style src="./assets/css/2018/style.css"></style>
-<style src="./assets/css/2018/dark.css"></style>
