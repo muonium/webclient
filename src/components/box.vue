@@ -7,11 +7,12 @@
       <p onclick="Upload.dialog()">
         <i class="fa fa-upload" aria-hidden="true"></i> {{ $t('RightClick.upFiles') }}
       </p>
-      <!-- if(Move.Files.length > 0 || Move.Folders.length > 0) { -->
-      <hr>
-      <p onclick="Move.paste()">
-        <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
-      </p>
+      <div v-if="hasElToMove()">
+        <hr>
+        <p @click="move.paste()">
+          <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
+        </p>
+      </div>
     </div>
 
     <div v-if="type === 1">
@@ -32,32 +33,33 @@
           <i class="fa fa-star" aria-hidden="true"></i> {{ $t('RightClick.star') }}
         </p>
         <hr>
-        <p onclick="Move.cut(id)">
+        <p @click="move.cut(id, type)">
           <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
         </p>
-        <p onclick="Move.copy(id)">
+        <p @click="move.copy(id, type)">
           <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
         </p>
-        <p onclick="Move.trashMultiple(id)">
+        <p @click="Move.toTrash(id, type)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
         </p>
       </div>
       <div v-else>
-        <p onclick="Move.trashMultiple(id)">
+        <p @click="move.fromTrash(id, type)">
           <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
         </p>
         <p onclick="Rm.multiple(id)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
         </p>
       </div>
-      <!-- if(Move.Files.length > 0 || Move.Folders.length > 0) { -->
-      <hr>
-      <p onclick="Move.paste()">
-        <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
-      </p>
+      <div v-if="hasElToMove()">
+        <hr>
+        <p @click="move.paste()">
+          <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
+        </p>
+      </div>
       <div v-if="!isInTrash()">
         <hr>
-        <p onclick="Move.rename(id)">
+        <p @click="move.rename(id, type)">
           <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
         </p>
       </div>
@@ -73,32 +75,33 @@
       </p>
       <hr>
       <div v-if="!isInTrash()">
-        <p onclick="Move.cut(id)">
+        <p @click="move.cut(id, type)">
           <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
         </p>
-        <p onclick="Move.copy(id)">
+        <p @click="move.copy(id, type)">
           <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
         </p>
-        <p onclick="Move.trashMultiple(id)">
+        <p @click="move.toTrash(id, type)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
         </p>
       </div>
       <div v-else>
-        <p onclick="Move.trashMultiple(id)">
+        <p @click="move.fromTrash(id, type)">
           <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
         </p>
         <p onclick="Rm.multiple(id)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
         </p>
       </div>
-      <!-- if(Move.Files.length > 0 || Move.Folders.length > 0) { -->
-      <hr>
-      <p onclick="Move.paste(id)">
-        <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
-      </p>
+      <div v-if="hasElToMove()">
+        <hr>
+        <p @click="move.paste(id)">
+          <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
+        </p>
+      </div>
       <div v-if="!isInTrash()">
         <hr>
-        <p onclick="Move.rename(id)">
+        <p @click="move.rename(id, type)">
           <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
         </p>
       </div>
@@ -111,7 +114,9 @@
 </template>
 
 <script>
+import store from '../store'
 import bus from '../bus'
+import move from '../move'
 
 export default {
   name: 'box',
@@ -161,7 +166,10 @@ export default {
       this.css.display = 'none'
     },
     isInTrash () {
-      return this.$parent.trash
+      return store.folder.trash
+    },
+    hasElToMove () {
+      return store.move.files.length > 0 || store.move.folders.length > 0
     },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
@@ -170,12 +178,16 @@ export default {
   computed: {
     style () {
       return this.css
+    },
+    move () {
+      return move
     }
   },
   created () {
     bus.$on('BoxOpen', (id, type, e) => this.open(id, type, e))
     bus.$on('BoxClose', this.close)
     window.addEventListener('click', this.close)
+    move.vue = this
   },
   beforeDestroy () {
     bus.$off('BoxOpen')

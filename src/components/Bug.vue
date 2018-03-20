@@ -95,6 +95,13 @@ export default {
     this.fields.os.value = infos.os.name + ' ' + infos.os.version
     this.fields.browser.value = infos.browser.name
     this.fields.version.value = infos.browser.version
+  },
+  mounted () {
+    // Show sidebar and selection div
+    this.$parent.sidebar = true
+  },
+  beforeDestroy () {
+    this.$parent.sidebar = false
   }
 }
 </script>

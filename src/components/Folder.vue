@@ -107,11 +107,13 @@
 </template>
 
 <script>
-import moment from 'moment'
+import store from '../store'
 import bus from '../bus'
+import moment from 'moment'
 import box from './box'
 import messageBox from './messageBox'
 import arrows from '../arrows'
+import move from '../move'
 
 export default {
   name: 'Folder',
@@ -120,18 +122,17 @@ export default {
   },
   data () {
     return {
-      folder_id: 0,
-      folder: null,
-      trash: false
+      shared: store.folder,
+      folder: null
     }
   },
   methods: {
     open (folderId) {
       this.$router.push('/u/' + folderId)
-      this.$http.post('folders/open', {folder_id: folderId, trash: (this.trash ? 1 : 0)}).then((res) => {
+      this.$http.post('folders/open', {folder_id: folderId, trash: (this.shared.trash ? 1 : 0)}).then((res) => {
         bus.$emit('SelectionRemoveAll')
         bus.$emit('BoxClose')
-        this.folder_id = folderId
+        this.shared.folder_id = folderId
         this.folder = res.body.data
         arrows.reset()
       }, (res) => {
@@ -153,8 +154,8 @@ export default {
           if (index !== false) {
             let name = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="folder_name"]').value
             this.$refs.messageBox.close(index)
-            this.$http.post('folders/add', {name: name, folder_id: this.folder_id}).then((res) => {
-              this.open(this.folder_id)
+            this.$http.post('folders/add', {name: name, folder_id: this.shared.folder_id}).then((res) => {
+              this.open(this.shared.folder_id)
             }, (res) => {
               console.log('Exists')
             })
@@ -219,7 +220,7 @@ export default {
     },
     keyListener (e) {
       let fired = true
-      if (e.ctrlKey) {
+      if (e.ctrlKey) { // CTRL + ...
         switch (e.keyCode) {
           case 68: // D
             this.$parent.logout()
@@ -229,6 +230,15 @@ export default {
             break
           case 73: // I
             bus.$emit('SelectionInvert')
+            break
+          case 67: // C
+            move.copy()
+            break
+          case 88: // X
+            move.cut()
+            break
+          case 86: // V
+            move.paste()
             break
           default:
             fired = false
@@ -254,11 +264,6 @@ export default {
       bus.$emit.apply(bus, arguments)
     }
   },
-  beforeCreate () {
-    // Show sidebar and selection div
-    this.$parent.sidebar = true
-    this.$parent.selection = true
-  },
   created () {
     if (!this.$parent.isLogged()) {
       this.$parent.logout()
@@ -268,20 +273,26 @@ export default {
     document.addEventListener('keydown', this.keyListener)
 
     bus.$on('FolderOpenCurrent', () => {
-      this.trash = false
-      this.open(this.folder_id)
+      this.shared.trash = false
+      this.open(this.shared.folder_id)
     })
     bus.$on('FolderOpenTrash', () => {
-      this.trash = true
-      this.open(this.folder_id)
+      this.shared.trash = true
+      this.open(this.shared.folder_id)
     })
     bus.$on('FolderAdd', this.add)
 
     if (typeof this.$route.params.folder_id !== 'undefined') {
-      this.folder_id = this.$route.params.folder_id
+      this.shared.folder_id = this.$route.params.folder_id
     }
+    move.vue = this
 
-    this.open(this.folder_id)
+    this.open(this.shared.folder_id)
+  },
+  mounted () {
+    // Show sidebar and selection div
+    this.$parent.sidebar = true
+    this.$parent.selection = true
   },
   beforeDestroy () {
     document.removeEventListener('keydown', this.keyListener)

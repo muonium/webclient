@@ -51,14 +51,14 @@
 </template>
 
 <script>
+import store from '../store'
 import bus from '../bus'
 
 export default {
   name: 'selection',
   data () {
     return {
-      files: [],
-      folders: [],
+      shared: store.selection,
       multiple: false
     }
   },
@@ -79,9 +79,9 @@ export default {
       if (document.querySelector('#f' + id)) {
         if (this.multiple || (e !== null && (e === 'ctrl' || e.ctrlKey))) {
           // Multiple selection
-          let pos = this.files.indexOf(id)
+          let pos = this.shared.files.indexOf(id)
           if (pos === -1) {
-            this.files.push(id)
+            this.shared.files.push(id)
             this.addSelected('f' + id)
           } else {
             this.removeFile(id)
@@ -89,7 +89,7 @@ export default {
         } else {
           // Single selection
           this.removeAll()
-          this.files.push(id)
+          this.shared.files.push(id)
           this.addSelected('f' + id)
         }
       }
@@ -110,9 +110,9 @@ export default {
       if (document.querySelector('#d' + id)) {
         if (this.multiple || (e !== null && (e === 'ctrl' || e.ctrlKey))) {
           // Multiple selection
-          let pos = this.folders.indexOf(id)
+          let pos = this.shared.folders.indexOf(id)
           if (pos === -1) {
-            this.folders.push(id)
+            this.shared.folders.push(id)
             this.addSelected('d' + id)
           } else {
             this.removeFolder(id)
@@ -120,7 +120,7 @@ export default {
         } else {
           // Single selection
           this.removeAll()
-          this.folders.push(id)
+          this.shared.folders.push(id)
           this.addSelected('d' + id)
         }
       }
@@ -140,13 +140,13 @@ export default {
       let folders = document.querySelectorAll('#mui .folder')
       for (let i = 0; i < files.length; i++) {
         let id = parseInt(files[i].id.substr(1))
-        if (!isNaN(id) && this.files.indexOf(id) === -1) {
+        if (!isNaN(id) && this.shared.files.indexOf(id) === -1) {
           this.addFile(id, 'ctrl')
         }
       }
       for (let j = 0; j < folders.length; j++) {
         let id = parseInt(folders[j].id.substr(1))
-        if (!isNaN(id) && this.folders.indexOf(id) === -1) {
+        if (!isNaN(id) && this.shared.folders.indexOf(id) === -1) {
           this.addFolder(id, 'ctrl')
         }
       }
@@ -156,9 +156,9 @@ export default {
       // Remove a file from selection
       id = parseInt(id)
       if (isNaN(id)) return false
-      let pos = this.files.indexOf(id)
+      let pos = this.shared.files.indexOf(id)
       if (pos !== -1) {
-        this.$delete(this.files, pos)
+        this.$delete(this.shared.files, pos)
         this.removeSelected('f' + id)
       }
     },
@@ -166,25 +166,25 @@ export default {
       // Remove a folder from selection
       id = parseInt(id)
       if (isNaN(id)) return false
-      let pos = this.folders.indexOf(id)
+      let pos = this.shared.folders.indexOf(id)
       if (pos !== -1) {
-        this.$delete(this.folders, pos)
+        this.$delete(this.shared.folders, pos)
         this.removeSelected('d' + id)
       }
     },
     removeFiles () {
       // Remove selected files from selection
-      for (let file of this.files) {
+      for (let file of this.shared.files) {
         this.removeSelected('f' + file)
       }
-      this.files = []
+      this.shared.files = []
     },
     removeFolders () {
       // Remove selected folders from selection
-      for (let folder of this.folders) {
+      for (let folder of this.shared.folders) {
         this.removeSelected('d' + folder)
       }
-      this.folders = []
+      this.shared.folders = []
     },
     removeSelected (id) {
       // Remove selected file/folder from selection

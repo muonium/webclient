@@ -291,6 +291,13 @@ export default {
       // Error
       this.$parent.logout()
     })
+  },
+  mounted () {
+    // Show sidebar and selection div
+    this.$parent.sidebar = true
+  },
+  beforeDestroy () {
+    this.$parent.sidebar = false
   }
 }
 </script>
