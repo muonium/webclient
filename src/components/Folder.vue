@@ -272,6 +272,9 @@ export default {
 
     document.addEventListener('keydown', this.keyListener)
 
+    bus.$on('FolderOpen', () => {
+      this.open(this.shared.folder_id)
+    })
     bus.$on('FolderOpenCurrent', () => {
       this.shared.trash = false
       this.open(this.shared.folder_id)
@@ -299,6 +302,7 @@ export default {
     this.$parent.sidebar = false
     this.$parent.selection = false
 
+    bus.$off('FolderOpen')
     bus.$off('FolderOpenCurrent')
     bus.$off('FolderOpenTrash')
     bus.$off('FolderAdd')

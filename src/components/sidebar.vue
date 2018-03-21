@@ -2,17 +2,17 @@
   <div class="sidebar">
     <ul @click="setSelected">
       <li>
-        <a href="#" id="sidebar-folder" @click.prevent="trigger('FolderOpenCurrent')" :class="this.selected === 'folder' ? 'selected' : ''">
+        <a href="#" id="sidebar-folder" @click.prevent="setState()" :class="this.selected === 'folder' ? 'selected' : ''">
           <i class="fa fa-file" aria-hidden="true"></i>
         </a>
       </li>
       <li>
-        <a href="#" id="sidebar-trash" @click.prevent="trigger('FolderOpenTrash')" :title="$t('RightClick.trash')" :class="this.selected === 'trash' ? 'selected' : ''">
+        <a href="#" id="sidebar-trash" @click.prevent="setState('trash')" :title="$t('RightClick.trash')" :class="this.selected === 'trash' ? 'selected' : ''">
           <i class="fa fa-trash" aria-hidden="true"></i>
         </a>
       </li>
       <li>
-        <a href="#" id="sidebar-transfers" @click.prevent="trigger('FolderOpenTransfers')" :title="$t('Global.transfers')" :class="this.selected === 'transfers' ? 'selected' : ''">
+        <a href="#" id="sidebar-transfers" @click.prevent="setState('transfers')" :title="$t('Global.transfers')" :class="this.selected === 'transfers' ? 'selected' : ''">
           <i class="fa fa-exchange" aria-hidden="true"></i>
         </a>
       </li>
@@ -51,11 +51,20 @@ export default {
         }
       }
     },
-    getCurrentFolder () {
-      return store.folder.folder_id
-    },
-    trigger (event) {
-      bus.$emit.apply(bus, arguments)
+    setState (state) {
+      switch (state) {
+        case 'trash':
+          store.folder.trash = true
+          break
+        case 'transfers':
+          store.folder.transfers = true
+          break
+        default:
+          store.folder.trash = false
+          store.folder.transfers = false
+      }
+      bus.$emit('FolderOpen')
+      this.$router.push('/u/' + store.folder.folder_id)
     }
   },
   created () {
