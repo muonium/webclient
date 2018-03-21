@@ -9,7 +9,7 @@
     >
       <div class="MessageBoxClose" @click="close(index)">x</div>
       <div class="MessageBoxTitle" v-if="box.title">{{ box.title }}</div>
-      <div class="MessageBoxTxt" v-if="box.txt">{{ box.txt }}</div>
+      <div class="MessageBoxTxt" v-if="box.txt" v-html="box.txt"></div>
       <div class="MessageBoxToggle" v-if="box.toggle"></div>
       <div class="MessageBoxInput" v-if="box.inputs">
         <p class="input-large" v-for="(input, index) in box.inputs" :key="'input-' + index">
@@ -17,7 +17,7 @@
             v-bind="attributes(input)"
             v-on:click="typeof input.clickEvent !== 'undefined' ? input.clickEvent($event) : null"
             v-on:keyup="typeof input.keyUpEvent !== 'undefined' ? input.keyUpEvent($event) : null"
-            v-on:keypress="typeof input.keyPressEvent !== 'undefined' ? input.keyPressEvent($event) : null"
+            v-on:keydown="typeof input.keyDownEvent !== 'undefined' ? input.keyDownEvent($event) : null"
           >
           <label :class="input.icon" :for="typeof input.id !== 'undefined' ? input.id : ''" v-if="input.icon"></label>
         </p>
@@ -78,6 +78,9 @@ export default {
     close (index) {
       this.$delete(this.boxes, index)
     },
+    closeAll () {
+      this.boxes = []
+    },
     dragStart (index, e) {
       if (['input', 'button', 'textarea', 'a'].indexOf(e.target.tagName.toLowerCase()) === -1) {
         let el = document.querySelector('.MessageBox[data-index="' + index + '"]')
@@ -130,7 +133,7 @@ export default {
     },
     attributes (input) {
       // Keep only HTML attributes to set in input
-      let exclude = ['keypressevent', 'keyupevent', 'clickevent', 'icon']
+      let exclude = ['keydownevent', 'keyupevent', 'clickevent', 'icon']
       return Object.keys(input).filter((key) => {
         return exclude.indexOf(key.toLowerCase()) === -1
       }).reduce((res, key) => {

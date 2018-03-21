@@ -139,10 +139,17 @@ export default {
         console.log('Error while opening a folder')
       })
     },
+    back () {
+      // Open parent folder
+      let parent = document.querySelector('a[id^=parent-]')
+      if (parent) {
+        this.open(parent.id.replace('parent-', ''))
+      }
+    },
     add () {
       let validate = (e) => {
         let exclude = '/\\:*?<>|"'
-        if (e.type === 'keypress' && e.keyCode !== 13) { // Check
+        if (e.type === 'keydown' && e.keyCode !== 13) { // Check
           let key = e.key ? e.key : String.fromCharCode(e.keyCode)
           if (exclude.indexOf(key) === -1) {
             return true
@@ -173,7 +180,7 @@ export default {
             autocomplete: 'off',
             autofocus: true,
             icon: 'fa fa-folder-o',
-            keyPressEvent (e) {
+            keyDownEvent (e) {
               if (!validate(e)) {
                 e.preventDefault()
               }
@@ -222,34 +229,97 @@ export default {
       let fired = true
       if (e.ctrlKey) { // CTRL + ...
         switch (e.keyCode) {
+          case 65: // A
+            if (!this.$parent.isInInput(e)) {
+              bus.$emit('SelectionAddAll')
+            } else {
+              fired = false
+            }
+            break
+          case 67: // C
+            if (!this.$parent.isInInput(e)) {
+              move.copy()
+            } else {
+              fired = false
+            }
+            break
           case 68: // D
             this.$parent.logout()
-            break
-          case 65: // A
-            bus.$emit('SelectionAddAll')
             break
           case 73: // I
             bus.$emit('SelectionInvert')
             break
-          case 67: // C
-            move.copy()
+          case 82: // R
+            move.toTrash()
             break
-          case 88: // X
-            move.cut()
+          case 83:
+            // TODO: dl selection
             break
           case 86: // V
-            move.paste()
+            if (!this.$parent.isInInput(e)) {
+              move.paste()
+            } else {
+              fired = false
+            }
+            break
+          case 88: // X
+            if (!this.$parent.isInInput(e)) {
+              move.cut()
+            } else {
+              fired = false
+            }
+            break
+          case 38: // UP
+            arrows.up(true)
+            break
+          case 40: // DOWN
+            arrows.down(true)
             break
           default:
             fired = false
         }
       } else {
         switch (e.keyCode) {
+          case 8: // Backspace
+            if (!this.$parent.isInInput(e)) {
+              this.back()
+            } else {
+              fired = false
+            }
+            break
+          case 13: // Enter
+            if (!this.$parent.isInInput(e)) {
+              if (store.selection.files.length === 1 && store.selection.folders.length === 0) {
+                // TODO: dl file
+              } else if (store.selection.files.length === 0 && store.selection.folders.length === 1) {
+                this.open(store.selection.folders[0])
+              }
+            } else {
+              fired = false
+            }
+            break
+          case 27: // Esc
+            bus.$emit('BoxClose')
+            bus.$emit('SelectionRemoveAll')
+            this.$refs.messageBox.closeAll() // TODO: Animate
+            break
           case 38: // UP
             arrows.up()
             break
           case 40: // DOWN
             arrows.down()
+            break
+          case 46: // Delete
+            if (!this.$parent.isInInput(e)) {
+              // TODO: rm
+            } else {
+              fired = false
+            }
+            break
+          case 112: // F1
+            this.$refs.messageBox.add({
+              txt: this.$t('Help.shortcuts').join('\n')
+            })
             break
           default:
             fired = false

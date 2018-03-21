@@ -12,6 +12,9 @@ class Move {
   mv (id, type) {
     this.from = store.folder.folder_id
     if (store.selection.files.length === 0 && store.selection.folders.length === 0) {
+      if (id === undefined || (type !== 1 && type !== 2)) {
+        return false
+      }
       this.reset()
       if (type === 1) {
         store.move.files = [id]
@@ -61,6 +64,9 @@ class Move {
     let files = []
     let folders = []
     if (store.selection.files.length === 0 && store.selection.folders.length === 0) {
+      if (id === undefined || (type !== 1 && type !== 2)) {
+        return false
+      }
       if (type === 1) {
         files = [id]
       } else if (type === 2) {
@@ -82,6 +88,9 @@ class Move {
     let files = []
     let folders = []
     if (store.selection.files.length === 0 && store.selection.folders.length === 0) {
+      if (id === undefined || (type !== 1 && type !== 2)) {
+        return false
+      }
       if (type === 1) {
         files = [id]
       } else if (type === 2) {
@@ -101,7 +110,7 @@ class Move {
 
   rename (id, type) {
     let row = document.querySelector('#' + (type === 1 ? 'f' : 'd') + id)
-    if ((type !== 1 && type !== 2) || row === null) {
+    if (id === undefined || (type !== 1 && type !== 2) || row === null) {
       return false
     }
     let target = type === 1 ? 'files/rename' : 'folders/rename'
@@ -109,7 +118,7 @@ class Move {
 
     let validate = (e) => {
       let exclude = '/\\:*?<>|"'
-      if (e.type === 'keypress' && e.keyCode !== 13) { // Check
+      if (e.type === 'keydown' && e.keyCode !== 13) { // Check
         let key = e.key ? e.key : String.fromCharCode(e.keyCode)
         if (exclude.indexOf(key) === -1) {
           return true
@@ -143,7 +152,7 @@ class Move {
           placeholder: this.vue.$t('User.name'),
           autocomplete: 'off',
           autofocus: true,
-          keyPressEvent (e) {
+          keyDownEvent (e) {
             if (!validate(e)) {
               e.preventDefault()
             }

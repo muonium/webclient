@@ -21,19 +21,19 @@ class Arrows {
     }
   }
 
-  add () {
+  add (multiple = false) {
     if (this.selected !== null && typeof this.rows[this.selected] !== 'undefined' && typeof this.rows[this.selected].id !== 'undefined') {
       let type = this.rows[this.selected].id.substr(0, 1)
       if (type === 'f') {
-        bus.$emit('SelectionAddFile', this.rows[this.selected].id.substr(1), null)
+        bus.$emit('SelectionAddFile', this.rows[this.selected].id.substr(1), (multiple ? 'ctrl' : null))
       } else if (type === 'd') {
-        bus.$emit('SelectionAddFolder', this.rows[this.selected].id.substr(1), null)
+        bus.$emit('SelectionAddFolder', this.rows[this.selected].id.substr(1), (multiple ? 'ctrl' : null))
       }
       this.scroll()
     }
   }
 
-  up () {
+  up (multiple = false) {
     if (!this.loaded) this.load()
     if (this.loaded) {
       if (this.selected !== null && this.selected > 0) {
@@ -41,11 +41,11 @@ class Arrows {
       } else {
         this.selected = this.rows.length - 1
       }
-      this.add()
+      this.add(multiple)
     }
   }
 
-  down () {
+  down (multiple = false) {
     if (!this.loaded) this.load()
     if (this.loaded) {
       if (this.selected !== null && this.selected < this.rows.length - 1) {
@@ -53,7 +53,7 @@ class Arrows {
       } else {
         this.selected = 0
       }
-      this.add()
+      this.add(multiple)
     }
   }
 
