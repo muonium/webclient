@@ -142,14 +142,13 @@ export default {
     add () {
       let validate = (e) => {
         let exclude = '/\\:*?<>|"'
-        if (e.type === 'keypress' && e.keyCode !== 13) {
+        if (e.type === 'keypress' && e.keyCode !== 13) { // Check
           let key = e.key ? e.key : String.fromCharCode(e.keyCode)
           if (exclude.indexOf(key) === -1) {
             return true
           }
           return false
-        }
-        if (e.type === 'click' || e.keyCode === 13) { // Send
+        } else if (e.type === 'click' || e.keyCode === 13) { // Send
           let index = this.$refs.messageBox.getIndexFromEvent(e)
           if (index !== false) {
             let name = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="folder_name"]').value
@@ -172,6 +171,7 @@ export default {
             id: 'nFolder',
             placeholder: this.$t('User.foldername'),
             autocomplete: 'off',
+            autofocus: true,
             icon: 'fa fa-folder-o',
             keyPressEvent (e) {
               if (!validate(e)) {
@@ -288,7 +288,6 @@ export default {
     if (typeof this.$route.params.folder_id !== 'undefined') {
       this.shared.folder_id = this.$route.params.folder_id
     }
-    move.vue = this
 
     this.open(this.shared.folder_id)
   },
@@ -296,6 +295,8 @@ export default {
     // Show sidebar and selection div
     this.$parent.sidebar = true
     this.$parent.selection = true
+
+    move.vue = this
   },
   beforeDestroy () {
     document.removeEventListener('keydown', this.keyListener)

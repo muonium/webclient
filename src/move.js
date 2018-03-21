@@ -22,7 +22,6 @@ class Move {
       store.move.files = store.selection.files
       store.move.folders = store.selection.folders
     }
-    console.log(store)
   }
 
   cut (id, type) {
@@ -52,7 +51,7 @@ class Move {
       old_folder_id: this.from,
       folder_id: to
     }).then((res) => {
-      bus.$emit('FolderOpenCurrent')
+      bus.$emit('FolderOpen')
     }, (res) => {
       console.log(res)
     })
@@ -73,7 +72,7 @@ class Move {
     }
 
     this.vue.$http.delete('trash', {files: files, folders: folders}).then((res) => {
-      bus.$emit('FolderOpenCurrent')
+      bus.$emit('FolderOpen')
     }, (res) => {
       console.log(res)
     })
@@ -94,14 +93,74 @@ class Move {
     }
 
     this.vue.$http.post('trash', {files: files, folders: folders}).then((res) => {
-      bus.$emit('FolderOpenCurrent')
+      bus.$emit('FolderOpen')
     }, (res) => {
       console.log(res)
     })
   }
 
-  rename () {
-    // TODO: Rename
+  rename (id, type) {
+    let row = document.querySelector('#' + (type === 1 ? 'f' : 'd') + id)
+    if ((type !== 1 && type !== 2) || row === null) {
+      return false
+    }
+    let target = type === 1 ? 'files/rename' : 'folders/rename'
+    let oldName = row.getAttribute('data-title')
+
+    let validate = (e) => {
+      let exclude = '/\\:*?<>|"'
+      if (e.type === 'keypress' && e.keyCode !== 13) { // Check
+        let key = e.key ? e.key : String.fromCharCode(e.keyCode)
+        if (exclude.indexOf(key) === -1) {
+          return true
+        }
+        return false
+      } else if (e.type === 'click' || e.keyCode === 13) { // Send
+        let index = this.vue.$refs.messageBox.getIndexFromEvent(e)
+        if (index !== false) {
+          let newName = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="elem_name"]').value
+          this.vue.$refs.messageBox.close(index)
+          if (newName !== oldName) {
+            this.vue.$http.post(target, {old: oldName, new: newName, folder_id: store.folder.folder_id}).then((res) => {
+              bus.$emit('FolderOpen')
+            }, (res) => {
+              console.log(res)
+            })
+          }
+        }
+      }
+      return true
+    }
+
+    this.vue.$refs.messageBox.add({
+      title: this.vue.$t('RightClick.mvItem'),
+      inputs: [
+        {
+          type: 'text',
+          name: 'elem_name',
+          id: 'nRename',
+          value: oldName,
+          placeholder: this.vue.$t('User.name'),
+          autocomplete: 'off',
+          autofocus: true,
+          keyPressEvent (e) {
+            if (!validate(e)) {
+              e.preventDefault()
+            }
+          }
+        }
+      ],
+      btns: [
+        {
+          type: 'button',
+          class: 'btn',
+          value: 'OK',
+          clickEvent (e) {
+            validate(e)
+          }
+        }
+      ]
+    })
   }
 
   reset () {

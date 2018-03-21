@@ -48,7 +48,32 @@ export default {
   },
   methods: {
     add (data) {
+      let autofocus = false
+      // Check input icon and autofocus before adding messageBox
+      if (typeof data.inputs !== 'undefined') {
+        data.inputs.forEach((input, index) => {
+          if (typeof input.icon === 'undefined') {
+            if (typeof input.class === 'undefined') {
+              input.class = 'noicon'
+            } else {
+              input.class += ' noicon'
+            }
+          }
+          if (typeof input.autofocus !== 'undefined' && (input.autofocus === true || input.autofocus === 'autofocus')) {
+            autofocus = index + 1
+          }
+        })
+      }
       this.boxes.push(data)
+      this.$nextTick(() => {
+        // Once DOM has been refreshed, place cursor at the end of value if autofocus
+        if (autofocus !== false) {
+          let el = document.querySelector('#messageBoxContainer > .MessageBox:last-child > .MessageBoxInput input:nth-child(' + autofocus + ')')
+          if (el !== null) {
+            el.focus()
+          }
+        }
+      })
     },
     close (index) {
       this.$delete(this.boxes, index)
