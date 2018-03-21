@@ -1,5 +1,4 @@
 #transfers {
-    display: none;
     width: 100%; min-height: 20px;
 	max-height: 60vh;
     position: fixed;
@@ -55,8 +54,6 @@
 	font-family: OpenSans; font-size: 15px; font-weight: bold;
 	padding-top: 13px;
 }
-#transfers .transfers_upload { display: block; }
-#transfers .transfers_download { display: none; }
 
 #transfers .transfers_upload > div > div, #transfers .transfers_download > div > div { margin-right: 50px; }
 

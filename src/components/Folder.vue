@@ -103,6 +103,7 @@
 
     <messageBox ref="messageBox"/>
     <box ref="box"/>
+    <transfers ref="transfers"/>
   </div>
 </template>
 
@@ -110,15 +111,16 @@
 import store from '../store'
 import bus from '../bus'
 import moment from 'moment'
-import box from './box'
 import messageBox from './messageBox'
+import box from './box'
+import transfers from './transfers'
 import arrows from '../arrows'
 import move from '../move'
 
 export default {
   name: 'Folder',
   components: {
-    messageBox, box
+    messageBox, box, transfers
   },
   data () {
     return {

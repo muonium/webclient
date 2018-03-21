@@ -59,6 +59,9 @@ export default {
         case 'transfers':
           store.folder.transfers = true
           break
+        case 'transfersExit':
+          store.folder.transfers = false
+          break
         default:
           store.folder.trash = false
           store.folder.transfers = false
@@ -68,6 +71,10 @@ export default {
     }
   },
   created () {
+    bus.$on('SidebarCloseTransfers', () => {
+      this.selected = store.folder.trash ? 'trash' : 'folder'
+    })
+
     if (this.$route.path === '/bug') {
       this.selected = 'bug'
     } else if (this.$route.path === '/profile') {
@@ -77,6 +84,9 @@ export default {
     } else {
       this.selected = 'folder'
     }
+  },
+  beforeDestroy () {
+    bus.$off('SidebarCloseTransfers')
   }
 }
 </script>
