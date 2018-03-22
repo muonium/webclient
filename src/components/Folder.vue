@@ -17,7 +17,7 @@
     <section id="desktop">
       <!-- Hidden upload form -->
       <form class="hidden">
-        <input type="file" id="upFilesInput" name="files[]" multiple="multiple" class="hide" onchange="Upload.upFiles(this.files)" onclick="reset()">
+        <input type="file" id="upFilesInput" name="files[]" multiple="multiple" class="hide" @change="startUpload($event)" @click="uploadReset">
       </form>
 
       <div id="returnArea"></div>
@@ -76,6 +76,7 @@
             :data-shared="file.is_shared ? 1 : 0"
             :data-url="file.url"
             @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
+            @dblclick.stop.prevent="startDownload(file.id)"
             @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
             draggable="true"
           >
@@ -229,6 +230,18 @@ export default {
       }
       return moment(timestamp * 1000).format(format)
     },
+    uploadReset () {
+      document.querySelector('#upFilesInput').value = ''
+    },
+    uploadDialog () {
+      document.querySelector('#upFilesInput').click()
+    },
+    startUpload (e) {
+      upload.upFiles(e.target.files)
+    },
+    startDownload (id) {
+      download.dl(id)
+    },
     keyListener (e) {
       let fired = true
       if (e.ctrlKey) { // CTRL + ...
@@ -358,6 +371,7 @@ export default {
       this.open(this.shared.folder_id)
     })
     bus.$on('FolderAdd', this.add)
+    bus.$on('UploadDialog', this.uploadDialog)
 
     if (typeof this.$route.params.folder_id !== 'undefined') {
       this.shared.folder_id = this.$route.params.folder_id
@@ -381,6 +395,7 @@ export default {
     bus.$off('FolderOpenCurrent')
     bus.$off('FolderOpenTrash')
     bus.$off('FolderAdd')
+    bus.$off('UploadDialog')
   }
 }
 </script>

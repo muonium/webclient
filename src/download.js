@@ -1,8 +1,12 @@
 import store from './store'
 
 class Download {
-  constructor () {
-    //
+  abort (id) {
+    console.log(store)
+  }
+
+  dl (id) {
+    console.log(id)
   }
 }
 

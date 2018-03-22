@@ -59,6 +59,8 @@
 <script>
 import store from '../store'
 import bus from '../bus'
+import upload from '../upload'
+import download from '../download'
 import progressBar from './progress_bar'
 
 export default {
@@ -91,13 +93,16 @@ export default {
       this.upSelected = false
     },
     abort (type, id) {
-      if (type !== 'upload' && type !== 'download') {
-        return false
-      }
-      let file = this.shared[type].find(f => f.id === parseInt(id))
-      let index = this.shared[type].indexOf(file)
+      if (type !== 'upload' && type !== 'download') return false
+      let file = store.transfers[type].find(f => f.id === parseInt(id))
+      let index = store.transfers[type].indexOf(file)
       if (file !== undefined && index !== -1) {
-        this.$delete(this.shared[type], index)
+        this.$delete(store.transfers[type], index)
+        if (type === 'upload') {
+          upload.abort(id)
+        } else if (type === 'download') {
+          download.abort(id)
+        }
       }
     }
   }

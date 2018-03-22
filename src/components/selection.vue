@@ -2,9 +2,9 @@
   <div id="selection">
     <div class="fixed">
       <section class="selection">
-        <button id="up_btn" class="btn btn-large mbottom" onclick="Upload.dialog()">{{ $t('RightClick.upFiles') }}</button>
+        <button id="up_btn" class="btn btn-large mbottom" @click.prevent="trigger('UploadDialog')">{{ $t('RightClick.upFiles') }}</button>
 
-        <a href="#" id="up_icon" class="blue block" onclick="Upload.dialog(event)" :title="$t('RightClick.upFiles')">
+        <a href="#" id="up_icon" class="blue block" @click.prevent="trigger('UploadDialog')" :title="$t('RightClick.upFiles')">
           <i class="fa fa-upload" aria-hidden="true"></i>
         </a>
 

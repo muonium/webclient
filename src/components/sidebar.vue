@@ -71,6 +71,9 @@ export default {
     }
   },
   created () {
+    bus.$on('SidebarOpenTransfers', () => {
+      this.selected = 'transfers'
+    })
     bus.$on('SidebarCloseTransfers', () => {
       this.selected = store.folder.trash ? 'trash' : 'folder'
     })
@@ -86,6 +89,7 @@ export default {
     }
   },
   beforeDestroy () {
+    bus.$off('SidebarOpenTransfers')
     bus.$off('SidebarCloseTransfers')
   }
 }

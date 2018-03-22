@@ -4,7 +4,7 @@
       <p @click="trigger('FolderAdd')">
         <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
       </p>
-      <p onclick="Upload.dialog()">
+      <p @click="trigger('UploadDialog')">
         <i class="fa fa-upload" aria-hidden="true"></i> {{ $t('RightClick.upFiles') }}
       </p>
       <div v-if="hasElToMove()">
