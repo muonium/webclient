@@ -51,7 +51,6 @@
             @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
             draggable="true"
           >
-            <!-- @click="Selection.addFolder()" -->
             <td class="file_checkbox">
               <input type="checkbox" :id="'sel_d'+ folder.id">
               <label :for="'sel_d'+ folder.id"></label>
@@ -80,13 +79,11 @@
             @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
             draggable="true"
           >
-            <!-- @click="Selection.addFile()" -->
-            <!-- @dblclick="Selection.dl()" -->
             <td class="folder_checkbox">
               <input type="checkbox" :id="'sel_f' + file.id">
               <label :for="'sel_f' + file.id"></label>
             </td>
-            <td></td>
+            <td><img :src="'../assets/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon"></td>
             <td>
               <strong>{{ file.name }}</strong>
             </td>
@@ -222,7 +219,7 @@ export default {
       }
       let base = Math.log(size) / Math.log(1000)
       let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
-      return Math.pow(1000, base - Math.floor(base)).toFixed(precision) + ' ' + suffixes[Math.floor(base)]
+      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
     },
     getDate (timestamp) {
       let format = this.$t('Dates.date') + ' ' + this.$t('Dates.time')
@@ -230,6 +227,9 @@ export default {
         format = 'YYYY-MM-DD HH:mm'
       }
       return moment(timestamp * 1000).format(format)
+    },
+    getIcon (filename) {
+      return extIcons.get(filename)
     },
     uploadReset () {
       document.querySelector('#upFilesInput').value = ''

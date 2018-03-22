@@ -76,7 +76,7 @@ export default {
       }
       let base = Math.log(size) / Math.log(1000)
       let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
-      return Math.pow(1000, base - Math.floor(base)).toFixed(precision) + ' ' + suffixes[Math.floor(base)]
+      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
     }
   },
   created () {

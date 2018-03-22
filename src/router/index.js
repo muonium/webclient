@@ -1,16 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '@/components/Home'
-import Login from '@/components/Login'
-import Register from '@/components/Register'
-import LostPass from '@/components/LostPass'
-import Validate from '@/components/Validate'
-import Folder from '@/components/Folder'
-import Bug from '@/components/Bug'
-import Profile from '@/components/Profile'
-import Download from '@/components/Download'
-import PageNotFound from '@/components/PageNotFound'
+import Home from '../components/Home'
+import Login from '../components/Login'
+import Register from '../components/Register'
+import LostPass from '../components/LostPass'
+import Validate from '../components/Validate'
+import Folder from '../components/Folder'
+import Bug from '../components/Bug'
+import Profile from '../components/Profile'
+import Upgrade from '../components/Upgrade'
+import Download from '../components/Download'
+import PageNotFound from '../components/PageNotFound'
 
 Vue.use(Router)
 
@@ -70,6 +71,11 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: Profile
+    },
+    {
+      path: '/upgrade',
+      name: 'Upgrade',
+      component: Upgrade
     },
     {
       path: '/dl/:id',
