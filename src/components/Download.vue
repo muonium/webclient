@@ -31,14 +31,19 @@
 
       <p id="msg"></p>
     </div>
+    <transfers ref="transfers" show="download"/>
   </div>
 </template>
 
 <script>
+import transfers from './transfers'
 import moment from 'moment'
 
 export default {
   name: 'download',
+  components: {
+    transfers
+  },
   data () {
     return {
       id: null,

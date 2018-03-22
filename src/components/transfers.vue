@@ -65,6 +65,12 @@ import progressBar from './progress_bar'
 
 export default {
   name: 'transfers',
+  props: {
+    show: {
+      type: String,
+      required: false
+    }
+  },
   components: {
     progressBar
   },
@@ -104,6 +110,11 @@ export default {
           download.abort(id)
         }
       }
+    }
+  },
+  created () {
+    if (typeof this.show !== 'undefined' && this.show === 'download') {
+      this.upSelected = false
     }
   }
 }

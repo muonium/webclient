@@ -117,6 +117,7 @@ import box from './box'
 import transfers from './transfers'
 import arrows from '../arrows'
 import move from '../move'
+import extIcons from '../extIcons'
 import upload from '../upload'
 import download from '../download'
 
