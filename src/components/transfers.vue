@@ -10,7 +10,7 @@
       </span>
     </section>
 
-    <section class="toggle">
+    <section class="toggle" v-show="!this.minimized">
       <ul>
         <li @click="showUp()" :class="this.upSelected ? 'selected' : ''">
           {{ $t('User.uploading') }}
@@ -21,12 +21,36 @@
       </ul>
     </section>
 
-    <section class="content">
+    <section class="content" v-show="!this.minimized">
       <div class="transfers_upload" v-if="this.upSelected">
-        {{ $t('User.nothing') }}
+        <div v-if="this.shared.upload.length > 0">
+          <div :id="'div_upload' + file.id" v-for="file in this.shared.upload" :key="file.id">
+            <i :data-id="file.id" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', file.id)"></i>
+            <div>
+              <span class="fileinfo">{{ file.name }}</span>
+              <span class="pct">{{ file.pct }}%</span>
+              <progressBar :pct="file.pct"/>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          {{ $t('User.nothing') }}
+        </div>
       </div>
       <div class="transfers_download" v-else>
-        {{ $t('User.nothing') }}
+        <div v-if="this.shared.download.length > 0">
+          <div :id="'div_download'+ file.id" v-for="file in this.shared.download" :key="file.id">
+            <i :data-id="file.id" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', file.id)"></i>
+            <div>
+              <span class="fileinfo">{{ file.name }}</span>
+              <span class="pct">{{ file.pct }}%</span>
+              <progressBar :pct="file.pct"/>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          {{ $t('User.nothing') }}
+        </div>
       </div>
     </section>
   </div>
@@ -35,12 +59,18 @@
 <script>
 import store from '../store'
 import bus from '../bus'
+import progressBar from './progress_bar'
 
 export default {
   name: 'transfers',
+  components: {
+    progressBar
+  },
   data () {
     return {
-      upSelected: true
+      minimized: false,
+      upSelected: true,
+      shared: store.transfers
     }
   },
   methods: {
@@ -52,13 +82,23 @@ export default {
       store.folder.transfers = false
     },
     minimize () {
-      //
+      this.minimized = !this.minimized
     },
     showUp () {
       this.upSelected = true
     },
     showDl () {
       this.upSelected = false
+    },
+    abort (type, id) {
+      if (type !== 'upload' && type !== 'download') {
+        return false
+      }
+      let file = this.shared[type].find(f => f.id === parseInt(id))
+      let index = this.shared[type].indexOf(file)
+      if (file !== undefined && index !== -1) {
+        this.$delete(this.shared[type], index)
+      }
     }
   }
 }

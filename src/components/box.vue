@@ -1,5 +1,5 @@
 <template>
-  <div id="box" :style="style">
+  <div id="box" :style="style" v-if="opened">
     <div v-if="type === 0">
       <p @click="trigger('FolderAdd')">
         <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
@@ -122,13 +122,13 @@ export default {
   name: 'box',
   data () {
     return {
+      opened: false,
       type: 0, // 1: file, 2: folder, 0: somewhere else
       id: null,
       css: {
         top: '0px',
         left: '0px',
-        visibility: 'visible',
-        display: 'none'
+        visibility: 'visible'
       }
     }
   },
@@ -141,29 +141,31 @@ export default {
       } else if (type === 2) {
         bus.$emit('SelectionAddFolder', id, null)
       }
-
+      this.opened = true
       // We need to make Box 'visible' in order to calculate overflow
-      this.css.display = 'block'
       this.css.visibility = 'hidden'
 
-      let x = e.clientX
-      let y = e.clientY
-      let el = document.querySelector('#box')
-      let headerHeight = document.querySelector('header').offsetHeight
+      this.$nextTick(() => {
+        // Once DOM updated, calculate position
+        let x = e.clientX
+        let y = e.clientY
+        let el = document.querySelector('#box')
+        let headerHeight = document.querySelector('header').offsetHeight
 
-      if (x < 5) x = 5
-      if (x + el.clientWidth > document.body.clientWidth - 5) x = document.body.clientWidth - el.clientWidth - 5
-      if (y < headerHeight + 5) y = headerHeight + 5
-      if (y + el.clientHeight > document.body.clientHeight - 5) y = document.body.clientHeight - el.clientHeight - 5
+        if (x < 5) x = 5
+        if (x + el.clientWidth > document.body.clientWidth - 5) x = document.body.clientWidth - el.clientWidth - 5
+        if (y < headerHeight + 5) y = headerHeight + 5
+        if (y + el.clientHeight > document.body.clientHeight - 5) y = document.body.clientHeight - el.clientHeight - 5
 
-      this.css.top = y + 'px'
-      this.css.left = x + 'px'
-      this.css.visibility = 'visible'
-      this.css.transform = 'none'
+        this.css.top = y + 'px'
+        this.css.left = x + 'px'
+        this.css.visibility = 'visible'
+        this.css.transform = 'none'
+      })
     },
     close () {
       this.type = 0
-      this.css.display = 'none'
+      this.opened = false
     },
     isInTrash () {
       return store.folder.trash

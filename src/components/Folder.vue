@@ -116,6 +116,8 @@ import box from './box'
 import transfers from './transfers'
 import arrows from '../arrows'
 import move from '../move'
+import upload from '../upload'
+import download from '../download'
 
 export default {
   name: 'Folder',
