@@ -24,9 +24,9 @@
     <section class="content" v-show="!this.minimized">
       <div class="transfers_upload" v-if="this.upSelected">
         <div v-if="this.shared.upload.length > 0">
-          <div :id="'div_upload' + file.id" v-for="file in this.shared.upload" :key="file.id">
-            <i :data-id="file.id" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', file.id)"></i>
-            <div>
+          <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="index">
+            <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
+            <div :class="file.error === true ? 'transfers_error' : ''">
               <span class="fileinfo">{{ file.name }}</span>
               <span class="pct">{{ file.pct }}%</span>
               <progressBar :pct="file.pct"/>
@@ -39,9 +39,9 @@
       </div>
       <div class="transfers_download" v-else>
         <div v-if="this.shared.download.length > 0">
-          <div :id="'div_download'+ file.id" v-for="file in this.shared.download" :key="file.id">
-            <i :data-id="file.id" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', file.id)"></i>
-            <div>
+          <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="index">
+            <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
+            <div :class="file.error === true ? 'transfers_error' : ''">
               <span class="fileinfo">{{ file.name }}</span>
               <span class="pct">{{ file.pct }}%</span>
               <progressBar :pct="file.pct"/>
@@ -98,6 +98,14 @@ export default {
     showDl () {
       this.upSelected = false
     },
+    setError (type, id, msg = null) {
+      if ((type === 'upload' || type === 'download') && typeof this.shared[type][id] !== 'undefined') {
+        let row = this.shared[type][id]
+        row.error = true
+        row.error_msg = msg
+        this.$set(this.shared[type], id, row)
+      }
+    },
     abort (type, id) {
       if (type !== 'upload' && type !== 'download') return false
       let file = store.transfers[type].find(f => f.id === parseInt(id))
@@ -116,6 +124,10 @@ export default {
     if (typeof this.show !== 'undefined' && this.show === 'download') {
       this.upSelected = false
     }
+    bus.$on('TransfersSetError', (type, id, msg) => this.setError(type, id, msg))
+  },
+  beforeDestroy () {
+    bus.$off('TransfersSetError')
   }
 }
 </script>

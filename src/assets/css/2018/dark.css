@@ -101,7 +101,10 @@ table.table-responsive td { background-color: #4a4a4a; }
 
 .progress_bar { background-color: #4a4a4a; }
 .progress_bar .used { background-color: #16c1f3; }
-#transfers .progress_bar .used { background: #16c1f3; }
+#transfers .progress_bar .used { background-color: #16c1f3; }
+
+#transfers .transfers_error .progress_bar { background-color: #483f3f; }
+#transfers .transfers_error .progress_bar .used { background-color: #9c3e3e; }
 
 #transfers { background-color: #212121; box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3); }
 #transfers > .top { background-color: #212121; }

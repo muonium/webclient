@@ -70,7 +70,7 @@
     </div>
 
     <div v-if="type === 2">
-      <p onclick="Folders.open(id)">
+      <p @click="trigger('FolderOpen', id)">
         <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('RightClick.open') }}
       </p>
       <hr>

@@ -104,6 +104,9 @@ table.table-responsive td { background-color: #f9f9f9; }
 .progress_bar .used { background-color: #ff874b; }
 #transfers .progress_bar .used { background: #16c1f3; }
 
+#transfers .transfers_error .progress_bar { background-color: #ffebeb; }
+#transfers .transfers_error .progress_bar .used { background-color: #ca6d6d; }
+
 #transfers { background-color: #fff; box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1); }
 #transfers > .top { background-color: #16c1f3; }
 #transfers > .content { background-color: #fff; }

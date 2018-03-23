@@ -95,6 +95,10 @@ export default {
       return false
     }
 
+    if (typeof this.$route.query.success !== 'undefined') {
+      this.success_msg = 'Upgrade.success_msg'
+    }
+
     this.$http.get('upgrade/plans').then((res) => {
       this.endpoint = res.body.data.endpoint
       this.offers = res.body.data.plans

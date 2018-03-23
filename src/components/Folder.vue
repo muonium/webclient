@@ -238,7 +238,7 @@ export default {
       document.querySelector('#upFilesInput').click()
     },
     startUpload (e) {
-      upload.upFiles(e.target.files)
+      upload.upFiles(e.target.files, this)
     },
     startDownload (id) {
       download.dl(id)
@@ -360,8 +360,8 @@ export default {
 
     document.addEventListener('keydown', this.keyListener)
 
-    bus.$on('FolderOpen', () => {
-      this.open(this.shared.folder_id)
+    bus.$on('FolderOpen', (id = this.shared.folder_id) => {
+      this.open(id)
     })
     bus.$on('FolderOpenCurrent', () => {
       this.shared.trash = false
