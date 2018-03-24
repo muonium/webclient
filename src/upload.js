@@ -51,7 +51,53 @@ class Encryption {
     } else if (yesReplaceAll) {
       // TODO - rm + start reading at 0
     } else if (!noAll) {
-      // TODO
+      // TODO: disable yesAll / noAll for the last
+      vue.$refs.messageBox.add({
+        title: vue.$t('User.replaceCompleteFile').replace('[filename]', this.dest_filename),
+        toggles: [
+          {
+            leftTxt: vue.$t('User.complete'),
+            rightTxt: vue.$t('User.replace'),
+            clickEvent (e) {
+              //
+            }
+          }
+        ],
+        btns: [
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.yes'),
+            clickEvent (e) {
+              //
+            }
+          },
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.yesAll'),
+            clickEvent (e) {
+              //
+            }
+          },
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.no'),
+            clickEvent (e) {
+              //
+            }
+          },
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.noAll'),
+            clickEvent (e) {
+              //
+            }
+          }
+        ]
+      })
     } else {
       this.abort()
     }
@@ -61,7 +107,44 @@ class Encryption {
     if (yesReplaceAll) {
       // TODO - rm + start reading at 0
     } else if (!noAll) {
-      // TODO
+      // TODO: disable yesAll / noAll for the last
+      vue.$refs.messageBox.add({
+        title: vue.$t('User.replaceFile').replace('[filename]', this.dest_filename),
+        btns: [
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.yes'),
+            clickEvent (e) {
+              //
+            }
+          },
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.yesAll'),
+            clickEvent (e) {
+              //
+            }
+          },
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.no'),
+            clickEvent (e) {
+              //
+            }
+          },
+          {
+            type: 'button',
+            class: 'btn',
+            value: vue.$t('User.noAll'),
+            clickEvent (e) {
+              //
+            }
+          }
+        ]
+      })
     } else {
       this.abort()
     }

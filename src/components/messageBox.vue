@@ -10,7 +10,16 @@
       <div class="MessageBoxClose" @click="close(index)">x</div>
       <div class="MessageBoxTitle" v-if="box.title">{{ box.title }}</div>
       <div class="MessageBoxTxt" v-if="box.txt" v-html="box.txt"></div>
-      <div class="MessageBoxToggle" v-if="box.toggle"></div>
+      <div class="MessageBoxToggle" v-if="box.toggles">
+        <div v-for="(toggle, index) in box.toggles" :key="'toggle-' + index">
+          <span>{{ toggle.leftTxt }}</span>
+          <label class="switch" v-on:click="typeof toggle.clickEvent !== 'undefined' ? toggle.clickEvent($event) : null">
+            <input type="checkbox">
+            <div class="slider"></div>
+          </label>
+          <span>{{ toggle.rightTxt }}</span>
+        </div>
+      </div>
       <div class="MessageBoxInput" v-if="box.inputs">
         <p class="input-large" v-for="(input, index) in box.inputs" :key="'input-' + index">
           <input
