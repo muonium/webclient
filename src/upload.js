@@ -59,7 +59,7 @@ class Encryption {
             leftTxt: vue.$t('User.complete'),
             rightTxt: vue.$t('User.replace'),
             clickEvent (e) {
-              //
+              console.log(e)
             }
           }
         ],
@@ -69,7 +69,7 @@ class Encryption {
             class: 'btn',
             value: vue.$t('User.yes'),
             clickEvent (e) {
-              //
+              console.log(e)
             }
           },
           {
@@ -116,7 +116,7 @@ class Encryption {
             class: 'btn',
             value: vue.$t('User.yes'),
             clickEvent (e) {
-              //
+              console.log(e)
             }
           },
           {

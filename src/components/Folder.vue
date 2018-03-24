@@ -55,7 +55,7 @@
               <input type="checkbox" :id="'sel_d'+ folder.id">
               <label :for="'sel_d'+ folder.id"></label>
             </td>
-            <td><img src="../assets/img/desktop/extensions/folder.svg" class="icon"></td>
+            <td><img src="/static/img/desktop/extensions/folder.svg" class="icon"></td>
             <td>
               <strong>{{ folder.name }}</strong>
               [{{ folder.nb_elements }} {{ folder.nb_elements > 1 ? $t('User.elements') : $t('User.element') }}]
@@ -83,7 +83,7 @@
               <input type="checkbox" :id="'sel_f' + file.id">
               <label :for="'sel_f' + file.id"></label>
             </td>
-            <td><img :src="'../assets/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon"></td>
+            <td><img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon"></td>
             <td>
               <strong>{{ file.name }}</strong>
             </td>
