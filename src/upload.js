@@ -29,9 +29,10 @@ class Encryption {
     this.est_size = Math.round(file.size * this.est) // Estimation of encrypted file size
 
     this.start = 0 // Start to write at chunk x
-    this.read = 0 // Number of chunks read
-    this.written = 0 // Number of chunks written
-    this.writtenB = 0 // Number of B written
+    this.chRead = 0 // Number of chunks read
+    this.chWritten = 0 // Number of chunks written
+    this.bWritten = 0 // Number of B written
+    this.offset = 0
 
     store.transfers.upload[id] = {
       name: this.dest_filename,
@@ -45,122 +46,68 @@ class Encryption {
 
   read (start = 0) {
     this.start = start
+
+    let readChunk = () => {
+      let r = new FileReader()
+      let blob = this.file.slice(this.offset, chunkSize + this.offset)
+      r.onload = (e) => { // Block loaded
+        let chkLength = e.target.result.length || e.loaded
+        if (e.target.error !== null || chkLength === undefined) { // An error occurred
+          this.error(null, e.target.error)
+          return false
+        } else if (this.offset >= this.file.size) { // File totally read
+          this.success()
+          return true
+        }
+        // Handle current chunk and read next
+        this.offset += chkLength
+        this.handleChunk(e.target.result)
+        readChunk()
+      }
+      r.readAsArrayBuffer(blob)
+    }
+    readChunk()
   }
 
-/*
-  Encryption.prototype.read = function(chkNb = 0) {
-		if(debug) console.log("reading "+chkNb);
-		this.m = chkNb;
-		var me = this;
+  success () {
+    if (this.halt) return false
+    // Waiting end of the uploading process
+    let timer = setInterval(() => {
+      if (debug) console.log('Waiting...')
+      if (this.chWritten >= this.chRead) { // Done, write "EOF" at the end of file
+        clearInterval(timer)
+        vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: 'EOF'}).then((res) => {
+          /*
+          if(typeof(me.callback) !== 'function') {
+            Folders.open(me.folder_id);
+          }
+          */
+        }, (res) => {
+          this.error()
+        })
+      }
+    }, 1000)
+  }
 
-		this.parseFile(this.file, {
-			binary: true,
-			chunk_size: chunkSize,
-			success: function(i) {
-				if(me.halt) return false;
-				// Waiting end of the uploading process
-				var timer = setInterval(function() {
-					if(debug) console.log("Waiting...");
-					if(me.k >= me.j) {
-						// Done, write "EOF" at the end of file
-						clearInterval(timer);
+  handleChunk (chunk) {
+    if (this.halt) return false
+    this.chRead++
+    if (this.start < this.chRead) {
+      // Encrypt it
+      chunk = new Uint8Array(chunk)
+      chunk = this.toBitArrayCodec(chunk)
+      // var chk_length = me.encryptChk(chk, this.chRead);
+      // if(debug) console.log(me.file.name+' - Part '+this.chRead+' size : '+chk_length);
+    } else {
+      this.chWritten++
+      this.bWritten += Math.round(chunkSize * this.est)
+      let pct = this.bWritten / this.est_size * 100
+      if (pct > 100) pct = 100
 
-						var xhr = new XMLHttpRequest();
-						xhr.open("POST", target+'/writeChunk', true);
-						xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      console.log('Did not write part ' + this.chRead)
+    }
+  }
 
-						xhr.onreadystatechange = function() {
-							if(xhr.status == 200 && xhr.readyState == 4) {
-								Transfers.number = Transfers.number <= 0 ? 0 : Transfers.number - 1;
-								Transfers.numberUp = Transfers.numberUp <= 0 ? 0 : Transfers.numberUp - 1;
-								$("#div_upload"+(me.i)).remove();
-								if($('.transfers_upload > div').length === 0) {
-									$('.transfers_upload').html(txt.User.nothing);
-								}
-								if(debug) {
-									console.log("Split + encryption : "+time.elapsed()+" ms");
-									console.log("Splitted in "+me.j+" chunks !");
-								}
-								if(typeof(me.callback) !== 'function') {
-									Folders.open(me.folder_id);
-								}
-							}
-						}
-						xhr.send("filename="+me.file.name+"&data=EOF&folder_id="+me.folder_id);
-					}
-				}, 1000);
-			},
-			chunk_read_callback: function(chk) {
-				// Reading a chunk
-				if(me.halt) return false;
-				me.j++;
-				if(me.m < me.j) {
-					chk = new Uint8Array(chk);
-					chk = me.toBitArrayCodec(chk);
-					var chk_length = me.encryptChk(chk, me.j);
-					if(debug) console.log(me.file.name+' - Part '+me.j+' size : '+chk_length);
-				}
-				else {
-					me.k++;
-					me.l += Math.round(chunkSize*(1+est/100));
-					var pct = me.l/me.est_size*100;
-					if(pct > 100) pct = 100;
-
-					$('#div_upload'+(me.i)).find('.pct').html(pct.toFixed(2)+'%');
-					$('#div_upload'+(me.i)).find('.progress_bar > .used').css('width', pct.toFixed(2)+'%');
-
-					console.log('Did not write part '+me.j);
-				}
-			},
-			error_callback: errorHandler
-		});
-	};
-
-	Encryption.prototype.parseFile = function(file, options) {
-		var opts       = typeof options === 'undefined' ? {} : options;
-		var fileSize   = file.size;
-		var chunkSize  = typeof opts['chunk_size'] === 'undefined' ?  64 * 1024 : parseInt(opts['chunk_size']); // bytes
-		var binary     = typeof opts['binary'] === 'undefined' ? false : opts['binary'] == true;
-		var offset     = 0;
-		var self       = this; // we need a reference to the current object
-		var readBlock  = null;
-		var chunkReadCallback = typeof opts['chunk_read_callback'] === 'function' ? opts['chunk_read_callback'] : function() {};
-		var chunkErrorCallback = typeof opts['error_callback'] === 'function' ? opts['error_callback'] : function() {};
-		var success = typeof opts['success'] === 'function' ? opts['success'] : function() {};
-
-		var onLoadHandler = function(evt) {
-			var current_chk_length = evt.target.result.length;
-			if(current_chk_length === undefined)
-				current_chk_length = evt.loaded;
-
-			if (evt.target.error == null && current_chk_length !== undefined) {
-				offset += current_chk_length;
-				chunkReadCallback(evt.target.result);
-			} else {
-				chunkErrorCallback(evt.target.error);
-				return;
-			}
-			if (offset >= fileSize) {
-				success(file);
-				return;
-			}
-
-			readBlock(offset, chunkSize, file);
-		}
-
-		readBlock = function(_offset, length, _file) {
-			var r = new FileReader();
-			var blob = _file.slice(_offset, length + _offset);
-			r.onload = onLoadHandler;
-			if (binary) {
-				r.readAsArrayBuffer(blob);
-			} else {
-				r.readAsText(blob);
-			}
-		}
-		readBlock(offset, chunkSize, file);
-	};
-*/
   complete (line) {
     if (yesCompleteAll) {
       this.read(line)
@@ -214,22 +161,24 @@ class Encryption {
 
   toBitArrayCodec (bytes) {
     // Convert from an array of bytes to a bitArray
-    let out = [], i, tmp = 0
-		for (i = 0; i < bytes.length; i++) {
+    let out = []
+    let i
+    let tmp = 0
+    for (i = 0; i < bytes.length; i++) {
       tmp = tmp << 8 | bytes[i]
-      if ((i&3) === 3) {
+      if ((i & 3) === 3) {
         out.push(tmp)
         tmp = 0
       }
-		}
-    if (i&3) {
-      out.push(sjcl.bitArray.partial(8 * (i&3), tmp))
-		}
-		return out
-	}
+    }
+    if (i & 3) {
+      out.push(sjcl.bitArray.partial(8 * (i & 3), tmp))
+    }
+    return out
+  }
 
-  error (msg) {
-    console.log('Error', msg)
+  error (msg, msg2) {
+    console.log('Error', msg, msg2)
     bus.$emit('TransfersSetError', 'upload', this.id, msg)
   }
 
@@ -246,8 +195,8 @@ class Upload {
   }
 
   checkAPI () {
-    return (window.File && window.FileReader && window.FileList && window.Blob) ? true : false
-	}
+    return window.File && window.FileReader && window.FileList && window.Blob
+  }
 
   upFiles (files, v) {
     vue = v
