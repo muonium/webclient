@@ -11,7 +11,7 @@ let yesCompleteAll = false
 let noAll = false
 
 class Encryption {
-  constructor (file, destFolder, id) {
+  constructor (file, destFolder, id, open) {
     this.cek = sessionStorage.getItem('cek')
     this.est = 1.335 // Estimation of the difference between the file and encrypted file
     this.halt = false
@@ -26,6 +26,7 @@ class Encryption {
     this.dest_filename = file.name.replace(/<\/?[^>]+(>|$)/g, '')
     this.dest_folder = destFolder
     this.id = id
+    this.open = open
     this.est_size = Math.round(file.size * this.est) // Estimation of encrypted file size
 
     this.start = 0 // Start to write at chunk x
@@ -42,70 +43,6 @@ class Encryption {
     }
 
     this.checkStatus() // Once initialized, check status before uploading
-  }
-
-  read (start = 0) {
-    this.start = start
-
-    let readChunk = () => {
-      let r = new FileReader()
-      let blob = this.file.slice(this.offset, chunkSize + this.offset)
-      r.onload = (e) => { // Block loaded
-        let chkLength = e.target.result.length || e.loaded
-        if (e.target.error !== null || chkLength === undefined) { // An error occurred
-          this.error(null, e.target.error)
-          return false
-        } else if (this.offset >= this.file.size) { // File totally read
-          this.success()
-          return true
-        }
-        // Handle current chunk and read next
-        this.offset += chkLength
-        this.handleChunk(e.target.result)
-        readChunk()
-      }
-      r.readAsArrayBuffer(blob)
-    }
-    readChunk()
-  }
-
-  success () {
-    if (this.halt) return false
-    // Waiting end of the uploading process
-    let timer = setInterval(() => {
-      if (debug) console.log('Waiting...')
-      if (this.chWritten >= this.chRead) { // Done, write "EOF" at the end of file
-        clearInterval(timer)
-        vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: 'EOF'}).then((res) => {
-          /*
-          if(typeof(me.callback) !== 'function') {
-            Folders.open(me.folder_id);
-          }
-          */
-        }, (res) => {
-          this.error()
-        })
-      }
-    }, 1000)
-  }
-
-  handleChunk (chunk) {
-    if (this.halt) return false
-    this.chRead++
-    if (this.start < this.chRead) {
-      // Encrypt it
-      chunk = new Uint8Array(chunk)
-      chunk = this.toBitArrayCodec(chunk)
-      // var chk_length = me.encryptChk(chk, this.chRead);
-      // if(debug) console.log(me.file.name+' - Part '+this.chRead+' size : '+chk_length);
-    } else {
-      this.chWritten++
-      this.bWritten += Math.round(chunkSize * this.est)
-      let pct = this.bWritten / this.est_size * 100
-      if (pct > 100) pct = 100
-
-      console.log('Did not write part ' + this.chRead)
-    }
   }
 
   complete (line) {
@@ -157,6 +94,108 @@ class Encryption {
         this.error()
       }
     })
+  }
+
+  read (start = 0) {
+    this.start = start
+
+    let readChunk = () => {
+      let r = new FileReader()
+      let blob = this.file.slice(this.offset, chunkSize + this.offset)
+      r.onload = (e) => { // Block loaded
+        let chkLength = e.target.result.length || e.loaded
+        if (e.target.error !== null || chkLength === undefined) { // An error occurred
+          this.error(null, e.target.error)
+          return false
+        } else if (this.offset >= this.file.size) { // File totally read
+          this.success()
+          return true
+        }
+        // Handle current chunk and read next
+        this.offset += chkLength
+        this.handleChunk(e.target.result)
+        readChunk()
+      }
+      r.readAsArrayBuffer(blob)
+    }
+    readChunk()
+  }
+
+  success () {
+    if (this.halt) return false
+    // Waiting end of the uploading process
+    let timer = setInterval(() => {
+      if (debug) console.log('Waiting...')
+      if (this.chWritten >= this.chRead) { // Done, write "EOF" at the end of file
+        clearInterval(timer)
+        vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: 'EOF'}).then((res) => {
+          if (this.open) {
+            bus.$emit('FolderOpen')
+          }
+        }, (res) => {
+          this.error()
+        })
+      }
+    }, 1000)
+  }
+
+  handleChunk (chunk) {
+    if (this.halt) return false
+    this.chRead++
+    if (this.start < this.chRead) {
+      // Encrypt it
+      chunk = new Uint8Array(chunk)
+      chunk = this.toBitArrayCodec(chunk)
+      if (debug) console.log('Starting encryption of part ' + this.chRead)
+
+      let pack = (c, s, a, i) => { // ciphered_chk, salt, authentification data, initialization vector
+        let t = []
+        t.push(sjcl.codec.base64.fromBits(c))
+        t.push(sjcl.codec.base64.fromBits(s))
+        t.push(sjcl.codec.base64.fromBits(a))
+        t.push(sjcl.codec.base64.fromBits(i))
+        return t.join(':')
+      }
+
+      // crypto parameter
+      let initVector = sjcl.random.randomWords(4)
+      let aDATA = sjcl.random.randomWords(4)
+
+      // chunk encryption
+      let s = pack(
+        sjcl.mode.gcm.encrypt(this.enc, chunk, initVector, aDATA, 128),
+        this.salt,
+        aDATA,
+        initVector
+      ) // eslint-disable-line no-unused-vars
+
+      // Avoiding chunk sent before previous chunk if encryption is faster
+      let timer = setInterval(() => {
+        if (this.chRead === this.chWritten + 1) {
+          clearInterval(timer)
+          vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: s}).then((res) => {
+            this.chWritten++
+            this.bWritten += s.length
+            let pct = this.bWritten / this.est_size * 100
+            if (pct > 100) pct = 100
+            store.transfers.upload[this.id].pct = pct
+          }, (res) => {
+            this.chWritten++
+            // Quota exceeded or unable to write
+            this.abort()
+            return false
+          })
+        }
+      }, 250)
+    } else {
+      this.chWritten++
+      this.bWritten += Math.round(chunkSize * this.est)
+      let pct = this.bWritten / this.est_size * 100
+      if (pct > 100) pct = 100
+      store.transfers.upload[this.id].pct = pct
+
+      console.log('Did not write part ' + this.chRead)
+    }
   }
 
   toBitArrayCodec (bytes) {
@@ -212,7 +251,8 @@ class Upload {
     noAll = false
 
     for (let i = 0; i < files.length; i++) {
-      this.enc.push(new Encryption(files[i], store.folder.folder_id, this.enc.length))
+      let open = i === files.length - 1
+      this.enc.push(new Encryption(files[i], store.folder.folder_id, this.enc.length, open))
     }
   }
 
