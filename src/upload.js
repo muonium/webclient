@@ -195,8 +195,9 @@ class Encryption {
           return true
         }
         // Handle current chunk and read next
+        this.chRead++
         this.offset += chkLength
-        this.handleChunk(e.target.result)
+        this.handleChunk(this.chRead, e.target.result)
         readChunk()
       }
       r.readAsArrayBuffer(blob)
@@ -222,14 +223,13 @@ class Encryption {
     }, 1000)
   }
 
-  handleChunk (chunk) {
+  handleChunk (chunkNb, chunkContent) {
     if (this.halt) return false
-    this.chRead++
-    if (this.start < this.chRead) {
+    if (this.start < chunkNb) {
       // Encrypt it
-      chunk = new Uint8Array(chunk)
-      chunk = this.toBitArrayCodec(chunk)
-      if (debug) console.log('Starting encryption of part ' + this.chRead)
+      chunkContent = new Uint8Array(chunkContent)
+      chunkContent = this.toBitArrayCodec(chunkContent)
+      if (debug) console.log('Starting encryption of part ' + chunkNb)
 
       let pack = (c, s, a, i) => { // ciphered_chk, salt, authentification data, initialization vector
         let t = []
@@ -246,7 +246,7 @@ class Encryption {
 
       // chunk encryption
       let s = pack(
-        sjcl.mode.gcm.encrypt(this.enc, chunk, initVector, aDATA, 128),
+        sjcl.mode.gcm.encrypt(this.enc, chunkContent, initVector, aDATA, 128),
         this.salt,
         aDATA,
         initVector
@@ -254,14 +254,14 @@ class Encryption {
 
       // Avoiding chunk sent before previous chunk if encryption is faster
       let timer = setInterval(() => {
-        if (this.chRead === this.chWritten + 1) {
+        if (chunkNb === this.chWritten + 1) {
           clearInterval(timer)
           vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: s}).then((res) => {
             this.chWritten++
             this.bWritten += s.length
             let pct = this.bWritten / this.est_size * 100
             if (pct > 100) pct = 100
-            store.transfers.upload[this.id].pct = pct
+            store.transfers.upload[this.id].pct = Math.round(pct)
           }, (res) => {
             this.chWritten++
             // Quota exceeded or unable to write
@@ -275,9 +275,9 @@ class Encryption {
       this.bWritten += Math.round(chunkSize * this.est)
       let pct = this.bWritten / this.est_size * 100
       if (pct > 100) pct = 100
-      store.transfers.upload[this.id].pct = pct
+      store.transfers.upload[this.id].pct = Math.round(pct)
 
-      console.log('Did not write part ' + this.chRead)
+      console.log('Did not write part ' + chunkNb)
     }
   }
 

@@ -24,7 +24,7 @@
     <section class="content" v-show="!this.minimized">
       <div class="transfers_upload" v-if="this.upSelected">
         <div v-if="this.shared.upload.length > 0">
-          <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="index">
+          <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
             <div :class="file.error === true ? 'transfers_error' : ''">
               <span class="fileinfo">{{ file.name }}</span>
@@ -39,7 +39,7 @@
       </div>
       <div class="transfers_download" v-else>
         <div v-if="this.shared.download.length > 0">
-          <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="index">
+          <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="'download-' + index">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
             <div :class="file.error === true ? 'transfers_error' : ''">
               <span class="fileinfo">{{ file.name }}</span>

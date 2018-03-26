@@ -8,7 +8,7 @@
     <p class="em" v-html="$t('Upgrade.mue')"></p>
 
     <div class="bloc-offers">
-      <div v-for="(offer, index) in this.offers" :key="index">
+      <div v-for="(offer, index) in this.offers" :key="'offer-' + index">
         <div class="most-popular" v-if="index === 0">Most Popular</div>
         <div class="offer-size">{{ showSize(offer.size) }}</div>
         <div class="offer-price">
@@ -19,7 +19,7 @@
           {{ duration(offer.duration) }}
         </div>
         <form :action="endpoint" method="post" target="_blank" v-if="offer.product_id">
-          <input type="hidden" :name="index" :value="field" v-for="(field, index) in offer.fields" :key="index">
+          <input type="hidden" :name="index" :value="field" v-for="(field, index) in offer.fields" :key="'field-' + index">
           <button type="submit" class="btn">{{ $t('Upgrade.upgrade') }}</button>
         </form>
       </div>
@@ -34,7 +34,7 @@
         <th>{{ $t('Upgrade.end_date') }}</th>
         <th></th>
       </tr>
-      <tr v-for="(row, index) in this.history" :key="index">
+      <tr v-for="(row, index) in this.history" :key="'history-' + index">
         <td>{{ showSize(row.size) }}</td>
         <td>{{ row.price }} {{ row.currency_symbol }}</td>
         <td>{{ getDate(row.start) }}</td>

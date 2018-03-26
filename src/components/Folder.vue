@@ -39,7 +39,7 @@
             <th>Uploaded</th>
             <th>Options</th>
           </tr>
-          <tr class="folder" v-for="folder in this.folder.folders" :key="folder.id"
+          <tr class="folder" v-for="folder in this.folder.folders" :key="'folder-' + folder.id"
             :id="'d'+ folder.id"
             :name="folder.name"
             :title="showSize(folder.size)"
@@ -65,7 +65,7 @@
             <td><a href="#" class="btn btn-actions"></a></td>
           </tr>
           <tr class="break"></tr>
-          <tr v-for="file in this.folder.files" :key="file.id"
+          <tr v-for="file in this.folder.files" :key="'file-' + file.id"
             :class="'file' + (file.size < 0 ? ' red' : '')"
             :id="'f' + file.id"
             :title="showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + getDate(file.lastmod)"
