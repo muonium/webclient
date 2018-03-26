@@ -51,7 +51,7 @@
             @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
             draggable="true"
           >
-            <td class="file_checkbox">
+            <td class="folder_checkbox">
               <input type="checkbox" :id="'sel_d'+ folder.id">
               <label :for="'sel_d'+ folder.id"></label>
             </td>
@@ -79,7 +79,7 @@
             @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
             draggable="true"
           >
-            <td class="folder_checkbox">
+            <td class="file_checkbox">
               <input type="checkbox" :id="'sel_f' + file.id">
               <label :for="'sel_f' + file.id"></label>
             </td>
@@ -114,6 +114,7 @@ import box from './box'
 import transfers from './transfers'
 import arrows from '../arrows'
 import move from '../move'
+import rm from '../rm'
 import extIcons from '../extIcons'
 import upload from '../upload'
 import download from '../download'
@@ -329,7 +330,7 @@ export default {
             break
           case 46: // Delete
             if (!this.$parent.isInInput(e)) {
-              // TODO: rm
+              rm.rm()
             } else {
               fired = false
             }
@@ -386,6 +387,7 @@ export default {
     this.$parent.selection = true
 
     move.vue = this
+    rm.vue = this
   },
   beforeDestroy () {
     document.removeEventListener('keydown', this.keyListener)

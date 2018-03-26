@@ -47,7 +47,7 @@
         <p @click="move.fromTrash(id, type)">
           <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
         </p>
-        <p onclick="Rm.multiple(id)">
+        <p @click="rm.rm(id, type)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
         </p>
       </div>
@@ -89,7 +89,7 @@
         <p @click="move.fromTrash(id, type)">
           <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
         </p>
-        <p onclick="Rm.multiple(id)">
+        <p @click="rm.rm(id, type)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
         </p>
       </div>
@@ -117,6 +117,7 @@
 import store from '../store'
 import bus from '../bus'
 import move from '../move'
+import rm from '../rm'
 
 export default {
   name: 'box',
@@ -183,6 +184,9 @@ export default {
     },
     move () {
       return move
+    },
+    rm () {
+      return rm
     }
   },
   created () {
@@ -190,6 +194,7 @@ export default {
     bus.$on('BoxClose', this.close)
     window.addEventListener('click', this.close)
     move.vue = this
+    rm.vue = this
   },
   beforeDestroy () {
     bus.$off('BoxOpen')
