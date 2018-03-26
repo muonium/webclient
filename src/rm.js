@@ -8,7 +8,7 @@ class Rm {
     this.vue = {}
   }
 
-  rm (id, type, callback = false, showConfirm = true) {
+  rm (id, type, showConfirm = true) {
     if (store.selection.files.length === 0 && store.selection.folders.length === 0) {
       if (id === undefined || (type !== 1 && type !== 2)) {
         return false
@@ -57,14 +57,29 @@ class Rm {
     }
 
     this.vue.$http.post('rm', {files: files, folders: folders}).then((res) => {
-      if (callback === false) {
-        bus.$emit('FolderOpen')
-      } else {
-        callback()
-      }
+      bus.$emit('FolderOpen')
     }, (res) => {
       console.log(res)
     })
+  }
+
+  rmFromFilename (filename, callback = false) {
+    console.log('rmFromFilename')
+    let f = document.querySelector('tr.file [data-title="' + filename + '"]')
+    if (f) {
+      this.vue.$http.post('rm', {
+        files: [{id: parseInt(f.id.substr(1)), folder_id: store.folder.folder_id}]
+      }).then((res) => {
+        console.log('rmFromFilename ok')
+        if (callback === false) {
+          bus.$emit('FolderOpen')
+        } else {
+          callback()
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    }
   }
 }
 

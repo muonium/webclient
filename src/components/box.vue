@@ -39,7 +39,7 @@
         <p @click="move.copy(id, type)">
           <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
         </p>
-        <p @click="Move.toTrash(id, type)">
+        <p @click="move.toTrash(id, type)">
           <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
         </p>
       </div>

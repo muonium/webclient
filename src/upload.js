@@ -1,5 +1,6 @@
 import store from './store'
 import bus from './bus'
+import rm from './rm'
 import sjcl from 'sjcl'
 
 let vue = {}
@@ -49,7 +50,7 @@ class Encryption {
     if (yesCompleteAll) {
       this.read(line)
     } else if (yesReplaceAll) {
-      // TODO - rm + start reading at 0
+      rm.rmFromFilename(this.dest_filename, this.read())
     } else if (!noAll) {
       // TODO: disable yesAll / noAll for the last
       vue.$refs.messageBox.add({
@@ -105,7 +106,7 @@ class Encryption {
 
   replace () {
     if (yesReplaceAll) {
-      // TODO - rm + start reading at 0
+      rm.rmFromFilename(this.dest_filename, this.read())
     } else if (!noAll) {
       // TODO: disable yesAll / noAll for the last
       vue.$refs.messageBox.add({
@@ -181,6 +182,7 @@ class Encryption {
 
   read (start = 0) {
     this.start = start
+    if (debug) console.log('start reading')
 
     let readChunk = () => {
       let r = new FileReader()
