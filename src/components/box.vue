@@ -19,20 +19,22 @@
       <p onclick="Selection.dl(id)">
         <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
       </p>
-      <!-- if(Files.isShared(id.substr(1))) { -->
-      <p onclick="Selection.unshare(id)">
-        <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
-      </p>
-      <!-- } else { -->
-      <p onclick="Selection.share(id)">
-        <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
-      </p>
+      <div v-if="isShared()">
+        <p @click="share.unshare(id)">
+          <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
+        </p>
+      </div>
+      <div v-else>
+        <p @click="share.share(id)">
+          <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
+        </p>
+      </div>
       <hr>
       <div v-if="!isInTrash()">
-        <p onclick="Favorites.update(id)">
+        <p class="hide">
           <i class="fa fa-star" aria-hidden="true"></i> {{ $t('RightClick.star') }}
         </p>
-        <hr>
+        <hr class="hide">
         <p @click="move.cut(id, type)">
           <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
         </p>
@@ -118,6 +120,7 @@ import store from '../store'
 import bus from '../bus'
 import move from '../move'
 import rm from '../rm'
+import share from '../share'
 
 export default {
   name: 'box',
@@ -138,9 +141,13 @@ export default {
       this.id = id
       this.type = parseInt(type)
       if (type === 1) {
-        bus.$emit('SelectionAddFile', id, null)
+        if (store.selection.files.indexOf(id) === -1) {
+          bus.$emit('SelectionAddFile', id, null)
+        }
       } else if (type === 2) {
-        bus.$emit('SelectionAddFolder', id, null)
+        if (store.selection.folders.indexOf(id) === -1) {
+          bus.$emit('SelectionAddFolder', id, null)
+        }
       }
       this.opened = true
       // We need to make Box 'visible' in order to calculate overflow
@@ -174,6 +181,15 @@ export default {
     hasElToMove () {
       return store.move.files.length > 0 || store.move.folders.length > 0
     },
+    isShared () {
+      if (this.type !== 0 && this.id !== null) {
+        let el = document.querySelector('#' + (this.type === 1 ? 'f' : 'd') + this.id)
+        if (el !== null && el.getAttribute('data-shared') === '1') {
+          return true
+        }
+      }
+      return false
+    },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
     }
@@ -187,19 +203,23 @@ export default {
     },
     rm () {
       return rm
+    },
+    share () {
+      return share
     }
   },
   created () {
     bus.$on('BoxOpen', (id, type, e) => this.open(id, type, e))
     bus.$on('BoxClose', this.close)
-    window.addEventListener('click', this.close)
+    document.addEventListener('click', this.close)
     move.vue = this
     rm.vue = this
+    share.vue = this
   },
   beforeDestroy () {
     bus.$off('BoxOpen')
     bus.$off('BoxClose')
-    window.removeEventListener('click', this.close)
+    document.removeEventListener('click', this.close)
   }
 }
 </script>

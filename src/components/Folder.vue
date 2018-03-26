@@ -115,6 +115,7 @@ import transfers from './transfers'
 import arrows from '../arrows'
 import move from '../move'
 import rm from '../rm'
+import share from '../share'
 import extIcons from '../extIcons'
 import upload from '../upload'
 import download from '../download'
@@ -388,6 +389,7 @@ export default {
 
     move.vue = this
     rm.vue = this
+    share.vue = this
   },
   beforeDestroy () {
     document.removeEventListener('keydown', this.keyListener)

@@ -102,7 +102,7 @@ export default {
         if (e.target.classList.contains('btn-actions')) {
           return false
         }
-        if (e.target.tagName === 'LABEL' || (e.target.tagName === 'TD' && e.target.classList.contains('file_checkbox'))) {
+        if (e.target.tagName === 'LABEL' || (e.target.tagName === 'TD' && e.target.classList.contains('folder_checkbox'))) {
           e = 'ctrl' // Click on label/checkbox: behave like 'ctrl' key is pressed
         }
       }
@@ -216,8 +216,14 @@ export default {
     }
   },
   created () {
-    bus.$on('SelectionAddFile', (id, e) => this.addFile(id, e))
-    bus.$on('SelectionAddFolder', (id, e) => this.addFolder(id, e))
+    bus.$on('SelectionAddFile', (id, e) => {
+      if (e !== null) bus.$emit('BoxClose')
+      this.addFile(id, e)
+    })
+    bus.$on('SelectionAddFolder', (id, e) => {
+      if (e !== null) bus.$emit('BoxClose')
+      this.addFolder(id, e)
+    })
     bus.$on('SelectionAddAll', this.addAll)
     bus.$on('SelectionRemoveAll', this.removeAll)
     bus.$on('SelectionInvert', this.invert)
