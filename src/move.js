@@ -77,7 +77,7 @@ class Move {
       folders = store.selection.folders
     }
 
-    this.vue.$http.delete('trash', {files: files, folders: folders}).then((res) => {
+    this.vue.$http.post('trash/from', {files: files, folders: folders}).then((res) => {
       bus.$emit('FolderOpen')
     }, (res) => {
       console.log(res)
@@ -101,7 +101,7 @@ class Move {
       folders = store.selection.folders
     }
 
-    this.vue.$http.post('trash', {files: files, folders: folders}).then((res) => {
+    this.vue.$http.post('trash/to', {files: files, folders: folders}).then((res) => {
       bus.$emit('FolderOpen')
     }, (res) => {
       console.log(res)

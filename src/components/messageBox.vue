@@ -13,8 +13,8 @@
       <div class="MessageBoxToggle" v-if="box.toggles">
         <div v-for="(toggle, index) in box.toggles" :key="'toggle-' + index">
           <span>{{ toggle.leftTxt }}</span>
-          <label class="switch" v-on:click="typeof toggle.clickEvent !== 'undefined' ? toggle.clickEvent($event) : null">
-            <input type="checkbox">
+          <label class="switch">
+            <input type="checkbox" v-on:click.stop="typeof toggle.clickEvent !== 'undefined' ? toggle.clickEvent($event) : null">
             <div class="slider"></div>
           </label>
           <span>{{ toggle.rightTxt }}</span>

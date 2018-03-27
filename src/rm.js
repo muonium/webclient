@@ -64,13 +64,12 @@ class Rm {
   }
 
   rmFromFilename (filename, callback = false) {
-    console.log('rmFromFilename')
-    let f = document.querySelector('tr.file [data-title="' + filename + '"]')
+    let f = document.querySelector('tr.file[data-title="' + filename + '"]')
     if (f) {
       this.vue.$http.post('rm', {
         files: [{id: parseInt(f.id.substr(1)), folder_id: store.folder.folder_id}]
       }).then((res) => {
-        console.log('rmFromFilename ok')
+        console.log('deleted ' + filename)
         if (callback === false) {
           bus.$emit('FolderOpen')
         } else {

@@ -108,15 +108,10 @@ export default {
     },
     abort (type, id) {
       if (type !== 'upload' && type !== 'download') return false
-      let file = store.transfers[type].find(f => f.id === parseInt(id))
-      let index = store.transfers[type].indexOf(file)
-      if (file !== undefined && index !== -1) {
-        this.$delete(store.transfers[type], index)
-        if (type === 'upload') {
-          upload.abort(id)
-        } else if (type === 'download') {
-          download.abort(id)
-        }
+      if (type === 'upload') {
+        upload.abort(id)
+      } else if (type === 'download') {
+        download.abort(id)
       }
     }
   },

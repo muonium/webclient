@@ -66,7 +66,7 @@
           </tr>
           <tr class="break"></tr>
           <tr v-for="file in this.folder.files" :key="'file-' + file.id"
-            :class="'file' + (file.size < 0 ? ' red' : '')"
+            :class="'file' + (file.is_completed ? '' : ' red')"
             :id="'f' + file.id"
             :title="showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + getDate(file.lastmod)"
             :data-folder="file.folder_id"

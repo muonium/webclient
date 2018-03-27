@@ -15,6 +15,7 @@ class Encryption {
   constructor (file, destFolder, id, open) {
     this.cek = sessionStorage.getItem('cek')
     this.est = 1.335 // Estimation of the difference between the file and encrypted file
+    this.yes = false
     this.halt = false
 
     if (this.cek === null) return false
@@ -47,12 +48,74 @@ class Encryption {
   }
 
   complete (line) {
+    let completeFile = true // Initial state
+    let btnCallback = (e, yes) => {
+      let index = vue.$refs.messageBox.getIndexFromEvent(e)
+      if (index !== false) {
+        this.yes = yes
+        vue.$refs.messageBox.close(index)
+
+        if (this.yes) {
+          if (completeFile) {
+            this.read(line)
+          } else {
+            rm.rmFromFilename(this.dest_filename, () => this.read())
+          }
+        } else {
+          this.abort()
+        }
+      }
+    }
+
     if (yesCompleteAll) {
       this.read(line)
     } else if (yesReplaceAll) {
-      rm.rmFromFilename(this.dest_filename, this.read())
+      rm.rmFromFilename(this.dest_filename, () => this.read())
     } else if (!noAll) {
-      // TODO: disable yesAll / noAll for the last
+      let btns = [
+        {
+          type: 'button',
+          class: 'btn',
+          value: vue.$t('User.yes'),
+          clickEvent (e) {
+            btnCallback(e, true)
+          }
+        }
+      ]
+      if (!this.open) {
+        btns.push({
+          type: 'button',
+          class: 'btn',
+          value: vue.$t('User.yesAll'),
+          clickEvent (e) {
+            if (completeFile) {
+              yesCompleteAll = true
+            } else {
+              yesReplaceAll = true
+            }
+            btnCallback(e, true)
+          }
+        })
+      }
+      btns.push({
+        type: 'button',
+        class: 'btn',
+        value: vue.$t('User.no'),
+        clickEvent (e) {
+          btnCallback(e, false)
+        }
+      })
+      if (!this.open) {
+        btns.push({
+          type: 'button',
+          class: 'btn',
+          value: vue.$t('User.noAll'),
+          clickEvent (e) {
+            noAll = true
+            btnCallback(e, false)
+          }
+        })
+      }
       vue.$refs.messageBox.add({
         title: vue.$t('User.replaceCompleteFile').replace('[filename]', this.dest_filename),
         toggles: [
@@ -60,44 +123,11 @@ class Encryption {
             leftTxt: vue.$t('User.complete'),
             rightTxt: vue.$t('User.replace'),
             clickEvent (e) {
-              console.log(e)
+              completeFile = !e.target.checked
             }
           }
         ],
-        btns: [
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.yes'),
-            clickEvent (e) {
-              console.log(e)
-            }
-          },
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.yesAll'),
-            clickEvent (e) {
-              //
-            }
-          },
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.no'),
-            clickEvent (e) {
-              //
-            }
-          },
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.noAll'),
-            clickEvent (e) {
-              //
-            }
-          }
-        ]
+        btns: btns
       })
     } else {
       this.abort()
@@ -105,46 +135,66 @@ class Encryption {
   }
 
   replace () {
+    let btnCallback = (e, yes) => {
+      let index = vue.$refs.messageBox.getIndexFromEvent(e)
+      if (index !== false) {
+        this.yes = yes
+        vue.$refs.messageBox.close(index)
+
+        if (this.yes) {
+          rm.rmFromFilename(this.dest_filename, () => this.read())
+        } else {
+          this.abort()
+        }
+      }
+    }
+
     if (yesReplaceAll) {
-      rm.rmFromFilename(this.dest_filename, this.read())
+      rm.rmFromFilename(this.dest_filename, () => this.read())
     } else if (!noAll) {
-      // TODO: disable yesAll / noAll for the last
+      let btns = [
+        {
+          type: 'button',
+          class: 'btn',
+          value: vue.$t('User.yes'),
+          clickEvent (e) {
+            btnCallback(e, true)
+          }
+        }
+      ]
+      if (!this.open) { // Not the last file
+        btns.push({
+          type: 'button',
+          class: 'btn',
+          value: vue.$t('User.yesAll'),
+          clickEvent (e) {
+            yesReplaceAll = true
+            btnCallback(e, true)
+          }
+        })
+      }
+      btns.push({
+        type: 'button',
+        class: 'btn',
+        value: vue.$t('User.no'),
+        clickEvent (e) {
+          btnCallback(e, false)
+        }
+      })
+      if (!this.open) { // Not the last file
+        btns.push({
+          type: 'button',
+          class: 'btn',
+          value: vue.$t('User.noAll'),
+          clickEvent (e) {
+            noAll = true
+            btnCallback(e, false)
+          }
+        })
+      }
       vue.$refs.messageBox.add({
         title: vue.$t('User.replaceFile').replace('[filename]', this.dest_filename),
-        btns: [
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.yes'),
-            clickEvent (e) {
-              console.log(e)
-            }
-          },
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.yesAll'),
-            clickEvent (e) {
-              //
-            }
-          },
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.no'),
-            clickEvent (e) {
-              //
-            }
-          },
-          {
-            type: 'button',
-            class: 'btn',
-            value: vue.$t('User.noAll'),
-            clickEvent (e) {
-              //
-            }
-          }
-        ]
+        btns: btns
       })
     } else {
       this.abort()
@@ -261,9 +311,7 @@ class Encryption {
           vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: s}).then((res) => {
             this.chWritten++
             this.bWritten += s.length
-            let pct = this.bWritten / this.est_size * 100
-            if (pct > 100) pct = 100
-            store.transfers.upload[this.id].pct = Math.round(pct)
+            this.updatePct()
           }, (res) => {
             this.chWritten++
             // Quota exceeded or unable to write
@@ -275,11 +323,8 @@ class Encryption {
     } else {
       this.chWritten++
       this.bWritten += Math.round(chunkSize * this.est)
-      let pct = this.bWritten / this.est_size * 100
-      if (pct > 100) pct = 100
-      store.transfers.upload[this.id].pct = Math.round(pct)
-
-      console.log('Did not write part ' + chunkNb)
+      this.updatePct()
+      if (debug) console.log('Did not write part ' + chunkNb)
     }
   }
 
@@ -301,15 +346,28 @@ class Encryption {
     return out
   }
 
-  error (msg, msg2) {
-    console.log('Error', msg, msg2)
+  updatePct () {
+    let pct = Math.round(this.bWritten / this.est_size * 100)
+    let row = store.transfers.upload[this.id]
+    row.pct = pct > 100 ? 100 : pct
+    vue.$set(store.transfers.upload, this.id, row)
+    if (row.pct === 100) {
+      setTimeout(() => {
+        vue.$delete(store.transfers.upload, this.id)
+      }, 800)
+    }
+  }
+
+  error (msg = '', msg2 = '') {
+    if (debug) console.log('Error', msg, msg2)
     bus.$emit('TransfersSetError', 'upload', this.id, msg)
   }
 
   abort () {
     // Abort encryption process
     this.halt = true
-    console.log('abort ' + this.file.name)
+    vue.$delete(store.transfers.upload, this.id)
+    if (debug) console.log('aborted ' + this.file.name)
   }
 }
 
