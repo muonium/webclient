@@ -13,6 +13,7 @@ var store = {
     folders: []
   },
   transfers: {
+    upSelected: true,
     upload: [],
     download: []
   }

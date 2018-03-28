@@ -310,7 +310,7 @@ export default {
           case 13: // Enter
             if (!this.$parent.isInInput(e)) {
               if (store.selection.files.length === 1 && store.selection.folders.length === 0) {
-                // TODO: dl file
+                download.dlFiles(store.selection.files, this)
               } else if (store.selection.files.length === 0 && store.selection.folders.length === 1) {
                 this.open(store.selection.folders[0])
               }

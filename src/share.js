@@ -1,4 +1,3 @@
-import bus from './bus'
 import store from './store'
 import sjcl from 'sjcl'
 

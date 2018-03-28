@@ -53,6 +53,7 @@
 <script>
 import store from '../store'
 import bus from '../bus'
+import download from '../download'
 
 export default {
   name: 'selection',
@@ -211,6 +212,16 @@ export default {
         this.addFolder(folders[j].id.substr(1), 'ctrl')
       }
     },
+    dl (id) {
+      if (this.shared.files === 0) {
+        if (id === undefined) {
+          return false
+        }
+        download.dlFiles([id], this)
+      } else {
+        download.dlFiles(this.shared.files, this)
+      }
+    },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
     }
@@ -227,6 +238,7 @@ export default {
     bus.$on('SelectionAddAll', this.addAll)
     bus.$on('SelectionRemoveAll', this.removeAll)
     bus.$on('SelectionInvert', this.invert)
+    bus.$on('SelectionDl', (id) => this.dl(id))
   },
   beforeDestroy () {
     bus.$off('SelectionAddFile')
@@ -234,6 +246,7 @@ export default {
     bus.$off('SelectionAddAll')
     bus.$off('SelectionRemoveAll')
     bus.$off('SelectionInvert')
+    bus.$off('SelectionDl')
   }
 }
 </script>

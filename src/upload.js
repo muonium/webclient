@@ -388,6 +388,7 @@ class Upload {
       return false
     }
     store.folder.transfers = true
+    store.transfers.upSelected = true
     bus.$emit('SidebarOpenTransfers')
 
     yesReplaceAll = false

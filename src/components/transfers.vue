@@ -12,17 +12,17 @@
 
     <section class="toggle" v-show="!this.minimized">
       <ul>
-        <li @click="showUp()" :class="this.upSelected ? 'selected' : ''">
+        <li @click="showUp()" :class="this.shared.upSelected ? 'selected' : ''">
           {{ $t('User.uploading') }}
         </li>
-        <li @click="showDl()" :class="this.upSelected ? '' : 'selected'">
+        <li @click="showDl()" :class="this.shared.upSelected ? '' : 'selected'">
           {{ $t('User.downloading') }}
         </li>
       </ul>
     </section>
 
     <section class="content" v-show="!this.minimized">
-      <div class="transfers_upload" v-if="this.upSelected">
+      <div class="transfers_upload" v-if="this.shared.upSelected">
         <div v-if="this.shared.upload.length > 0">
           <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index" v-if="file">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
@@ -77,7 +77,6 @@ export default {
   data () {
     return {
       minimized: false,
-      upSelected: true,
       shared: store.transfers
     }
   },
@@ -93,10 +92,10 @@ export default {
       this.minimized = !this.minimized
     },
     showUp () {
-      this.upSelected = true
+      this.shared.upSelected = true
     },
     showDl () {
-      this.upSelected = false
+      this.shared.upSelected = false
     },
     setError (type, id, msg = null) {
       if ((type === 'upload' || type === 'download') && typeof this.shared[type][id] !== 'undefined') {
@@ -117,7 +116,7 @@ export default {
   },
   created () {
     if (typeof this.show !== 'undefined' && this.show === 'download') {
-      this.upSelected = false
+      this.shared.upSelected = false
     }
     bus.$on('TransfersSetError', (type, id, msg) => this.setError(type, id, msg))
   },

@@ -16,7 +16,7 @@
     </div>
 
     <div v-if="type === 1">
-      <p onclick="Selection.dl(id)">
+      <p @click="trigger('SelectionDl', id)">
         <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
       </p>
       <div v-if="isShared()">
