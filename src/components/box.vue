@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <div v-if="type === 1">
+    <div v-if="!details && type === 1">
       <p @click="trigger('SelectionDl', id)">
         <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
       </p>
@@ -66,12 +66,12 @@
         </p>
       </div>
       <hr>
-      <p onclick="Files.details(id)">
+      <p @click.stop="toggleDetails()">
         <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
       </p>
     </div>
 
-    <div v-if="type === 2">
+    <div v-if="!details && type === 2">
       <p @click="trigger('FolderOpen', id)">
         <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('RightClick.open') }}
       </p>
@@ -108,9 +108,57 @@
         </p>
       </div>
       <hr>
-      <p onclick="Folders.details(id)">
+      <p @click.stop="toggleDetails()">
         <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
       </p>
+    </div>
+
+    <div v-if="details && type === 1">
+      <div class="close" @click="close()">x</div>
+      <div class="details">
+        <strong>{{ $t('User.details') }}</strong>
+        <ul>
+          <li><span class="label">{{ $t('User.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
+          <li><span class="label">{{ $t('User.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
+          <li><span class="label">{{ $t('User.type') }}:</span> {{ $t('User.file') }}</li>
+          <li><span class="label">{{ $t('User.size') }}:</span> {{ el.querySelector('.file_size').textContent }}</li>
+          <li><span class="label">{{ $t('User.lastmod') }}:</span> {{ el.querySelector('.file_lastmod').textContent }}</li>
+        </ul>
+        <p>
+          <a class="mono blue" @click="trigger('SelectionDl', id)">
+            <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
+          </a>
+        </p>
+        <p v-if="isShared()">
+          <a class="mono blue" @click="share.unshare(id)">
+            <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
+          </a>
+        </p>
+        <p v-if="isShared()">
+          <a class="blue block" @click="copyUrl()">
+            <i class="fa fa-link"></i> {{ $t('RightClick.copy') }}
+          </a>
+          <input type="text" :value="this.el.getAttribute('data-url')" class="copy_url">
+        </p>
+        <p v-else>
+          <a class="mono blue" @click="share.share(id)">
+            <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div v-if="details && type === 2">
+      <div class="close" @click="close()">x</div>
+      <div class="details">
+        <strong>{{ $t('User.details') }}</strong>
+        <ul>
+          <li><span class="label">{{ $t('User.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
+          <li><span class="label">{{ $t('User.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
+          <li><span class="label">{{ $t('User.type') }}:</span> {{ $t('User.folder') }}</li>
+          <li><span class="label">{{ $t('User.size') }}:</span> {{ el.getAttribute('title') }}</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -129,6 +177,8 @@ export default {
       opened: false,
       type: 0, // 1: file, 2: folder, 0: somewhere else
       id: null,
+      el: null,
+      details: false,
       css: {
         top: '0px',
         left: '0px',
@@ -141,14 +191,17 @@ export default {
       this.id = id
       this.type = parseInt(type)
       if (type === 1) {
+        this.el = document.querySelector('#f' + id)
         if (store.selection.files.indexOf(id) === -1) {
           bus.$emit('SelectionAddFile', id, null)
         }
       } else if (type === 2) {
+        this.el = document.querySelector('#d' + id)
         if (store.selection.folders.indexOf(id) === -1) {
           bus.$emit('SelectionAddFolder', id, null)
         }
       }
+      this.details = false
       this.opened = true
       // We need to make Box 'visible' in order to calculate overflow
       this.css.visibility = 'hidden'
@@ -173,7 +226,21 @@ export default {
     },
     close () {
       this.type = 0
+      this.details = false
       this.opened = false
+    },
+    toggleDetails () {
+      if (this.el === null) return false
+      this.details = !this.details
+      if (this.details) {
+        document.removeEventListener('click', this.close)
+      } else {
+        document.addEventListener('click', this.close)
+      }
+    },
+    copyUrl () {
+      document.querySelector('#box .copy_url').select()
+      document.execCommand('copy')
     },
     isInTrash () {
       return store.folder.trash
@@ -183,8 +250,7 @@ export default {
     },
     isShared () {
       if (this.type !== 0 && this.id !== null) {
-        let el = document.querySelector('#' + (this.type === 1 ? 'f' : 'd') + this.id)
-        if (el !== null && el.getAttribute('data-shared') === '1') {
+        if (this.el !== null && this.el.getAttribute('data-shared') === '1') {
           return true
         }
       }

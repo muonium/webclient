@@ -263,7 +263,6 @@ class Download {
       let timer = setInterval(() => {
         i++
         dl(i)
-        console.log('dl ' + i)
         if (i >= files.length - 1) {
           clearInterval(timer)
         }

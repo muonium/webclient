@@ -71,7 +71,32 @@ class Share {
                   this.vue.$http.post('share', {id: file, dk: p}).then((res) => {
                     el.setAttribute('data-shared', '1')
                     if (files.length === 1) {
-                      // TODO: add copy messagebox
+                      this.vue.$refs.messageBox.add({
+                        title: this.vue.$t('User.shared'),
+                        inputs: [
+                          {
+                            type: 'text',
+                            class: 'copy_url',
+                            autocomplete: 'off',
+                            value: res.body.data,
+                            style: 'width:100%'
+                          }
+                        ],
+                        btns: [
+                          {
+                            type: 'button',
+                            class: 'btn',
+                            value: this.vue.$t('RightClick.copy'),
+                            clickEvent: (e) => {
+                              let index = this.vue.$refs.messageBox.getIndexFromEvent(e)
+                              if (index !== false) {
+                                document.querySelector('.MessageBox[data-index="' + index + '"] input.copy_url').select()
+                                document.execCommand('copy')
+                              }
+                            }
+                          }
+                        ]
+                      })
                     }
                   }, (res) => {
                     console.log(res)

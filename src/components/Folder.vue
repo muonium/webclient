@@ -87,8 +87,8 @@
             <td>
               <strong>{{ file.name }}</strong>
             </td>
-            <td>{{ showSize(file.size) }}</td>
-            <td>{{ getDate(file.lastmod) }}</td>
+            <td class="file_size">{{ showSize(file.size) }}</td>
+            <td class="file_lastmod">{{ getDate(file.lastmod) }}</td>
             <td><a href="#" class="btn btn-actions"></a></td>
           </tr>
         </table>

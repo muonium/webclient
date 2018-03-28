@@ -37,6 +37,7 @@
 
 <script>
 import transfers from './transfers'
+import download from '../download'
 import moment from 'moment'
 
 export default {
