@@ -15,6 +15,7 @@
       <sidebar v-if="this.sidebar"/>
       <router-view/>
       <selection v-if="this.selection"/>
+      <a href="#" id="dl_decrypted"></a>
     </div>
   </body>
 </template>

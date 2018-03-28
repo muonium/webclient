@@ -27,7 +27,10 @@
           <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index" v-if="file">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
             <div :class="file.error ? 'transfers_error' : ''">
-              <span class="fileinfo">{{ file.name }}</span>
+              <span class="fileinfo">
+                <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
+                {{ file.name }}
+              </span>
               <span class="pct">{{ file.pct }}%</span>
               <progressBar :pct="file.pct"/>
             </div>
@@ -42,7 +45,10 @@
           <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="'download-' + index" v-if="file">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
             <div :class="file.error ? 'transfers_error' : ''">
-              <span class="fileinfo">{{ file.name }}</span>
+              <span class="fileinfo">
+                <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
+                {{ file.name }}
+              </span>
               <span class="pct">{{ file.pct }}%</span>
               <progressBar :pct="file.pct"/>
             </div>
@@ -61,6 +67,7 @@ import store from '../store'
 import bus from '../bus'
 import upload from '../upload'
 import download from '../download'
+import extIcons from '../extIcons'
 import progressBar from './progress_bar'
 
 export default {
@@ -96,6 +103,9 @@ export default {
     },
     showDl () {
       this.shared.upSelected = false
+    },
+    getIcon (filename) {
+      return extIcons.get(filename)
     },
     setError (type, id, msg = null) {
       if ((type === 'upload' || type === 'download') && typeof this.shared[type][id] !== 'undefined') {

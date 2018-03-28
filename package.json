@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "hi-base64": "^0.2.1",
+    "idb.filesystem.js": "0.0.8",
     "js-sha512": "^0.7.1",
     "moment": "^2.21.0",
     "sjcl": "^1.0.7",
