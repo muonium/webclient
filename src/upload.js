@@ -37,12 +37,13 @@ class Encryption {
     this.bWritten = 0 // Number of B written
     this.offset = 0
 
-    store.transfers.upload[id] = {
+    vue.$set(store.transfers.upload, this.id, {
       name: this.dest_filename,
       pct: 0,
       error: false,
       error_msg: null
-    }
+    })
+    if (debug) console.log('Transfers ID: ' + this.id)
 
     this.checkStatus() // Once initialized, check status before uploading
   }

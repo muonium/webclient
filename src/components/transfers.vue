@@ -24,9 +24,9 @@
     <section class="content" v-show="!this.minimized">
       <div class="transfers_upload" v-if="this.upSelected">
         <div v-if="this.shared.upload.length > 0">
-          <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index">
+          <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index" v-if="file">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
-            <div :class="file.error === true ? 'transfers_error' : ''">
+            <div :class="file.error ? 'transfers_error' : ''">
               <span class="fileinfo">{{ file.name }}</span>
               <span class="pct">{{ file.pct }}%</span>
               <progressBar :pct="file.pct"/>
@@ -39,9 +39,9 @@
       </div>
       <div class="transfers_download" v-else>
         <div v-if="this.shared.download.length > 0">
-          <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="'download-' + index">
+          <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="'download-' + index" v-if="file">
             <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
-            <div :class="file.error === true ? 'transfers_error' : ''">
+            <div :class="file.error ? 'transfers_error' : ''">
               <span class="fileinfo">{{ file.name }}</span>
               <span class="pct">{{ file.pct }}%</span>
               <progressBar :pct="file.pct"/>
