@@ -1,5 +1,5 @@
 <template>
-  <div id="transfers" v-if="isOpened()">
+  <div id="transfers" v-if="isOpened">
     <section class="top">
       {{ $t('Global.transfers') }}
       <span @click="close()">
@@ -88,9 +88,6 @@ export default {
     }
   },
   methods: {
-    isOpened () {
-      return store.folder.transfers
-    },
     close () {
       bus.$emit('SidebarCloseTransfers')
       store.folder.transfers = false
@@ -122,6 +119,11 @@ export default {
       } else if (type === 'download') {
         download.abort(id)
       }
+    }
+  },
+  computed: {
+    isOpened () {
+      return store.folder.transfers
     }
   },
   created () {

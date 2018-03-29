@@ -1,5 +1,5 @@
 <template>
-  <div class="container-large">
+  <div class="container-large" v-if="this.loaded">
     <div class="info" v-if="!this.$parent.isLogged()">
       {{ $t('Register.donthaveaccount') }}
       <router-link to="/register">{{ $t('Register.create') }}</router-link>
@@ -14,30 +14,31 @@
       </p>
       <p class="dl-info">{{ $t('User.size') }}: {{ showSize(this.infos.size) }}</p>
 
-      <p class="input-small">
-        <input type="password" id="password" :placeholder="$t('Register.password')">
-        <label class="fa fa-lock" for="password"></label>
-      </p>
-      <p>
-        <button id="dl" class="btn mtop"
-          :data-dk="this.infos.dk"
-          :data-fname="this.infos.name"
-          :data-fid="this.infos.folder_id"
-          :data-uid="this.infos.id_owner"
-        >
-          {{ $t('RightClick.dl') }}
-        </button>
-      </p>
+      <div v-if="!isDownloading">
+        <p class="input-small">
+          <input type="password" id="password" v-model="password" :placeholder="$t('Register.password')">
+          <label class="fa fa-lock" for="password"></label>
+        </p>
+        <p>
+          <button class="btn mtop" @click="dl()">
+            {{ $t('RightClick.dl') }}
+          </button>
+        </p>
 
-      <p id="msg"></p>
+        <p v-if="passErr">
+          {{ $t('User.badPass') }}
+        </p>
+      </div>
     </div>
     <transfers ref="transfers" show="download"/>
   </div>
 </template>
 
 <script>
+import store from '../store'
 import transfers from './transfers'
 import download from '../download'
+import sjcl from 'sjcl'
 import moment from 'moment'
 
 export default {
@@ -47,19 +48,50 @@ export default {
   },
   data () {
     return {
-      id: null,
+      shared: store.folder, // Needed in order to open transfers
+      loaded: false,
+      isDownloading: false,
+      password: null,
+      passErr: false,
       infos: {
-        name: null,
-        id_owner: null,
+        uid: null,
         login: null,
-        dk: null,
-        folder_id: null,
+        name: null,
         size: 0,
-        last_modification: 0
+        folder_id: null,
+        fid: null,
+        last_modification: 0,
+        dk: null
       }
     }
   },
   methods: {
+    dl () {
+      this.passErr = false
+      let fek = null
+      let c = this.infos.dk.split(':')
+      if (c.length !== 4) return false
+      let encFek = sjcl.codec.base64.toBits(c[0])
+      let salt = sjcl.codec.base64.toBits(c[1])
+      let aDATA = sjcl.codec.base64.toBits(c[2])
+      let initVector = sjcl.codec.base64.toBits(c[3])
+
+      // Password derivation to get dk
+      let dk = sjcl.misc.pbkdf2(this.password, salt, 7000, 256)
+      let enc = new sjcl.cipher.aes(dk) // eslint-disable-line new-cap
+
+      try {
+        fek = sjcl.mode.gcm.decrypt(enc, encFek, initVector, aDATA, 128)
+      } catch (e) {
+        this.passErr = true
+      }
+
+      if (!this.passErr) { // Password is ok
+        this.isDownloading = true
+        this.shared.transfers = true
+        download.dlSharedFile(this, this.infos.fid, this.infos.name, this.infos.folder_id, this.infos.uid, fek)
+      }
+    },
     getDate (timestamp) {
       let format = this.$t('Dates.date') + ' ' + this.$t('Dates.time')
       if (format === 'Dates.date Dates.time') {
@@ -85,7 +117,14 @@ export default {
       this.$router.push('/')
       return false
     }
-    this.id = this.$route.params.id
+
+    this.$http.get('dl/?' + this.$route.params.id).then((res) => {
+      this.infos = res.body.data
+      this.loaded = true
+    }, (res) => {
+      this.$router.push('/error')
+      return false
+    })
   }
 }
 </script>

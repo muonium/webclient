@@ -270,6 +270,15 @@ class Download {
     }
   }
 
+  dlSharedFile (v, fileId, filename, fromFolder, uid, fek) {
+    vue = v
+    if (!this.checkAPI()) {
+      alert(vue.$t('User.fileAPI'))
+      return false
+    }
+    this.dec.push(new Decryption(fileId, filename, fromFolder, this.dec.length, uid, fek))
+  }
+
   abort (id) {
     this.dec[id].abort()
   }
