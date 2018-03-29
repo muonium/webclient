@@ -14,21 +14,19 @@
       </p>
       <p class="dl-info">{{ $t('User.size') }}: {{ showSize(this.infos.size) }}</p>
 
-      <div v-if="!isDownloading">
+      <form v-if="!isDownloading" v-on:submit.prevent="dl">
         <p class="input-small">
           <input type="password" id="password" v-model="password" :placeholder="$t('Register.password')">
           <label class="fa fa-lock" for="password"></label>
         </p>
         <p>
-          <button class="btn mtop" @click="dl()">
-            {{ $t('RightClick.dl') }}
-          </button>
+          <input type="submit" class="btn mtop" :value="$t('RightClick.dl')">
         </p>
 
         <p v-if="passErr">
           {{ $t('User.badPass') }}
         </p>
-      </div>
+      </form>
     </div>
     <transfers ref="transfers" show="download"/>
   </div>
