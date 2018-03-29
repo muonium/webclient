@@ -319,17 +319,25 @@ export default {
     },
     putActions () {
       // Called from events callback which update selection
-      if (this.shared.files.length > 0) {
-        this.fileEl = document.querySelector('#f' + this.shared.files[this.shared.files.length - 1])
-        this.fileId = this.shared.files[this.shared.files.length - 1]
-        this.folderEl = null
-        this.folderId = null
-      } else if (this.shared.folders.length > 0) {
-        this.fileEl = null
-        this.fileId = null
-        this.folderEl = document.querySelector('#d' + this.shared.folders[this.shared.folders.length - 1])
-        this.folderId = this.shared.folders[this.shared.folders.length - 1]
+      if (this.shared.files.length > 0 || this.shared.folders.length > 0) {
+        document.querySelector('#selection').classList.add('selected')
+        document.querySelector('#mui').classList.add('selected')
+        document.querySelector('#display').classList.add('selected')
+        if (this.shared.files.length > 0) {
+          this.fileEl = document.querySelector('#f' + this.shared.files[this.shared.files.length - 1])
+          this.fileId = this.shared.files[this.shared.files.length - 1]
+          this.folderEl = null
+          this.folderId = null
+        } else {
+          this.fileEl = null
+          this.fileId = null
+          this.folderEl = document.querySelector('#d' + this.shared.folders[this.shared.folders.length - 1])
+          this.folderId = this.shared.folders[this.shared.folders.length - 1]
+        }
       } else {
+        document.querySelector('#selection').classList.remove('selected')
+        document.querySelector('#mui').classList.remove('selected')
+        document.querySelector('#display').classList.remove('selected')
         this.fileEl = null
         this.fileId = null
         this.folderEl = null
