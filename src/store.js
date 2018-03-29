@@ -2,7 +2,9 @@ var store = {
   folder: {
     folder_id: 0,
     trash: false,
-    transfers: false
+    transfers: false,
+    stored: 0,
+    quota: 0
   },
   selection: {
     files: [],

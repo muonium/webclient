@@ -187,7 +187,7 @@ export default {
     }
   },
   methods: {
-    open (id, type, e) {
+    open (id, type, e, details = false) {
       this.id = id
       this.type = parseInt(type)
       if (type === 1) {
@@ -201,27 +201,36 @@ export default {
           bus.$emit('SelectionAddFolder', id, null)
         }
       }
-      this.details = false
+      this.details = details
+      if (this.details) {
+        document.removeEventListener('click', this.close)
+      }
       this.opened = true
       // We need to make Box 'visible' in order to calculate overflow
       this.css.visibility = 'hidden'
 
       this.$nextTick(() => {
         // Once DOM updated, calculate position
-        let x = e.clientX
-        let y = e.clientY
-        let el = document.querySelector('#box')
-        let headerHeight = document.querySelector('header').offsetHeight
+        if (e) {
+          let x = e.clientX
+          let y = e.clientY
+          let el = document.querySelector('#box')
+          let headerHeight = document.querySelector('header').offsetHeight
 
-        if (x < 5) x = 5
-        if (x + el.clientWidth > document.body.clientWidth - 5) x = document.body.clientWidth - el.clientWidth - 5
-        if (y < headerHeight + 5) y = headerHeight + 5
-        if (y + el.clientHeight > document.body.clientHeight - 5) y = document.body.clientHeight - el.clientHeight - 5
+          if (x < 5) x = 5
+          if (x + el.clientWidth > document.body.clientWidth - 5) x = document.body.clientWidth - el.clientWidth - 5
+          if (y < headerHeight + 5) y = headerHeight + 5
+          if (y + el.clientHeight > document.body.clientHeight - 5) y = document.body.clientHeight - el.clientHeight - 5
 
-        this.css.top = y + 'px'
-        this.css.left = x + 'px'
+          this.css.top = y + 'px'
+          this.css.left = x + 'px'
+          this.css.transform = 'none'
+        } else {
+          this.css.top = null
+          this.css.left = null
+          this.css.transform = null
+        }
         this.css.visibility = 'visible'
-        this.css.transform = 'none'
       })
     },
     close () {
@@ -275,7 +284,7 @@ export default {
     }
   },
   created () {
-    bus.$on('BoxOpen', (id, type, e) => this.open(id, type, e))
+    bus.$on('BoxOpen', (id, type, e, details) => this.open(id, type, e, details))
     bus.$on('BoxClose', this.close)
     document.addEventListener('click', this.close)
     move.vue = this

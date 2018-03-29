@@ -138,6 +138,8 @@ export default {
         bus.$emit('SelectionRemoveAll')
         bus.$emit('BoxClose')
         this.shared.folder_id = folderId
+        this.shared.stored = res.body.data.stored
+        this.shared.quota = res.body.data.quota
         this.folder = res.body.data
         arrows.reset()
       }, (res) => {
@@ -203,6 +205,45 @@ export default {
           }
         ]
       })
+    },
+    dropFiles (e) {
+      e.preventDefault() // TODO: finish it
+      if (e.dataTransfer.files.length === 0) {
+        if (e.dataTransfer.getData('text') !== '') { // Move file/folder with drag/drop
+          let target = e.target
+          let targetId = null
+          if (target.nodeName === 'TR') {
+            targetId = target.id
+          } else {
+            for (let i of e.path) {
+              if (i.tagName === 'TR') {
+                targetId = i.id
+                break
+              }
+            }
+          }
+
+          if (targetId !== undefined && targetId !== null && targetId.length > 1 && targetId.substr(0, 1) === 'd') {
+            // Move.cut(e.dataTransfer.getData('text'))
+            // Move.paste(target_id.substr(1))
+            // Move.Files = []
+            // Move.Folders = []
+          } else {
+            if (target.nodeName === 'I') target = target.parentNode
+            if (target.nodeName === 'A' && target.id !== undefined && target.id !== null && target.id.indexOf('parent-') !== -1) {
+              targetId = parseInt(target.id.replace('parent-', ''))
+              // Move.cut(e.dataTransfer.getData('text'))
+              // Move.paste(target_id)
+              // Move.Files = []
+              // Move.Folders = []
+            }
+          }
+        } else {
+          return false
+        }
+      } else { // Move file(s) from client to Mui
+        // Upload.upFiles(e.dataTransfer.files)
+      }
     },
     selAll (e) {
       if (e.target.checked) {
@@ -361,6 +402,8 @@ export default {
     }
 
     document.addEventListener('keydown', this.keyListener)
+    document.querySelector('body').addEventListener('dragover', (e) => e.preventDefault())
+    document.querySelector('body').addEventListener('drop', (e) => this.dropFiles(e))
 
     bus.$on('FolderOpen', (id = this.shared.folder_id) => {
       this.open(id)
@@ -393,6 +436,8 @@ export default {
   },
   beforeDestroy () {
     document.removeEventListener('keydown', this.keyListener)
+    document.querySelector('body').removeEventListener('dragover', (e) => e.preventDefault())
+    document.querySelector('body').removeEventListener('drop', (e) => this.dropFiles(e))
     this.$parent.sidebar = false
     this.$parent.selection = false
 

@@ -53,14 +53,14 @@
   overflow-x: hidden;
 }
 
-#transfers .transfers_upload > div > div, #transfers .transfers_download > div > div {
+#transfers .transfers_upload > div, #transfers .transfers_download > div {
 	text-align: left;
 	height: 73px;
 	font-family: OpenSans; font-size: 15px; font-weight: bold;
 	padding-top: 13px;
 }
 
-#transfers .transfers_upload > div > div > div, #transfers .transfers_download > div > div > div { margin-right: 50px; }
+#transfers .transfers_upload > div > div, #transfers .transfers_download > div > div { margin-right: 50px; }
 
 #transfers .transfers_upload img, #transfers .transfers_download img { vertical-align: middle; margin-right: 19px; }
 

@@ -12,10 +12,89 @@
           <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
         </a>
 
-        <!-- Selection infos will be displayed there -->
-      </section>
+        <!-- Selection infos -->
+        <template v-if="this.fileEl && this.fileId">
+          <strong>Actions</strong>
+          <a class="blue block" @click="trigger('SelectionDl', fileId)" :title="$t('RightClick.dl')">
+            <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
+          </a>
+          <template v-if="!isInTrash()">
+            <a class="blue block" @click="move.cut(fileId, 1)" :title="$t('RightClick.cut')">
+              <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+            </a>
+            <a class="blue block" @click="move.copy(fileId, 1)" :title="$t('RightClick.copy')">
+              <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+            </a>
+            <a class="blue block" @click="move.toTrash(fileId, 1)" :title="$t('RightClick.trash')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+            </a>
+          </template>
+          <template v-else>
+            <a class="blue block" @click="move.fromTrash(fileId, 1)" :title="$t('RightClick.restore')">
+              <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+            </a>
+            <a class="blue block" @click="rm.rm(fileId, 1)" :title="$t('RightClick.rm')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+            </a>
+          </template>
+          <a v-if="!isInTrash() && shared.files.length === 1 && shared.folders.length === 0" class="blue block" @click="move.rename(fileId, 1)" :title="$t('RightClick.mvItem')">
+            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+          </a>
+          <a v-if="shared.files.length === 1 && shared.folders.length === 0" class="blue block" @click="trigger('BoxOpen', fileId, 1, null, true)" :title="$t('RightClick.vDetails')">
+            <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
+          </a>
+          <template v-if="shared.files.length > 1 || shared.folders.length > 1 || isShared()">
+            <a class="blue block share-link" @click="share.unshare(fileId)" :title="$t('RightClick.unshare')">
+              <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
+            </a>
+            <template v-if="shared.files.length === 1 && shared.folders.length === 0">
+              <input type="text" :value="fileEl.getAttribute('data-url')" class="copy_url">
+              <input id="copy_btn" type="button" class="btn btn-large" :value="$t('RightClick.copy')" @click="copyUrl()">
+              <a id="copy_icon" class="blue block" @click="copyUrl()" :title="$t('RightClick.copy')"><!-- TODO: copyurl instead copy string -->
+                <i class="fa fa-link"></i>
+              </a>
+            </template>
+          </template>
+          <template v-if="shared.files.length > 1 || shared.folders.length > 1 || !isShared()">
+            <a class="blue block share-link" @click="share.share(fileId)" :title="$t('RightClick.share')">
+              <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
+            </a>
+          </template>
+        </template>
 
-      <!-- Box -->
+        <template v-if="this.folderEl">
+          <template v-if="shared.files.length === 0 && shared.folders.length === 1">
+            <a class="blue block" @click="trigger('FolderOpen', folderId)" :title="$t('RightClick.open')">
+              <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('RightClick.open') }}
+            </a>
+          </template>
+          <template v-if="!isInTrash()">
+            <a class="blue block" @click="move.cut(folderId, 2)" :title="$t('RightClick.cut')">
+              <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+            </a>
+            <a class="blue block" @click="move.copy(folderId, 2)" :title="$t('RightClick.copy')">
+              <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+            </a>
+            <a class="blue block" @click="move.toTrash(folderId, 2)" :title="$t('RightClick.trash')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+            </a>
+          </template>
+          <template v-else>
+            <a class="blue block" @click="move.fromTrash(folderId, 2)" :title="$t('RightClick.restore')">
+              <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+            </a>
+            <a class="blue block" @click="rm.rm(folderId, 2)" :title="$t('RightClick.rm')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+            </a>
+          </template>
+          <a v-if="!isInTrash() && shared.files.length === 0 && shared.folders.length === 1" class="blue block" @click="move.rename(folderId, 2)" :title="$t('RightClick.mvItem')">
+            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+          </a>
+          <a v-if="shared.files.length === 0 && shared.folders.length === 1" class="blue block" @click="trigger('BoxOpen', folderId, 2, null, true)" :title="$t('RightClick.vDetails')">
+            <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
+          </a>
+        </template>
+      </section>
 
       <div class="story">
         <p class="mono keep">
@@ -23,20 +102,20 @@
         </p>
         <hr>
         <p class="join">{{ $t('Story.join') }}</p>
-
         <!--<p><a href="#">{{ $t('Story.read') }}</a></p>-->
-
         <p>
           <router-link to="/upgrade" class="btn btn-large btn-b">{{ $t('Story.premium') }}</router-link>
         </p>
         <p>
           <a href="https://muonium.io/#!/donate" target="_blank" class="btn btn-large btn-c">{{ $t('Story.donate') }}</a>
         </p>
-
         <!--<p class="help"><a href="#">{{ $t('Story.help') }}</a></p>-->
       </div>
 
-      <div id="quota_container"></div>
+      <div id="quota_container">
+        <progressBar :pct="pct"/>
+        <span v-html="quota_html"></span> - {{ pct }}%
+      </div>
 
       <p class="center">
         <router-link to="/upgrade" class="mono">{{ $t('Profile.getmore') }}</router-link>
@@ -53,18 +132,29 @@
 <script>
 import store from '../store'
 import bus from '../bus'
+import move from '../move'
+import rm from '../rm'
+import share from '../share'
 import download from '../download'
+import progressBar from './progress_bar'
 
 export default {
   name: 'selection',
+  components: {
+    progressBar
+  },
   data () {
     return {
       shared: store.selection,
-      multiple: false
+      multiple: false,
+      fileEl: null,
+      folderEl: null,
+      fileId: null,
+      folderId: null
     }
   },
   methods: {
-    addFile (id, e) {
+    addFile (id, e, putActions = false) {
       // Called when a file is clicked, try to add it to selection (or remove it)
       id = parseInt(id)
       if (isNaN(id)) return false
@@ -94,8 +184,9 @@ export default {
           this.addSelected('f' + id)
         }
       }
+      if (putActions) this.putActions()
     },
-    addFolder (id, e) {
+    addFolder (id, e, putActions = false) {
       // Called when a folder is clicked, try to add it to selection (or remove it)
       id = parseInt(id)
       if (isNaN(id)) return false
@@ -125,6 +216,7 @@ export default {
           this.addSelected('d' + id)
         }
       }
+      if (putActions) this.putActions()
     },
     addSelected (id) {
       // Add "selected" class to a file/folder
@@ -135,7 +227,7 @@ export default {
         document.querySelector('#sel_all').checked = false
       }
     },
-    addAll () {
+    addAll (putActions = false) {
       // Select all files/folders
       let files = document.querySelectorAll('#mui .file')
       let folders = document.querySelectorAll('#mui .folder')
@@ -152,6 +244,7 @@ export default {
         }
       }
       document.querySelector('#sel_all').checked = true
+      if (putActions) this.putActions()
     },
     removeFile (id) {
       // Remove a file from selection
@@ -196,12 +289,13 @@ export default {
         document.querySelector('#sel_all').checked = false
       }
     },
-    removeAll () {
+    removeAll (putActions = false) {
       // Remove selected files/folders from selection
       this.removeFiles()
       this.removeFolders()
+      if (putActions) this.putActions()
     },
-    invert () {
+    invert (putActions = false) {
       // Invert selection
       let files = document.querySelectorAll('#mui .file')
       let folders = document.querySelectorAll('#mui .folder')
@@ -211,6 +305,7 @@ export default {
       for (let j = 0; j < folders.length; j++) {
         this.addFolder(folders[j].id.substr(1), 'ctrl')
       }
+      if (putActions) this.putActions()
     },
     dl (id) {
       if (this.shared.files === 0) {
@@ -222,22 +317,98 @@ export default {
         download.dlFiles(this.shared.files, this)
       }
     },
+    putActions () {
+      // Called from events callback which update selection
+      if (this.shared.files.length > 0) {
+        this.fileEl = document.querySelector('#f' + this.shared.files[this.shared.files.length - 1])
+        this.fileId = this.shared.files[this.shared.files.length - 1]
+        this.folderEl = null
+        this.folderId = null
+      } else if (this.shared.folders.length > 0) {
+        this.fileEl = null
+        this.fileId = null
+        this.folderEl = document.querySelector('#d' + this.shared.folders[this.shared.folders.length - 1])
+        this.folderId = this.shared.folders[this.shared.folders.length - 1]
+      } else {
+        this.fileEl = null
+        this.fileId = null
+        this.folderEl = null
+        this.folderId = null
+      }
+    },
+    copyUrl () {
+      let el = document.querySelector('section.selection .copy_url')
+      if (el === null) return false
+      let isVisible = (el.currentStyle ? el.currentStyle.display : getComputedStyle(el, null).display) !== 'none'
+      if (!isVisible) {
+        el.classList.add('cc')
+      }
+      el.select()
+      document.execCommand('copy')
+      if (!isVisible) {
+        el.classList.remove('cc')
+        alert(this.$t('User.copied'))
+      }
+    },
+    showSize (size, precision = 2) { // size => size in bytes TODO: do not duplicate
+      size = parseInt(size)
+      if (isNaN(size) || size <= 0) {
+        return 0
+      }
+      if (this.$i18n.locale === null || typeof this.$i18n.messages[this.$i18n.locale] === 'undefined' || typeof this.$i18n.messages[this.$i18n.locale].Units === 'undefined') {
+        return size
+      }
+      let base = Math.log(size) / Math.log(1000)
+      let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
+      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
+    },
+    isInTrash () {
+      return store.folder.trash
+    },
+    isShared () {
+      if (this.fileEl !== null && this.fileId !== null) {
+        if (this.fileEl.getAttribute('data-shared') === '1') {
+          return true
+        }
+      }
+      return false
+    },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
+    }
+  },
+  computed: {
+    pct () {
+      let p = store.folder.stored / store.folder.quota * 100
+      return p > 100 ? 100 : parseFloat(p.toFixed(2))
+    },
+    quota_html () {
+      return this.$t('User.quota_of')
+        .replace('[used]', '<strong>' + this.showSize(store.folder.stored) + '</strong>')
+        .replace('[total]', '<strong>' + this.showSize(store.folder.quota) + '</strong>')
+    },
+    move () {
+      return move
+    },
+    rm () {
+      return rm
+    },
+    share () {
+      return share
     }
   },
   created () {
     bus.$on('SelectionAddFile', (id, e) => {
       if (e !== null) bus.$emit('BoxClose')
-      this.addFile(id, e)
+      this.addFile(id, e, true)
     })
     bus.$on('SelectionAddFolder', (id, e) => {
       if (e !== null) bus.$emit('BoxClose')
-      this.addFolder(id, e)
+      this.addFolder(id, e, true)
     })
-    bus.$on('SelectionAddAll', this.addAll)
-    bus.$on('SelectionRemoveAll', this.removeAll)
-    bus.$on('SelectionInvert', this.invert)
+    bus.$on('SelectionAddAll', () => this.addAll(true))
+    bus.$on('SelectionRemoveAll', () => this.removeAll(true))
+    bus.$on('SelectionInvert', () => this.invert(true))
     bus.$on('SelectionDl', (id) => this.dl(id))
   },
   beforeDestroy () {
