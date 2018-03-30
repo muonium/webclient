@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
+import VTooltip from 'v-tooltip'
 import App from './App'
 import router from './router'
 import VueI18n from 'vue-i18n'
@@ -9,6 +10,7 @@ Vue.config.productionTip = false
 
 Vue.use(VueResource)
 Vue.use(VueI18n)
+Vue.use(VTooltip, {defaultPlacement: 'left', defaultOffset: 5})
 Vue.component('vue-headful', vueHeadful)
 Vue.http.options.root = 'http://192.168.1.16/server'
 

@@ -218,6 +218,18 @@ input:not([type="radio"]):not([type="checkbox"]):not([type="button"]):not([type=
     font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
 }
 
+[class^="input-"] > .fa.fa-question-circle {
+  cursor: pointer;
+  position: absolute;
+  font-size: 20px;
+  top: 40px; right: -28px;
+  transition: all 0.2s linear;
+}
+[class^="input-"] > .fa.fa-question-circle:hover, [class^="input-"] > .fa.fa-question-circle:active {
+  transform: scale(1.1);
+  transition: all 0.2s linear;
+}
+
 input[type="radio"], input[type="checkbox"] { display: none; }
 input[type="radio"] + label, input[type="checkbox"] + label {
     cursor: pointer;

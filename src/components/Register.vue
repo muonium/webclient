@@ -30,6 +30,7 @@
       <p class="input-large">
         <input type="password" id="field_passphrase" :placeholder="$t('Register.passphrase')" v-model="fields.passphrase.value" required>
         <label class="fa fa-lock" for="field_passphrase" aria-hidden="true"></label>
+        <i class="fa fa-question-circle" aria-hidden="true" v-tooltip="$t('Register.passphrase')"></i>
       </p>
 
       <p class="input-large">
