@@ -49,6 +49,7 @@
             @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
             @dblclick.stop.prevent="open(folder.id)"
             @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
+            @dragstart="drag($event)"
             draggable="true"
           >
             <td class="folder_checkbox">
@@ -77,6 +78,7 @@
             @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
             @dblclick.stop.prevent="startDownload(file.id)"
             @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
+            @dragstart="drag($event)"
             draggable="true"
           >
             <td class="file_checkbox">
@@ -206,12 +208,17 @@ export default {
         ]
       })
     },
-    dropFiles (e) {
-      e.preventDefault() // TODO: finish it
+    drag (e) {
+      e.dataTransfer.setData('text', e.target.id)
+    },
+    drop (e) {
+      e.preventDefault()
       if (e.dataTransfer.files.length === 0) {
         if (e.dataTransfer.getData('text') !== '') { // Move file/folder with drag/drop
           let target = e.target
           let targetId = null
+          let id = parseInt(e.dataTransfer.getData('text').substr(1))
+          let type = e.dataTransfer.getData('text').substr(0, 1) === 'f' ? 1 : 2
           if (target.nodeName === 'TR') {
             targetId = target.id
           } else {
@@ -224,25 +231,24 @@ export default {
           }
 
           if (targetId !== undefined && targetId !== null && targetId.length > 1 && targetId.substr(0, 1) === 'd') {
-            // Move.cut(e.dataTransfer.getData('text'))
-            // Move.paste(target_id.substr(1))
-            // Move.Files = []
-            // Move.Folders = []
+            targetId = parseInt(targetId.substr(1))
+            move.cut(id, type)
+            move.paste(targetId)
+            move.reset()
           } else {
             if (target.nodeName === 'I') target = target.parentNode
             if (target.nodeName === 'A' && target.id !== undefined && target.id !== null && target.id.indexOf('parent-') !== -1) {
               targetId = parseInt(target.id.replace('parent-', ''))
-              // Move.cut(e.dataTransfer.getData('text'))
-              // Move.paste(target_id)
-              // Move.Files = []
-              // Move.Folders = []
+              move.cut(id, type)
+              move.paste(targetId)
+              move.reset()
             }
           }
         } else {
           return false
         }
       } else { // Move file(s) from client to Mui
-        // Upload.upFiles(e.dataTransfer.files)
+        upload.upFiles(e.dataTransfer.files, this)
       }
     },
     selAll (e) {
@@ -402,8 +408,6 @@ export default {
     }
 
     document.addEventListener('keydown', this.keyListener)
-    document.querySelector('body').addEventListener('dragover', (e) => e.preventDefault())
-    document.querySelector('body').addEventListener('drop', (e) => this.dropFiles(e))
 
     bus.$on('FolderOpen', (id = this.shared.folder_id) => {
       this.open(id)
@@ -433,13 +437,17 @@ export default {
     move.vue = this
     rm.vue = this
     share.vue = this
+
+    document.querySelector('body').addEventListener('dragover', (e) => e.preventDefault())
+    document.querySelector('body').addEventListener('drop', (e) => this.drop(e))
   },
   beforeDestroy () {
-    document.removeEventListener('keydown', this.keyListener)
-    document.querySelector('body').removeEventListener('dragover', (e) => e.preventDefault())
-    document.querySelector('body').removeEventListener('drop', (e) => this.dropFiles(e))
     this.$parent.sidebar = false
     this.$parent.selection = false
+
+    document.removeEventListener('keydown', this.keyListener)
+    document.querySelector('body').removeEventListener('dragover', (e) => e.preventDefault())
+    document.querySelector('body').removeEventListener('drop', (e) => this.drop(e))
 
     bus.$off('FolderOpen')
     bus.$off('FolderOpenCurrent')
