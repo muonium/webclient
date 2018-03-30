@@ -1,45 +1,47 @@
 <template>
   <div id="messageBoxContainer">
-    <div
-      class="MessageBox"
-      v-for="(box, index) in this.boxes"
-      :key="'box-' + index"
-      :data-index="index"
-      v-on:mousedown="dragStart(index, $event)"
-    >
-      <div class="MessageBoxClose" @click="close(index)">x</div>
-      <div class="MessageBoxTitle" v-if="box.title">{{ box.title }}</div>
-      <div class="MessageBoxTxt" v-if="box.txt" v-html="box.txt"></div>
-      <div class="MessageBoxToggle" v-if="box.toggles">
-        <div v-for="(toggle, index) in box.toggles" :key="'toggle-' + index">
-          <span>{{ toggle.leftTxt }}</span>
-          <label class="switch">
-            <input type="checkbox" v-on:click.stop="typeof toggle.clickEvent !== 'undefined' ? toggle.clickEvent($event) : null">
-            <div class="slider"></div>
-          </label>
-          <span>{{ toggle.rightTxt }}</span>
+    <transition-group tag="div" name="fade">
+      <div
+        class="MessageBox"
+        v-for="(box, index) in this.boxes"
+        :key="'box-' + index"
+        :data-index="index"
+        v-on:mousedown="dragStart(index, $event)"
+      >
+        <div class="MessageBoxClose" @click="close(index)">x</div>
+        <div class="MessageBoxTitle" v-if="box.title">{{ box.title }}</div>
+        <div class="MessageBoxTxt" v-if="box.txt" v-html="box.txt"></div>
+        <div class="MessageBoxToggle" v-if="box.toggles">
+          <div v-for="(toggle, index) in box.toggles" :key="'toggle-' + index">
+            <span>{{ toggle.leftTxt }}</span>
+            <label class="switch">
+              <input type="checkbox" v-on:click.stop="typeof toggle.clickEvent !== 'undefined' ? toggle.clickEvent($event) : null">
+              <div class="slider"></div>
+            </label>
+            <span>{{ toggle.rightTxt }}</span>
+          </div>
+        </div>
+        <div class="MessageBoxInput" v-if="box.inputs">
+          <p class="input-large" v-for="(input, index) in box.inputs" :key="'input-' + index">
+            <input
+              v-bind="attributes(input)"
+              v-on:click="typeof input.clickEvent !== 'undefined' ? input.clickEvent($event) : null"
+              v-on:keyup="typeof input.keyUpEvent !== 'undefined' ? input.keyUpEvent($event) : null"
+              v-on:keydown="typeof input.keyDownEvent !== 'undefined' ? input.keyDownEvent($event) : null"
+            >
+            <label :class="input.icon" :for="typeof input.id !== 'undefined' ? input.id : ''" v-if="input.icon"></label>
+          </p>
+        </div>
+        <div class="MessageBoxBtns" v-if="box.btns">
+          <input
+            v-bind="attributes(btn)"
+            @click="typeof btn.clickEvent !== 'undefined' ? btn.clickEvent($event) : null"
+            v-for="(btn, index) in box.btns"
+            :key="'btn-' + index"
+          >
         </div>
       </div>
-      <div class="MessageBoxInput" v-if="box.inputs">
-        <p class="input-large" v-for="(input, index) in box.inputs" :key="'input-' + index">
-          <input
-            v-bind="attributes(input)"
-            v-on:click="typeof input.clickEvent !== 'undefined' ? input.clickEvent($event) : null"
-            v-on:keyup="typeof input.keyUpEvent !== 'undefined' ? input.keyUpEvent($event) : null"
-            v-on:keydown="typeof input.keyDownEvent !== 'undefined' ? input.keyDownEvent($event) : null"
-          >
-          <label :class="input.icon" :for="typeof input.id !== 'undefined' ? input.id : ''" v-if="input.icon"></label>
-        </p>
-      </div>
-      <div class="MessageBoxBtns" v-if="box.btns">
-        <input
-          v-bind="attributes(btn)"
-          @click="typeof btn.clickEvent !== 'undefined' ? btn.clickEvent($event) : null"
-          v-for="(btn, index) in box.btns"
-          :key="'btn-' + index"
-        >
-      </div>
-    </div>
+    </transition-group>
   </div>
 </template>
 
@@ -77,7 +79,7 @@ export default {
       this.$nextTick(() => {
         // Once DOM has been refreshed, place cursor at the end of value if autofocus
         if (autofocus !== false) {
-          let el = document.querySelector('#messageBoxContainer > .MessageBox:last-child > .MessageBoxInput input:nth-child(' + autofocus + ')')
+          let el = document.querySelector('#messageBoxContainer .MessageBox:last-child > .MessageBoxInput input:nth-child(' + autofocus + ')')
           if (el !== null) {
             el.focus()
           }
@@ -163,5 +165,13 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .4s;
+}
+.fade-enter, .fade-leave-to {
+  transition: opacity .2s;
+  opacity: 0;
+}
+</style>
 <style src="../assets/css/Interface/MessageBox.css"></style>

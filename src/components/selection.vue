@@ -1,7 +1,7 @@
 <template>
   <div id="selection">
     <div class="fixed">
-      <section class="selection">
+      <section class="selection" ref="container">
         <button id="up_btn" class="btn btn-large mbottom" @click.prevent="trigger('UploadDialog')">{{ $t('RightClick.upFiles') }}</button>
 
         <a href="#" id="up_icon" class="blue block" @click.prevent="trigger('UploadDialog')" :title="$t('RightClick.upFiles')">
@@ -138,9 +138,11 @@ import share from '../share'
 import download from '../download'
 import progressBar from './progress_bar'
 import utils from '../utils'
+import slide from '../slide'
 
 export default {
   name: 'selection',
+  mixins: [slide],
   components: {
     progressBar
   },
@@ -407,6 +409,9 @@ export default {
     bus.$on('SelectionRemoveAll', () => this.removeAll(true))
     bus.$on('SelectionInvert', () => this.invert(true))
     bus.$on('SelectionDl', (id) => this.dl(id))
+  },
+  mounted () {
+    this.slide(this.$refs.container)
   },
   beforeDestroy () {
     bus.$off('SelectionAddFile')
