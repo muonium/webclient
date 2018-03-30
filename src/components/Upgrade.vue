@@ -10,7 +10,7 @@
     <div class="bloc-offers">
       <div v-for="(offer, index) in this.offers" :key="'offer-' + index">
         <div class="most-popular" v-if="index === 0">Most Popular</div>
-        <div class="offer-size">{{ showSize(offer.size) }}</div>
+        <div class="offer-size">{{ utils.showSize(offer.size) }}</div>
         <div class="offer-price">
           <span class="currency">{{ offer.currency_symbol }}</span>
           {{ offer.price }}
@@ -35,10 +35,10 @@
         <th></th>
       </tr>
       <tr v-for="(row, index) in this.history" :key="'history-' + index">
-        <td>{{ showSize(row.size) }}</td>
+        <td>{{ utils.showSize(row.size) }}</td>
         <td>{{ row.price }} {{ row.currency_symbol }}</td>
-        <td>{{ getDate(row.start) }}</td>
-        <td>{{ getDate(row.end) }}</td>
+        <td>{{ utils.getDate(row.start) }}</td>
+        <td>{{ utils.getDate(row.end) }}</td>
         <td class="fit-width">
           <span class="red" v-if="row.removed === 1">{{ $t('Upgrade.expired') }}</span>
         </td>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import utils from '../utils'
 
 export default {
   name: 'upgrade',
@@ -62,25 +62,6 @@ export default {
     }
   },
   methods: {
-    getDate (timestamp) {
-      let format = this.$t('Dates.date') + ' ' + this.$t('Dates.time')
-      if (format === 'Dates.date Dates.time') {
-        format = 'YYYY-MM-DD HH:mm'
-      }
-      return moment(timestamp * 1000).format(format)
-    },
-    showSize (size, precision = 2) { // size => size in bytes
-      size = parseInt(size)
-      if (isNaN(size) || size <= 0) {
-        return 0
-      }
-      if (this.$i18n.locale === null || typeof this.$i18n.messages[this.$i18n.locale] === 'undefined' || typeof this.$i18n.messages[this.$i18n.locale].Units === 'undefined') {
-        return size
-      }
-      let base = Math.log(size) / Math.log(1000)
-      let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
-      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
-    },
     duration (months) {
       if (months < 0) return this.$t('Upgrade.lifetime')
       if (months === 12) return '1 ' + this.$t('Upgrade.year')
@@ -111,6 +92,11 @@ export default {
     }, (res) => {
       console.log(res)
     })
+  },
+  computed: {
+    utils () {
+      return utils
+    }
   }
 }
 </script>

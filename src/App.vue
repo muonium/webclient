@@ -26,6 +26,7 @@ import language from './language'
 import languageSelector from './components/language_selector'
 import sidebar from './components/sidebar'
 import selection from './components/selection'
+import utils from './utils'
 
 export default {
   name: 'App',
@@ -50,6 +51,7 @@ export default {
           this.loading = false
           this.$i18n.locale = lang
           Vue.config.lang = lang
+          utils.t = this.$i18n.messages[this.$i18n.locale]
         }
       })
     },

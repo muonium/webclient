@@ -10,9 +10,9 @@
 
       <p class="dl-info">
         {{ $t('User.uploadedBy').replace('[login]', this.infos.login) }}
-        {{ getDate(this.infos.last_modification) }}
+        {{ utils.getDate(this.infos.last_modification) }}
       </p>
-      <p class="dl-info">{{ $t('User.size') }}: {{ showSize(this.infos.size) }}</p>
+      <p class="dl-info">{{ $t('User.size') }}: {{ utils.showSize(this.infos.size) }}</p>
 
       <form v-if="!isDownloading" v-on:submit.prevent="dl">
         <p class="input-small">
@@ -37,7 +37,7 @@ import store from '../store'
 import transfers from './transfers'
 import download from '../download'
 import sjcl from 'sjcl'
-import moment from 'moment'
+import utils from '../utils'
 
 export default {
   name: 'download',
@@ -89,25 +89,11 @@ export default {
         this.shared.transfers = true
         download.dlSharedFile(this, this.infos.fid, this.infos.name, this.infos.folder_id, this.infos.uid, fek)
       }
-    },
-    getDate (timestamp) {
-      let format = this.$t('Dates.date') + ' ' + this.$t('Dates.time')
-      if (format === 'Dates.date Dates.time') {
-        format = 'YYYY-MM-DD HH:mm'
-      }
-      return moment(timestamp * 1000).format(format)
-    },
-    showSize (size, precision = 2) { // size => size in bytes
-      size = parseInt(size)
-      if (isNaN(size) || size <= 0) {
-        return 0
-      }
-      if (this.$i18n.locale === null || typeof this.$i18n.messages[this.$i18n.locale] === 'undefined' || typeof this.$i18n.messages[this.$i18n.locale].Units === 'undefined') {
-        return size
-      }
-      let base = Math.log(size) / Math.log(1000)
-      let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
-      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
+    }
+  },
+  computed: {
+    utils () {
+      return utils
     }
   },
   created () {

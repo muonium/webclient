@@ -42,7 +42,7 @@
           <tr class="folder" v-for="folder in this.folder.folders" :key="'folder-' + folder.id"
             :id="'d'+ folder.id"
             :name="folder.name"
-            :title="showSize(folder.size)"
+            :title="utils.showSize(folder.size)"
             :data-folder="folder.parent"
             :data-path="folder.path"
             :data-title="folder.name"
@@ -69,7 +69,7 @@
           <tr v-for="file in this.folder.files" :key="'file-' + file.id"
             :class="'file' + (file.is_completed ? '' : ' red')"
             :id="'f' + file.id"
-            :title="showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + getDate(file.lastmod)"
+            :title="utils.showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + utils.getDate(file.lastmod)"
             :data-folder="file.folder_id"
             :data-path="file.path"
             :data-title="file.name"
@@ -89,8 +89,8 @@
             <td>
               <strong>{{ file.name }}</strong>
             </td>
-            <td class="file_size">{{ showSize(file.size) }}</td>
-            <td class="file_lastmod">{{ getDate(file.lastmod) }}</td>
+            <td class="file_size">{{ utils.showSize(file.size) }}</td>
+            <td class="file_lastmod">{{ utils.getDate(file.lastmod) }}</td>
             <td><a href="#" class="btn btn-actions"></a></td>
           </tr>
         </table>
@@ -110,7 +110,7 @@
 <script>
 import store from '../store'
 import bus from '../bus'
-import moment from 'moment'
+import utils from '../utils'
 import messageBox from './messageBox'
 import box from './box'
 import transfers from './transfers'
@@ -258,25 +258,6 @@ export default {
         bus.$emit('SelectionRemoveAll')
       }
     },
-    showSize (size, precision = 2) { // size => size in bytes
-      size = parseInt(size)
-      if (isNaN(size) || size <= 0) {
-        return 0
-      }
-      if (this.$i18n.locale === null || typeof this.$i18n.messages[this.$i18n.locale] === 'undefined' || typeof this.$i18n.messages[this.$i18n.locale].Units === 'undefined') {
-        return size
-      }
-      let base = Math.log(size) / Math.log(1000)
-      let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
-      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
-    },
-    getDate (timestamp) {
-      let format = this.$t('Dates.date') + ' ' + this.$t('Dates.time')
-      if (format === 'Dates.date Dates.time') {
-        format = 'YYYY-MM-DD HH:mm'
-      }
-      return moment(timestamp * 1000).format(format)
-    },
     getIcon (filename) {
       return extIcons.get(filename)
     },
@@ -319,8 +300,8 @@ export default {
           case 82: // R
             move.toTrash()
             break
-          case 83:
-            // TODO: dl selection
+          case 83: // S
+            bus.$emit('SelectionDl')
             break
           case 86: // V
             if (!this.$parent.isInInput(e)) {
@@ -399,6 +380,11 @@ export default {
     },
     trigger (event) {
       bus.$emit.apply(bus, arguments)
+    }
+  },
+  computed: {
+    utils () {
+      return utils
     }
   },
   created () {

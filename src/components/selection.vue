@@ -137,6 +137,7 @@ import rm from '../rm'
 import share from '../share'
 import download from '../download'
 import progressBar from './progress_bar'
+import utils from '../utils'
 
 export default {
   name: 'selection',
@@ -358,18 +359,6 @@ export default {
         alert(this.$t('User.copied'))
       }
     },
-    showSize (size, precision = 2) { // size => size in bytes TODO: do not duplicate
-      size = parseInt(size)
-      if (isNaN(size) || size <= 0) {
-        return 0
-      }
-      if (this.$i18n.locale === null || typeof this.$i18n.messages[this.$i18n.locale] === 'undefined' || typeof this.$i18n.messages[this.$i18n.locale].Units === 'undefined') {
-        return size
-      }
-      let base = Math.log(size) / Math.log(1000)
-      let suffixes = Object.values(this.$i18n.messages[this.$i18n.locale].Units)
-      return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
-    },
     isInTrash () {
       return store.folder.trash
     },
@@ -392,8 +381,8 @@ export default {
     },
     quota_html () {
       return this.$t('User.quota_of')
-        .replace('[used]', '<strong>' + this.showSize(store.folder.stored) + '</strong>')
-        .replace('[total]', '<strong>' + this.showSize(store.folder.quota) + '</strong>')
+        .replace('[used]', '<strong>' + utils.showSize(store.folder.stored) + '</strong>')
+        .replace('[total]', '<strong>' + utils.showSize(store.folder.quota) + '</strong>')
     },
     move () {
       return move

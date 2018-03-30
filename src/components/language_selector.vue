@@ -11,6 +11,7 @@
 <script>
 import Vue from 'vue'
 import language from '../language'
+import utils from '../utils'
 
 var activeLocale = language.current
 
@@ -28,6 +29,7 @@ export default {
         Vue.config.lang = locale
         this.activeLocale = locale
         this.$i18n.locale = locale
+        utils.t = this.$i18n.messages[this.$i18n.locale]
         localStorage.setItem('lang', locale)
       } else {
         this.$http.get(`public/translations/${locale}.json`).then((res) => {
@@ -35,6 +37,7 @@ export default {
           Vue.config.lang = locale
           this.activeLocale = locale
           this.$i18n.locale = locale
+          utils.t = this.$i18n.messages[this.$i18n.locale]
           localStorage.setItem('lang', locale)
         })
       }
