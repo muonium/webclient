@@ -1,65 +1,67 @@
 <template>
-  <div id="transfers" v-if="isOpened">
-    <section class="top">
-      {{ $t('Global.transfers') }}
-      <span @click="close()">
-        <i class="fa fa-times" aria-hidden="true"></i>
-      </span>
-      <span @click="minimize()">
-        <i class="fa fa-window-minimize" aria-hidden="true"></i>
-      </span>
-    </section>
+  <transition name="fade">
+    <div id="transfers" v-if="isOpened">
+      <section class="top">
+        {{ $t('Global.transfers') }}
+        <span @click="close()">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </span>
+        <span @click="minimize()">
+          <i class="fa fa-window-minimize" aria-hidden="true"></i>
+        </span>
+      </section>
 
-    <section class="toggle" v-show="!this.minimized">
-      <ul>
-        <li @click="showUp()" :class="this.shared.upSelected ? 'selected' : ''">
-          {{ $t('User.uploading') }}
-        </li>
-        <li @click="showDl()" :class="this.shared.upSelected ? '' : 'selected'">
-          {{ $t('User.downloading') }}
-        </li>
-      </ul>
-    </section>
+      <section class="toggle" v-show="!this.minimized">
+        <ul>
+          <li @click="showUp()" :class="this.shared.upSelected ? 'selected' : ''">
+            {{ $t('User.uploading') }}
+          </li>
+          <li @click="showDl()" :class="this.shared.upSelected ? '' : 'selected'">
+            {{ $t('User.downloading') }}
+          </li>
+        </ul>
+      </section>
 
-    <section class="content" v-show="!this.minimized">
-      <div class="transfers_upload" v-if="this.shared.upSelected">
-        <template v-if="this.shared.upload.length > 0">
-          <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index" v-if="file">
-            <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
-            <div :class="file.error ? 'transfers_error' : ''">
-              <span class="fileinfo">
-                <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
-                {{ file.name }}
-              </span>
-              <span class="pct">{{ file.pct }}%</span>
-              <progressBar :pct="file.pct"/>
+      <section class="content" v-show="!this.minimized">
+        <div class="transfers_upload" v-if="this.shared.upSelected">
+          <template v-if="this.shared.upload.length > 0">
+            <div :id="'div_upload' + index" v-for="(file, index) in this.shared.upload" :key="'upload-' + index" v-if="file">
+              <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
+              <div :class="file.error ? 'transfers_error' : ''">
+                <span class="fileinfo">
+                  <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
+                  {{ file.name }}
+                </span>
+                <span class="pct">{{ file.pct }}%</span>
+                <progressBar :pct="file.pct"/>
+              </div>
             </div>
-          </div>
-        </template>
-        <template v-else>
-          {{ $t('User.nothing') }}
-        </template>
-      </div>
-      <div class="transfers_download" v-else>
-        <template v-if="this.shared.download.length > 0">
-          <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="'download-' + index" v-if="file">
-            <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
-            <div :class="file.error ? 'transfers_error' : ''">
-              <span class="fileinfo">
-                <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
-                {{ file.name }}
-              </span>
-              <span class="pct">{{ file.pct }}%</span>
-              <progressBar :pct="file.pct"/>
+          </template>
+          <template v-else>
+            {{ $t('User.nothing') }}
+          </template>
+        </div>
+        <div class="transfers_download" v-else>
+          <template v-if="this.shared.download.length > 0">
+            <div :id="'div_download'+ index" v-for="(file, index) in this.shared.download" :key="'download-' + index" v-if="file">
+              <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
+              <div :class="file.error ? 'transfers_error' : ''">
+                <span class="fileinfo">
+                  <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
+                  {{ file.name }}
+                </span>
+                <span class="pct">{{ file.pct }}%</span>
+                <progressBar :pct="file.pct"/>
+              </div>
             </div>
-          </div>
-        </template>
-        <template v-else>
-          {{ $t('User.nothing') }}
-        </template>
-      </div>
-    </section>
-  </div>
+          </template>
+          <template v-else>
+            {{ $t('User.nothing') }}
+          </template>
+        </div>
+      </section>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -139,5 +141,13 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .4s;
+}
+.fade-enter, .fade-leave-to {
+  transition: opacity .2s;
+  opacity: 0;
+}
+</style>
 <style src="../assets/css/2018/transfers.css"></style>
