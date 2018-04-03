@@ -20,85 +20,86 @@
         <input type="file" id="upFilesInput" name="files[]" multiple="multiple" class="hide" @change="startUpload($event)" @click="uploadReset">
       </form>
 
-      <div id="returnArea"></div>
-
       <!-- mui contains all contents of interface : storage infos, link to parent folder, #tree (files and folders) ... -->
-      <div id="mui" v-if="this.folder">
-        <h1 class="inline" :title="this.folder.title">{{ this.folder.title }}</h1>
-        <a :id="'parent-'+ this.folder.parent" @click="open(folder.parent)" v-if="typeof this.folder.parent !== 'undefined'">
-          <i class="fa fa-caret-up" aria-hidden="true"></i>
-        </a>
-        <table id="tree">
-          <tr id="tree_head">
-            <th width="44px">
-              <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
-            </th>
-            <th></th>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Uploaded</th>
-            <th>Options</th>
-          </tr>
-          <tr class="folder" v-for="folder in this.folder.folders" :key="'folder-' + folder.id"
-            :id="'d'+ folder.id"
-            :name="folder.name"
-            :title="utils.showSize(folder.size)"
-            :data-folder="folder.parent"
-            :data-path="folder.path"
-            :data-title="folder.name"
-            @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
-            @dblclick.stop.prevent="open(folder.id)"
-            @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
-            @dragstart="drag($event)"
-            draggable="true"
-          >
-            <td class="folder_checkbox">
-              <input type="checkbox" :id="'sel_d'+ folder.id">
-              <label :for="'sel_d'+ folder.id"></label>
-            </td>
-            <td><img src="/static/img/desktop/extensions/folder.svg" class="icon"></td>
-            <td>
-              <strong>{{ folder.name }}</strong>
-              [{{ folder.nb_elements }} {{ folder.nb_elements > 1 ? $t('User.elements') : $t('User.element') }}]
-            </td>
-            <td></td>
-            <td></td>
-            <td><a href="#" class="btn btn-actions"></a></td>
-          </tr>
-          <tr class="break"></tr>
-          <tr v-for="file in this.folder.files" :key="'file-' + file.id"
-            :class="'file' + (file.is_completed ? '' : ' red')"
-            :id="'f' + file.id"
-            :title="utils.showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + utils.getDate(file.lastmod)"
-            :data-folder="file.folder_id"
-            :data-path="file.path"
-            :data-title="file.name"
-            :data-shared="file.is_shared ? 1 : 0"
-            :data-url="file.url"
-            @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
-            @dblclick.stop.prevent="startDownload(file.id)"
-            @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
-            @dragstart="drag($event)"
-            draggable="true"
-          >
-            <td class="file_checkbox">
-              <input type="checkbox" :id="'sel_f' + file.id">
-              <label :for="'sel_f' + file.id"></label>
-            </td>
-            <td><img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon"></td>
-            <td>
-              <strong>{{ file.name }}</strong>
-            </td>
-            <td class="file_size">{{ utils.showSize(file.size) }}</td>
-            <td class="file_lastmod">{{ utils.getDate(file.lastmod) }}</td>
-            <td><a href="#" class="btn btn-actions"></a></td>
-          </tr>
-        </table>
-      </div>
-
-      <div id="mui" v-else>
-        {{ $t('Global.loading') }}
-      </div>
+      <transition name="fade">
+        <div id="mui" v-show="!this.animate">
+          <template v-if="this.folder">
+            <h1 class="inline" :title="this.folder.title">{{ this.folder.title }}</h1>
+            <a :id="'parent-'+ this.folder.parent" @click="open(folder.parent)" v-if="typeof this.folder.parent !== 'undefined'">
+              <i class="fa fa-caret-up" aria-hidden="true"></i>
+            </a>
+            <table id="tree">
+              <tr id="tree_head">
+                <th width="44px">
+                  <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
+                </th>
+                <th></th>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Uploaded</th>
+                <th>Options</th>
+              </tr>
+              <tr class="folder" v-for="folder in this.folder.folders" :key="'folder-' + folder.id"
+                :id="'d'+ folder.id"
+                :name="folder.name"
+                :title="utils.showSize(folder.size)"
+                :data-folder="folder.parent"
+                :data-path="folder.path"
+                :data-title="folder.name"
+                @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
+                @dblclick.stop.prevent="open(folder.id)"
+                @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
+                @dragstart="drag($event)"
+                draggable="true"
+              >
+                <td class="folder_checkbox">
+                  <input type="checkbox" :id="'sel_d'+ folder.id">
+                  <label :for="'sel_d'+ folder.id"></label>
+                </td>
+                <td><img src="/static/img/desktop/extensions/folder.svg" class="icon"></td>
+                <td>
+                  <strong>{{ folder.name }}</strong>
+                  [{{ folder.nb_elements }} {{ folder.nb_elements > 1 ? $t('User.elements') : $t('User.element') }}]
+                </td>
+                <td></td>
+                <td></td>
+                <td><a href="#" class="btn btn-actions"></a></td>
+              </tr>
+              <tr class="break"></tr>
+              <tr v-for="file in this.folder.files" :key="'file-' + file.id"
+                :class="'file' + (file.is_completed ? '' : ' red')"
+                :id="'f' + file.id"
+                :title="utils.showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + utils.getDate(file.lastmod)"
+                :data-folder="file.folder_id"
+                :data-path="file.path"
+                :data-title="file.name"
+                :data-shared="file.is_shared ? 1 : 0"
+                :data-url="file.url"
+                @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
+                @dblclick.stop.prevent="startDownload(file.id)"
+                @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
+                @dragstart="drag($event)"
+                draggable="true"
+              >
+                <td class="file_checkbox">
+                  <input type="checkbox" :id="'sel_f' + file.id">
+                  <label :for="'sel_f' + file.id"></label>
+                </td>
+                <td><img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon"></td>
+                <td>
+                  <strong>{{ file.name }}</strong>
+                </td>
+                <td class="file_size">{{ utils.showSize(file.size) }}</td>
+                <td class="file_lastmod">{{ utils.getDate(file.lastmod) }}</td>
+                <td><a href="#" class="btn btn-actions"></a></td>
+              </tr>
+            </table>
+          </template>
+          <template v-else>
+            {{ $t('Global.loading') }}
+          </template>
+        </div>
+      </transition>
     </section>
 
     <messageBox ref="messageBox"/>
@@ -130,16 +131,19 @@ export default {
   data () {
     return {
       shared: store.folder,
-      folder: null
+      folder: null,
+      animate: true
     }
   },
   methods: {
     open (folderId) {
       this.$router.push('/u/' + folderId)
+      this.animate = this.shared.folder_id !== parseInt(folderId)
       this.$http.post('folders/open', {folder_id: folderId, trash: (this.shared.trash ? 1 : 0)}).then((res) => {
+        this.animate = false
         bus.$emit('SelectionRemoveAll')
         bus.$emit('BoxClose')
-        this.shared.folder_id = folderId
+        this.shared.folder_id = parseInt(folderId)
         this.shared.stored = res.body.data.stored
         this.shared.quota = res.body.data.quota
         this.folder = res.body.data
@@ -445,5 +449,12 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.fade-enter-active {
+  transition: opacity .4s;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0;
+}
+</style>
 <style src="../assets/css/2018/tree.css"></style>

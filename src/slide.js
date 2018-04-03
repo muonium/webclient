@@ -15,7 +15,7 @@ let slide = {
     this.after = null
   },
   beforeUpdate () {
-    if (this.el.style.height) { // When the previous animation wasn't finished
+    if (this.el.style.height) { // When the previous animation is not finished
       this.el.style.overflow = 'hidden'
       this.el.style.height = null
     }
