@@ -3,6 +3,7 @@ var store = {
     folder_id: 0,
     trash: false,
     transfers: false,
+    display: 'mosaic',
     stored: 0,
     quota: 0
   },

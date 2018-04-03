@@ -7,11 +7,15 @@
       title="Muonium"
     />
     <div id="display">
-      <input type="radio" id="display_list" name="display">
-      <label for="display_list" class="nomargin"><i class="fa fa-th-list" aria-hidden="true"></i></label>
+      <input type="radio" id="display_list" name="display" :checked="this.shared.display === 'list'">
+      <label for="display_list" class="nomargin" @click="changeDisplay('list')">
+        <i class="fa fa-th-list" aria-hidden="true"></i>
+      </label>
 
-      <input type="radio" id="display_mosaic" name="display" checked>
-      <label for="display_mosaic" class="nomargin"><i class="fa fa-th-large" aria-hidden="true"></i></label>
+      <input type="radio" id="display_mosaic" name="display" :checked="this.shared.display === 'mosaic'">
+      <label for="display_mosaic" class="nomargin" @click="changeDisplay('mosaic')">
+        <i class="fa fa-th-large" aria-hidden="true"></i>
+      </label>
     </div>
 
     <section id="desktop">
@@ -28,7 +32,7 @@
             <a :id="'parent-'+ this.folder.parent" @click="open(folder.parent)" v-if="typeof this.folder.parent !== 'undefined'">
               <i class="fa fa-caret-up" aria-hidden="true"></i>
             </a>
-            <table id="tree">
+            <table id="tree" :class="this.shared.display === 'mosaic' ? 'mosaic' : ''">
               <tr id="tree_head">
                 <th width="44px">
                   <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
@@ -211,6 +215,12 @@ export default {
           }
         ]
       })
+    },
+    changeDisplay (d) {
+      if (d === 'mosaic' || d === 'list') {
+        this.shared.display = d
+        localStorage.setItem('display', d)
+      }
     },
     drag (e) {
       e.dataTransfer.setData('text', e.target.id)
@@ -412,6 +422,11 @@ export default {
     })
     bus.$on('FolderAdd', this.add)
     bus.$on('UploadDialog', this.uploadDialog)
+
+    let display = localStorage.getItem('display')
+    if (display === 'list' || display === 'mosaic') {
+      this.shared.display = display
+    }
 
     if (typeof this.$route.params.folder_id !== 'undefined') {
       this.shared.folder_id = this.$route.params.folder_id
