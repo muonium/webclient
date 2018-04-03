@@ -209,12 +209,14 @@ class Decryption {
     let c = writeCompleted ? this.currentChunk + 1 : this.currentChunk + 0.5
     let pct = Math.round(c / this.nbChunks * 100)
     let row = store.transfers.download[this.id]
-    row.pct = pct > 100 ? 100 : pct
-    vue.$set(store.transfers.download, this.id, row)
-    if (row.pct === 100) {
-      setTimeout(() => {
-        vue.$delete(store.transfers.download, this.id)
-      }, 800)
+    if (typeof row !== 'undefined') {
+      row.pct = pct > 100 ? 100 : pct
+      vue.$set(store.transfers.download, this.id, row)
+      if (row.pct === 100) {
+        setTimeout(() => {
+          vue.$delete(store.transfers.download, this.id)
+        }, 800)
+      }
     }
   }
 

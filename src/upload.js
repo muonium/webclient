@@ -350,12 +350,14 @@ class Encryption {
   updatePct () {
     let pct = Math.round(this.bWritten / this.est_size * 100)
     let row = store.transfers.upload[this.id]
-    row.pct = pct > 100 ? 100 : pct
-    vue.$set(store.transfers.upload, this.id, row)
-    if (row.pct === 100) {
-      setTimeout(() => {
-        vue.$delete(store.transfers.upload, this.id)
-      }, 800)
+    if (typeof row !== 'undefined') {
+      row.pct = pct > 100 ? 100 : pct
+      vue.$set(store.transfers.upload, this.id, row)
+      if (row.pct === 100) {
+        setTimeout(() => {
+          vue.$delete(store.transfers.upload, this.id)
+        }, 800)
+      }
     }
   }
 

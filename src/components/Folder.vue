@@ -67,7 +67,9 @@
                 </td>
                 <td></td>
                 <td></td>
-                <td><a href="#" class="btn btn-actions"></a></td>
+                <td>
+                  <a href="#" class="btn btn-actions" @click.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"></a>
+                </td>
               </tr>
               <tr class="break"></tr>
               <tr v-for="file in this.folder.files" :key="'file-' + file.id"
@@ -95,7 +97,9 @@
                 </td>
                 <td class="file_size">{{ utils.showSize(file.size) }}</td>
                 <td class="file_lastmod">{{ utils.getDate(file.lastmod) }}</td>
-                <td><a href="#" class="btn btn-actions"></a></td>
+                <td>
+                  <a href="#" class="btn btn-actions" @click.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"></a>
+                </td>
               </tr>
             </table>
           </template>
