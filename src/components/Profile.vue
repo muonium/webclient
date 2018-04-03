@@ -116,6 +116,22 @@
     </fieldset>
 
     <fieldset>
+      <h3>Sessions</h3>
+      <div class="sessions">
+        <table>
+          <tr v-for="(session, index) in this.sessions" :key="'session-' + index">
+            <td>{{ session.jti.substr(0, 8) }}</td>
+            <td>{{ utils.getDate(session.iat) }}</td>
+            <td><a href="#" @click.prevent="terminate(index)">Terminate</a></td>
+          </tr>
+        </table>
+      </div>
+      <p>
+        <input type="button" class="btn btn-warning" value="Terminate all" @click.prevent="terminateAll">
+      </p>
+    </fieldset>
+
+    <fieldset>
       <form>
         <h3>{{ $t('Profile.deleteAccount') }}</h3>
         <p class="input-large">
@@ -130,6 +146,7 @@
 </template>
 
 <script>
+import utils from '../utils'
 import sjcl from 'sjcl'
 import base64 from 'hi-base64'
 import muiHash from '../mui_hash'
@@ -144,6 +161,7 @@ export default {
       doubleAuth: false,
       deleteCheckbox: false,
       theme: localStorage.getItem('theme') === 'dark' ? 'dark' : 'light',
+      sessions: [],
       fields: {
         changeLogin: {
           login: ''
@@ -265,6 +283,22 @@ export default {
         })
       }
     },
+    terminate (index) {
+      if (typeof this.sessions[index] !== 'undefined') {
+        this.$http.delete('session/jti/' + this.sessions[index].jti).then((res) => {
+          this.$delete(this.sessions, index)
+        }, (res) => {
+          console.log(res)
+        })
+      }
+    },
+    terminateAll () {
+      this.$http.delete('session/all').then((res) => {
+        this.sessions = []
+      }, (res) => {
+        console.log(res)
+      })
+    },
     isComplete (section) {
       let complete = true
       for (let key of Object.keys(this.fields[section])) {
@@ -274,6 +308,11 @@ export default {
         }
       }
       return complete
+    }
+  },
+  computed: {
+    utils () {
+      return utils
     }
   },
   created () {
@@ -291,6 +330,12 @@ export default {
       // Error
       this.$parent.logout()
     })
+
+    this.$http.get('session').then((res) => {
+      this.sessions = res.body.data.tokens
+    }, (res) => {
+      console.log(res)
+    })
   },
   mounted () {
     // Show sidebar and selection div
@@ -303,4 +348,19 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.sessions {
+  display: inline-block;
+  margin-top: 24px;
+  margin-bottom: 14px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+.sessions td {
+  font-weight: normal;
+  padding: 5px 10px;
+}
+.sessions td:first-child, .sessions td:last-child { padding: 5px 15px; }
+.sessions tr td:last-child { opacity: 0; }
+.sessions tr:hover td:last-child { opacity: 1; }
+</style>
