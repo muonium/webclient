@@ -32,7 +32,7 @@ export default {
         utils.t = this.$i18n.messages[this.$i18n.locale]
         localStorage.setItem('lang', locale)
       } else {
-        this.$http.get(`public/translations/${locale}.json`).then((res) => {
+        this.$http.get(`public/translations/${locale}.json?v=${utils.hash}`).then((res) => {
           this.$i18n.setLocaleMessage(locale, res.body)
           Vue.config.lang = locale
           this.activeLocale = locale

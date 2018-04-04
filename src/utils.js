@@ -3,6 +3,16 @@ import moment from 'moment'
 class Utils {
   constructor () {
     this.t = null // Language JSON set in App.vue
+    this.hash = typeof __webpack_hash__ !== 'undefined' ? __webpack_hash__ : null // eslint-disable-line no-undef, camelcase
+    if (this.hash === null) {
+      let appSrc = document.querySelector('script[src*="/static/js/app."]')
+      if (appSrc && appSrc.src !== undefined) {
+        let m = appSrc.src.match(/\/static\/js\/app\.(.+)\.js/)
+        if (typeof m[1] !== 'undefined') {
+          this.hash = m[1]
+        }
+      }
+    }
   }
 
   getDate (timestamp) {

@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     loadLanguage (lang, next = false) {
-      this.$http.get(`public/translations/${lang}.json`).then((res) => {
+      this.$http.get(`public/translations/${lang}.json?v=${utils.hash}`).then((res) => {
         this.$i18n.setLocaleMessage(lang, res.body)
         if (next) {
           this.loading = false
