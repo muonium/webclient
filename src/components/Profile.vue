@@ -119,10 +119,10 @@
       <h3>Sessions</h3>
       <div class="sessions">
         <table>
-          <tr v-for="(session, index) in this.sessions" :key="'session-' + index">
+          <tr v-for="(session, index) in this.sessions" :key="'session-' + index" :class="session.current ? 'current' : ''">
             <td>{{ session.jti.substr(0, 8) }}</td>
             <td>{{ utils.getDate(session.iat) }}</td>
-            <td><a href="#" @click.prevent="terminate(index)">Terminate</a></td>
+            <td><a href="#" @click.prevent="terminate(index)" v-if="!session.current">Terminate</a></td>
           </tr>
         </table>
       </div>
@@ -294,7 +294,7 @@ export default {
     },
     terminateAll () {
       this.$http.delete('session/all').then((res) => {
-        this.sessions = []
+        this.sessions = this.sessions.filter(session => session.current)
       }, (res) => {
         console.log(res)
       })
@@ -355,12 +355,11 @@ export default {
   margin-bottom: 14px;
   max-height: 250px;
   overflow-y: auto;
-}
-.sessions td {
   font-weight: normal;
-  padding: 5px 10px;
 }
+.sessions tr.current { font-weight: bold; }
+.sessions td { padding: 5px 10px; }
 .sessions td:first-child, .sessions td:last-child { padding: 5px 15px; }
 .sessions tr td:last-child { opacity: 0; }
-.sessions tr:hover td:last-child { opacity: 1; }
+.sessions tr:hover td:last-child, .sessions tr:active td:last-child { opacity: 1; }
 </style>
