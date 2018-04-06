@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import VueI18n from 'vue-i18n'
 import vueHeadful from 'vue-headful'
+import language from './language'
 
 Vue.config.productionTip = false
 
@@ -21,6 +22,7 @@ Vue.http.interceptors.push(function (request, next) {
   if (token !== null && request.url.indexOf('.json') === -1) {
     // If a token is stored and requested file is not a json, then, send the token
     request.headers.set('Authorization', 'Bearer ' + token)
+    request.headers.set('Client-Language', language.current)
   }
 
   return function (resp) {
