@@ -7,10 +7,10 @@
     <h1>{{ $t('Login.forgot') }}</h1>
 
     <form method="post" v-on:submit.prevent="changePass" v-if="change_form">
-      <strong>{{ $t('Profile.changepwd') }}</strong>
+      <strong>{{ $t('Profile.changePwd') }}</strong>
 
       <p class="input-large">
-        <input type="password" id="pwd" :placeholder="$t('Profile.newpwd')" v-model="fields.pass" required autofocus>
+        <input type="password" id="pwd" :placeholder="$t('Profile.newPwd')" v-model="fields.pass" required autofocus>
         <label class="fa fa-lock" for="pwd" aria-hidden="true"></label>
       </p>
 
@@ -29,7 +29,7 @@
       </p>
 
       <div class="bloc-links">
-        <router-link to="/login" class="mono blue">{{ $t('Login.signin') }}</router-link>
+        <router-link to="/login" class="mono blue">{{ $t('Login.signIn') }}</router-link>
         <input type="submit" class="btn btn-required" :value="$t('Global.submit')">
       </div>
     </form>
@@ -76,27 +76,27 @@ export default {
             this.$router.push('/login')
           }, 1000)
         }, (res) => {
-          this.err_msg = 'LostPass.errmessage' // TODO: update message, remove updateErr?
+          this.err_msg = 'LostPass.keyErr'
           this.change_form = false
           this.send_form = true
         })
       }
     },
     sendForm () {
-      if (this.username.length > 0) {
+      if (this.userna.me.length > 0) {
         this.$http.post('lostpass/mail', {'username': this.username}).then((res) => {
           this.err_msg = null
           this.success_msg = null
           if (res.body.message === 'sent') {
-            this.success_msg = 'Global.mail_sent'
+            this.success_msg = 'Global.mailSent'
           } else if (res.body.message === 'wait') {
-            this.err_msg = 'Validate.wait' // TODO: change message
+            this.err_msg = 'LostPass.wait'
           } else {
             this.err_msg = 'Error.default'
           }
         }, (res) => {
           if (res.body.message === 'unknownUser') {
-            this.err_msg = 'Error.default' // TODO: User not found err
+            this.err_msg = 'LostPass.notFound'
           } else {
             this.err_msg = 'Error.default'
           }

@@ -26,7 +26,7 @@
 
       <div class="bloc-links">
         <router-link to="lostPass" class="mono blue">{{ $t('Login.forgot') }}</router-link>
-        <input type="submit" class="btn btn-required" :value="$t('Login.signin')" :disabled="!isComplete">
+        <input type="submit" class="btn btn-required" :value="$t('Login.signIn')" :disabled="!isComplete">
       </div>
 
       <router-link to="/register" class="mono center">{{ $t('Login.register') }}</router-link>
@@ -92,7 +92,6 @@ export default {
               cek = base64.decode(cek) // the CEK is base64encoded in the database, then we decode it
               cek = sjcl.decrypt(this.fields.passphrase, cek) // the CEK is now a JSON, we decrypt it
             } catch (e) { // the passphrase is wrong
-              console.log(e.message)
               fail = true
               sessionStorage.clear()
               this.err_msg = 'Login.badPassphrase'
@@ -112,7 +111,7 @@ export default {
           this.err_msg = 'Error.default'
           if (res.body.code === 401) {
             if (res.body.message === 'badPass') {
-              this.err_msg = 'User.badPass'
+              this.err_msg = 'Login.badPass'
             } else if (res.body.message === 'validate') {
               this.$router.push({path: '/validate', params: {uid: res.body.data}})
             }
@@ -136,7 +135,6 @@ export default {
               cek = base64.decode(cek) // the CEK is base64encoded in the database, then we decode it
               cek = sjcl.decrypt(this.fields.passphrase, cek) // the CEK is now a JSON, we decrypt it
             } catch (e) { // the passphrase is wrong
-              console.log(e.message)
               fail = true
               sessionStorage.clear()
               this.err_msg = 'Login.badPassphrase'
@@ -156,7 +154,7 @@ export default {
           this.err_msg = 'Error.default'
           if (res.body.code === 401) {
             if (res.body.message === 'badPass') {
-              this.err_msg = 'User.badPass'
+              this.err_msg = 'Login.badPass'
             } else if (res.body.message === 'badCode') {
               this.err_msg = 'Login.invalidCode'
             } else if (res.body.message === 'validate') {

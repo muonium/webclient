@@ -142,14 +142,14 @@ class Move {
     }
 
     this.vue.$refs.messageBox.add({
-      title: this.vue.$t('RightClick.mvItem'),
+      title: this.vue.$t('Selection.mvItem'),
       inputs: [
         {
           type: 'text',
           name: 'elem_name',
           id: 'nRename',
           value: oldName,
-          placeholder: this.vue.$t('User.name'),
+          placeholder: this.vue.$t('Tree.name'),
           autocomplete: 'off',
           autofocus: true,
           keyDownEvent (e) {

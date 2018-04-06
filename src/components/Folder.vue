@@ -38,10 +38,10 @@
                   <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
                 </th>
                 <th></th>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Uploaded</th>
-                <th>Options</th>
+                <th>{{ $t('Tree.name') }}</th>
+                <th>{{ $t('Tree.size') }}</th>
+                <th>{{ $t('Tree.uploaded') }}</th>
+                <th>{{ $t('Tree.options') }}</th>
               </tr>
               <tr class="folder" v-for="folder in this.folder.folders" :key="'folder-' + folder.id"
                 :id="'d'+ folder.id"
@@ -63,7 +63,7 @@
                 <td><img src="/static/img/desktop/extensions/folder.svg" class="icon"></td>
                 <td>
                   <strong>{{ folder.name }}</strong>
-                  [{{ folder.nb_elements }} {{ folder.nb_elements > 1 ? $t('User.elements') : $t('User.element') }}]
+                  [{{ folder.nb_elements }} {{ folder.nb_elements > 1 ? $t('Tree.elements') : $t('Tree.element') }}]
                 </td>
                 <td></td>
                 <td></td>
@@ -75,7 +75,7 @@
               <tr v-for="file in this.folder.files" :key="'file-' + file.id"
                 :class="'file' + (file.is_completed ? '' : ' red')"
                 :id="'f' + file.id"
-                :title="utils.showSize(file.size) + '\n' + $t('User.lastmod') + ' ' + utils.getDate(file.lastmod)"
+                :title="utils.showSize(file.size) + '\n' + $t('Tree.lastmod') + ' ' + utils.getDate(file.lastmod)"
                 :data-folder="file.folder_id"
                 :data-path="file.path"
                 :data-title="file.name"
@@ -191,13 +191,13 @@ export default {
         return true
       }
       this.$refs.messageBox.add({
-        title: this.$t('RightClick.nFolder'),
+        title: this.$t('Selection.nFolder'),
         inputs: [
           {
             type: 'text',
             name: 'folder_name',
             id: 'nFolder',
-            placeholder: this.$t('User.foldername'),
+            placeholder: this.$t('Tree.foldername'),
             autocomplete: 'off',
             autofocus: true,
             icon: 'fa fa-folder-o',
@@ -240,9 +240,10 @@ export default {
           if (target.nodeName === 'TR') {
             targetId = target.id
           } else {
-            for (let i of e.path) {
-              if (i.tagName === 'TR') {
-                targetId = i.id
+            while (target) {
+              target = target.parentElement
+              if (target.tagName === 'TR') {
+                targetId = target.id
                 break
               }
             }
@@ -367,7 +368,7 @@ export default {
           case 27: // Esc
             bus.$emit('BoxClose')
             bus.$emit('SelectionRemoveAll')
-            this.$refs.messageBox.closeAll() // TODO: Animate
+            this.$refs.messageBox.closeAll()
             break
           case 38: // UP
             arrows.up()

@@ -14,10 +14,10 @@
       <section class="toggle" v-show="!this.minimized">
         <ul>
           <li @click="showUp()" :class="this.shared.upSelected ? 'selected' : ''">
-            {{ $t('User.uploading') }}
+            {{ $t('Transfers.uploading') }}
           </li>
           <li @click="showDl()" :class="this.shared.upSelected ? '' : 'selected'">
-            {{ $t('User.downloading') }}
+            {{ $t('Transfers.downloading') }}
           </li>
         </ul>
       </section>
@@ -38,7 +38,7 @@
             </div>
           </template>
           <template v-else>
-            {{ $t('User.nothing') }}
+            {{ $t('Transfers.nothing') }}
           </template>
         </div>
         <div class="transfers_download" v-else>
@@ -56,7 +56,7 @@
             </div>
           </template>
           <template v-else>
-            {{ $t('User.nothing') }}
+            {{ $t('Transfers.nothing') }}
           </template>
         </div>
       </section>

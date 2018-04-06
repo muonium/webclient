@@ -130,14 +130,16 @@ export default {
       this.drag = null
     },
     getIndexFromEvent (e) {
-      if (e.path) {
-        for (let i of e.path) {
-          if (typeof i.classList !== 'undefined' && i.classList.contains('MessageBox')) {
-            let index = i.getAttribute('data-index')
+      if (typeof e.target !== 'undefined' && typeof e.target.parentElement !== 'undefined') {
+        let el = e.target
+        while (el) {
+          if (typeof el.classList !== 'undefined' && el.classList.contains('MessageBox')) {
+            let index = el.getAttribute('data-index')
             if (index !== null && index !== '' && !isNaN(parseInt(index))) {
               return parseInt(index)
             }
           }
+          el = el.parentElement
         }
       }
       return false

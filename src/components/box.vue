@@ -3,147 +3,147 @@
     <div id="box" :style="style" v-if="opened">
       <div v-if="type === 0">
         <p @click="trigger('FolderAdd')">
-          <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
+          <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('Selection.nFolder') }}
         </p>
         <p @click="trigger('UploadDialog')">
-          <i class="fa fa-upload" aria-hidden="true"></i> {{ $t('RightClick.upFiles') }}
+          <i class="fa fa-upload" aria-hidden="true"></i> {{ $t('Selection.upFiles') }}
         </p>
         <div v-if="hasElToMove()">
           <hr>
           <p @click="move.paste()">
-            <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
+            <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('Selection.paste') }}
           </p>
         </div>
       </div>
 
       <div v-if="!details && type === 1">
         <p @click="trigger('SelectionDl', id)">
-          <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
+          <i class="fa fa-download" aria-hidden="true"></i> {{ $t('Selection.dl') }}
         </p>
         <div v-if="isShared()">
           <p @click="share.unshare(id)">
-            <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
+            <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('Selection.unshare') }}
           </p>
         </div>
         <div v-else>
           <p @click="share.share(id)">
-            <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
+            <i class="fa fa-share" aria-hidden="true"></i> {{ $t('Selection.share') }}
           </p>
         </div>
         <hr>
         <div v-if="!isInTrash()">
           <p class="hide">
-            <i class="fa fa-star" aria-hidden="true"></i> {{ $t('RightClick.star') }}
+            <i class="fa fa-star" aria-hidden="true"></i> {{ $t('Selection.star') }}
           </p>
           <hr class="hide">
           <p @click="move.cut(id, type)">
-            <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+            <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('Selection.cut') }}
           </p>
           <p @click="move.copy(id, type)">
-            <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+            <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('Selection.copy') }}
           </p>
           <p @click="move.toTrash(id, type)">
-            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.trash') }}
           </p>
         </div>
         <div v-else>
           <p @click="move.fromTrash(id, type)">
-            <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+            <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('Selection.restore') }}
           </p>
           <p @click="rm.rm(id, type)">
-            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.rm') }}
           </p>
         </div>
         <div v-if="hasElToMove()">
           <hr>
           <p @click="move.paste()">
-            <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
+            <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('Selection.paste') }}
           </p>
         </div>
         <div v-if="!isInTrash()">
           <hr>
           <p @click="move.rename(id, type)">
-            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('Selection.mvItem') }}
           </p>
         </div>
         <hr>
         <p @click.stop="toggleDetails()">
-          <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
+          <i class="fa fa-info" aria-hidden="true"></i> {{ $t('Selection.vDetails') }}
         </p>
       </div>
 
       <div v-if="!details && type === 2">
         <p @click="trigger('FolderOpen', id)">
-          <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('RightClick.open') }}
+          <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('Selection.open') }}
         </p>
         <hr>
         <div v-if="!isInTrash()">
           <p @click="move.cut(id, type)">
-            <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+            <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('Selection.cut') }}
           </p>
           <p @click="move.copy(id, type)">
-            <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+            <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('Selection.copy') }}
           </p>
           <p @click="move.toTrash(id, type)">
-            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.trash') }}
           </p>
         </div>
         <div v-else>
           <p @click="move.fromTrash(id, type)">
-            <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+            <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('Selection.restore') }}
           </p>
           <p @click="rm.rm(id, type)">
-            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+            <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.rm') }}
           </p>
         </div>
         <div v-if="hasElToMove()">
           <hr>
           <p @click="move.paste(id)">
-            <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('RightClick.paste') }}
+            <i class="fa fa-clipboard" aria-hidden="true"></i> {{ $t('Selection.paste') }}
           </p>
         </div>
         <div v-if="!isInTrash()">
           <hr>
           <p @click="move.rename(id, type)">
-            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('Selection.mvItem') }}
           </p>
         </div>
         <hr>
         <p @click.stop="toggleDetails()">
-          <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
+          <i class="fa fa-info" aria-hidden="true"></i> {{ $t('Selection.vDetails') }}
         </p>
       </div>
 
       <div v-if="details && type === 1">
         <div class="close" @click="close()">x</div>
         <div class="details">
-          <strong>{{ $t('User.details') }}</strong>
+          <strong>{{ $t('Tree.details') }}</strong>
           <ul>
-            <li><span class="label">{{ $t('User.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
-            <li><span class="label">{{ $t('User.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
-            <li><span class="label">{{ $t('User.type') }}:</span> {{ $t('User.file') }}</li>
-            <li><span class="label">{{ $t('User.size') }}:</span> {{ el.querySelector('.file_size').textContent }}</li>
-            <li><span class="label">{{ $t('User.lastmod') }}:</span> {{ el.querySelector('.file_lastmod').textContent }}</li>
+            <li><span class="label">{{ $t('Tree.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
+            <li><span class="label">{{ $t('Tree.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
+            <li><span class="label">{{ $t('Tree.type') }}:</span> {{ $t('Selection.file') }}</li>
+            <li><span class="label">{{ $t('Tree.size') }}:</span> {{ el.querySelector('.file_size').textContent }}</li>
+            <li><span class="label">{{ $t('Tree.lastmod') }}:</span> {{ el.querySelector('.file_lastmod').textContent }}</li>
           </ul>
           <p>
             <a class="mono blue" @click="trigger('SelectionDl', id)">
-              <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
+              <i class="fa fa-download" aria-hidden="true"></i> {{ $t('Selection.dl') }}
             </a>
           </p>
           <p v-if="isShared()">
             <a class="mono blue" @click="share.unshare(id)">
-              <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
+              <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('Selection.unshare') }}
             </a>
           </p>
           <p v-if="isShared()">
             <a class="blue block" @click="copyUrl()">
-              <i class="fa fa-link"></i> {{ $t('RightClick.copy') }}
+              <i class="fa fa-link"></i> {{ $t('Selection.copyLink') }}
             </a>
             <input type="text" :value="this.el.getAttribute('data-url')" class="copy_url">
           </p>
           <p v-else>
             <a class="mono blue" @click="share.share(id)">
-              <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
+              <i class="fa fa-share" aria-hidden="true"></i> {{ $t('Selection.share') }}
             </a>
           </p>
         </div>
@@ -152,12 +152,12 @@
       <div v-if="details && type === 2">
         <div class="close" @click="close()">x</div>
         <div class="details">
-          <strong>{{ $t('User.details') }}</strong>
+          <strong>{{ $t('Tree.details') }}</strong>
           <ul>
-            <li><span class="label">{{ $t('User.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
-            <li><span class="label">{{ $t('User.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
-            <li><span class="label">{{ $t('User.type') }}:</span> {{ $t('User.folder') }}</li>
-            <li><span class="label">{{ $t('User.size') }}:</span> {{ el.getAttribute('title') }}</li>
+            <li><span class="label">{{ $t('Tree.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
+            <li><span class="label">{{ $t('Tree.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
+            <li><span class="label">{{ $t('Tree.type') }}:</span> {{ $t('Selection.folder') }}</li>
+            <li><span class="label">{{ $t('Tree.size') }}:</span> {{ el.getAttribute('title') }}</li>
           </ul>
         </div>
       </div>

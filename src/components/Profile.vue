@@ -2,10 +2,10 @@
   <div class="container-large">
     <div class="info mono">
       {{ $t('Profile.upgrade') }}
-      <router-link to="/upgrade">{{ $t('Profile.getmore') }}</router-link>
+      <router-link to="/upgrade">{{ $t('Profile.getMore') }}</router-link>
     </div><br>
 
-    <h1>{{ $t('UserMenu.settings') }}</h1>
+    <h1>{{ $t('Sidebar.settings') }}</h1>
     <fieldset>
       <legend>{{ $t('Global.profile') }}</legend>
       <p>
@@ -23,13 +23,13 @@
     </fieldset>
 
     <fieldset>
-      <legend>{{ $t('Profile.mailusername') }}</legend>
+      <legend>{{ $t('Profile.mailUsername') }}</legend>
       <div class="bloc-input">
         <div>
           <form>
-            <h3>{{ $t('Profile.changelogin') }}</h3>
+            <h3>{{ $t('Profile.changeLogin') }}</h3>
             <p class="input-large">
-              <input type="text" id="new_login" :placeholder="$t('Profile.newlogin')" v-model="fields.changeLogin.login" required>
+              <input type="text" id="new_login" :placeholder="$t('Profile.newLogin')" v-model="fields.changeLogin.login" required>
               <label class="fa fa-user" for="new_login" aria-hidden="true"></label>
             </p>
             <input type="submit" class="btn btn-required btn-profile" @click.prevent="changeLogin" :value="$t('Global.submit')" :disabled="!isComplete('changeLogin')">
@@ -38,9 +38,9 @@
         </div>
         <div>
           <form>
-            <h3>{{ $t('Profile.changemail') }}</h3>
+            <h3>{{ $t('Profile.changeMail') }}</h3>
             <p class="input-large">
-              <input type="text" id="new_mail" :placeholder="$t('Profile.changemail')" v-model="fields.changeMail.mail" required>
+              <input type="text" id="new_mail" :placeholder="$t('Profile.changeMail')" v-model="fields.changeMail.mail" required>
               <label class="fa fa-envelope" for="new_mail" aria-hidden="true"></label>
             </p>
             <input type="submit" class="btn btn-required btn-profile" @click.prevent="changeMail" :value="$t('Global.submit')" :disabled="!isComplete('changeMail')">
@@ -51,17 +51,17 @@
     </fieldset>
 
     <fieldset>
-      <legend>{{ $t('Profile.pwdpp') }}</legend>
+      <legend>{{ $t('Profile.pwdPp') }}</legend>
       <div class="bloc-input">
         <div>
           <form>
-            <h3>{{ $t('Profile.changepwd') }}</h3>
+            <h3>{{ $t('Profile.changePwd') }}</h3>
             <p class="input-large">
-              <input type="password" id="old_pwd" :placeholder="$t('Profile.oldpwd')" v-model="fields.changePassword.old_pwd" required>
+              <input type="password" id="old_pwd" :placeholder="$t('Profile.oldPwd')" v-model="fields.changePassword.old_pwd" required>
               <label class="fa fa-lock" for="old_pwd" aria-hidden="true"></label>
             </p>
             <p class="input-large">
-              <input type="password" id="new_pwd" :placeholder="$t('Profile.newpwd')" v-model="fields.changePassword.new_pwd" required>
+              <input type="password" id="new_pwd" :placeholder="$t('Profile.newPwd')" v-model="fields.changePassword.new_pwd" required>
               <label class="fa fa-lock" for="new_pwd" aria-hidden="true"></label>
             </p>
             <p class="input-large">
@@ -74,13 +74,13 @@
         </div>
         <div>
           <form>
-            <h3>{{ $t('Profile.changepp') }}</h3>
+            <h3>{{ $t('Profile.changePp') }}</h3>
             <p class="input-large">
-              <input type="password" id="old_pp" :placeholder="$t('Profile.oldpp')" v-model="fields.changeCek.old_pp" required>
+              <input type="password" id="old_pp" :placeholder="$t('Profile.oldPp')" v-model="fields.changeCek.old_pp" required>
               <label class="fa fa-lock" for="old_pp" aria-hidden="true"></label>
             </p>
             <p class="input-large">
-              <input type="password" id="new_pp" :placeholder="$t('Profile.newpp')" v-model="fields.changeCek.new_pp" required>
+              <input type="password" id="new_pp" :placeholder="$t('Profile.newPp')" v-model="fields.changeCek.new_pp" required>
               <label class="fa fa-lock" for="new_pp" aria-hidden="true"></label>
             </p>
             <p class="input-large">
@@ -95,7 +95,7 @@
     </fieldset>
 
     <fieldset>
-      <legend>{{ $t('Profile.otheroptions') }}</legend>
+      <legend>{{ $t('Profile.otherOptions') }}</legend>
       <h3>{{ $t('Profile.theme') }}</h3>
       <p class="input-large">
         <input type="radio" name="theme" id="light" @click="switchTheme('light')" :checked="theme === 'light'">
@@ -116,18 +116,18 @@
     </fieldset>
 
     <fieldset>
-      <h3>Sessions</h3>
+      <h3>{{ $t('Profile.sessions') }}</h3>
       <div class="sessions">
         <table>
           <tr v-for="(session, index) in this.sessions" :key="'session-' + index" :class="session.current ? 'current' : ''">
             <td>{{ session.jti.substr(0, 8) }}</td>
             <td>{{ utils.getDate(session.iat) }}</td>
-            <td><a href="#" @click.prevent="terminate(index)" v-if="!session.current">Terminate</a></td>
+            <td><a href="#" @click.prevent="terminate(index)" v-if="!session.current">{{ $t('Profile.terminate') }}</a></td>
           </tr>
         </table>
       </div>
-      <p>
-        <input type="button" class="btn btn-warning" value="Terminate all" @click.prevent="terminateAll">
+      <p v-if="this.sessions.length > 1">
+        <input type="button" class="btn btn-warning" :value="$t('Profile.terminateAll')" @click.prevent="terminateAll">
       </p>
     </fieldset>
 
@@ -210,7 +210,7 @@ export default {
         this.changeMailReturn = 'Profile.updateErr'
         switch (res.body.message) {
           case 'mailExists':
-            this.changeMailReturn = 'Register.mailExists' // TODO: Update string
+            this.changeMailReturn = 'Profile.mailExists'
             break
           case 'mailFormat':
             this.changeMailReturn = 'Profile.mailFormat'
@@ -226,7 +226,11 @@ export default {
         this.$http.post('user/changePassword', {old_pwd: muiHash(this.fields.changePassword.old_pwd), new_pwd: muiHash(this.fields.changePassword.new_pwd)}).then((res) => {
           this.changePasswordReturn = 'Profile.updateOk'
         }, (res) => {
-          this.changePasswordReturn = 'Profile.updateErr'
+          if (res.body.message === 'badOldPass') {
+            this.changePasswordReturn = 'Profile.badOldPass'
+          } else {
+            this.changePasswordReturn = 'Profile.updateErr'
+          }
         })
       }
     },

@@ -24,8 +24,9 @@ class Rm {
       this.files = store.selection.files
       this.folders = store.selection.folders
     }
+    let question = this.files.length > 0 && this.folders.length === 0 ? 'Rm.questionf' : (this.files.length === 0 && this.folders.length > 0 ? 'Rm.questiond' : 'Rm.questionrm')
 
-    if (showConfirm && !confirm(this.vue.$t('User.questionrm'))) {
+    if (showConfirm && !confirm(this.vue.$t(question))) {
       return false
     }
 

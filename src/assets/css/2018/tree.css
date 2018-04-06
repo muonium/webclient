@@ -105,6 +105,8 @@
 	display: none !important;
 }
 
+#tree td.folder_checkbox, #tree td.file_checkbox { text-overflow: clip; }
+
 a[id^="parent-"] { cursor: pointer; }
 a[id^="parent-"] .fa-caret-up { font-size: 24px; padding-left: 10px; }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="container-large" v-if="this.loaded">
     <div class="info" v-if="!this.$parent.isLogged()">
-      {{ $t('Register.donthaveaccount') }}
+      {{ $t('Register.dontHaveAccount') }}
       <router-link to="/register">{{ $t('Register.create') }}</router-link>
     </div>
 
@@ -9,10 +9,10 @@
       <h1 class="dl-filename">{{ this.infos.name }}</h1>
 
       <p class="dl-info">
-        {{ $t('User.uploadedBy').replace('[login]', this.infos.login) }}
+        {{ $t('Tree.uploadedBy').replace('[login]', this.infos.login) }}
         {{ utils.getDate(this.infos.last_modification) }}
       </p>
-      <p class="dl-info">{{ $t('User.size') }}: {{ utils.showSize(this.infos.size) }}</p>
+      <p class="dl-info">{{ $t('Tree.size') }}: {{ utils.showSize(this.infos.size) }}</p>
 
       <form v-if="!isDownloading" v-on:submit.prevent="dl">
         <p class="input-small">
@@ -20,11 +20,11 @@
           <label class="fa fa-lock" for="password"></label>
         </p>
         <p>
-          <input type="submit" class="btn mtop" :value="$t('RightClick.dl')">
+          <input type="submit" class="btn mtop" :value="$t('Selection.dl')">
         </p>
 
         <p v-if="passErr">
-          {{ $t('User.badPass') }}
+          {{ $t('Login.badPass') }}
         </p>
       </form>
     </div>

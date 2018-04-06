@@ -20,11 +20,13 @@ class Share {
       if (e.type === 'keyup' && e.keyCode !== 13) {
         if ((!ready && e.target.value.length >= 6) || (ready && e.target.value.length < 6)) {
           ready = !ready
-          for (let i of e.path) {
-            if (i.classList.contains('MessageBox')) {
-              i.querySelector('.MessageBoxBtns input').disabled = !ready
+          let el = e.target
+          while (el) {
+            if (el.classList.contains('MessageBox')) {
+              el.querySelector('.MessageBoxBtns input').disabled = !ready
               break
             }
+            el = el.parentElement
           }
         }
       }
@@ -72,7 +74,7 @@ class Share {
                     el.setAttribute('data-shared', '1')
                     if (files.length === 1) {
                       this.vue.$refs.messageBox.add({
-                        title: this.vue.$t('User.shared'),
+                        title: this.vue.$t('Tree.shared'),
                         inputs: [
                           {
                             type: 'text',
@@ -86,7 +88,7 @@ class Share {
                           {
                             type: 'button',
                             class: 'btn',
-                            value: this.vue.$t('RightClick.copy'),
+                            value: this.vue.$t('Selection.copy'),
                             clickEvent: (e) => {
                               let index = this.vue.$refs.messageBox.getIndexFromEvent(e)
                               if (index !== false) {
@@ -132,7 +134,7 @@ class Share {
         {
           type: 'button',
           class: 'btn',
-          value: this.vue.$t('User.generatelink'),
+          value: this.vue.$t('Tree.generateLink'),
           disabled: true,
           clickEvent (e) {
             validate(e)

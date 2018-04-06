@@ -30,7 +30,7 @@
       <p class="input-large">
         <input type="password" id="field_passphrase" :placeholder="$t('Register.passphrase')" v-model="fields.passphrase.value" required>
         <label class="fa fa-lock" for="field_passphrase" aria-hidden="true"></label>
-        <i class="fa fa-question-circle" aria-hidden="true" v-tooltip="$t('Register.passphrase')"></i>
+        <i class="fa fa-question-circle" aria-hidden="true" v-tooltip="$t('Register.passphraseHelp')"></i>
       </p>
 
       <p class="input-large">
@@ -47,7 +47,7 @@
       </fieldset>
 
       <div class="bloc-links">
-        <router-link to="/login" class="mono blue">{{ $t('Register.alreadyregistered') }}</router-link>
+        <router-link to="/login" class="mono blue">{{ $t('Register.alreadyRegistered') }}</router-link>
         <input type="submit" class="btn btn-required" :value="$t('Global.register')" :disabled="!isComplete">
       </div>
 

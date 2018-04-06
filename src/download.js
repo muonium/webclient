@@ -245,7 +245,7 @@ class Download {
   dlFiles (files, v) {
     vue = v
     if (!this.checkAPI()) {
-      alert(vue.$t('User.fileAPI'))
+      alert(vue.$t('Transfers.fileAPI'))
       return false
     }
     store.folder.transfers = true
@@ -275,7 +275,7 @@ class Download {
   dlSharedFile (v, fileId, filename, fromFolder, uid, fek) {
     vue = v
     if (!this.checkAPI()) {
-      alert(vue.$t('User.fileAPI'))
+      alert(vue.$t('Transfers.fileAPI'))
       return false
     }
     this.dec.push(new Decryption(fileId, filename, fromFolder, this.dec.length, uid, fek))

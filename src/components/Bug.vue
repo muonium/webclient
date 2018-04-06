@@ -61,7 +61,7 @@ export default {
         if (res.body.message === 'sent') {
           this.success_msg = 'Bug.sent'
         } else {
-          this.err_msg = 'Validate.wait' // TODO: change message
+          this.err_msg = 'Bug.wait'
         }
       }, (res) => {
         this.loading = false

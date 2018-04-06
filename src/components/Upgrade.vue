@@ -9,18 +9,17 @@
 
     <div class="bloc-offers">
       <div v-for="(offer, index) in this.offers" :key="'offer-' + index">
-        <div class="most-popular" v-if="index === 0">Most Popular</div>
+        <div class="most-popular" v-if="index === 0">{{ $t('Upgrade.mostPopular') }}</div>
         <div class="offer-size">{{ utils.showSize(offer.size) }}</div>
         <div class="offer-price">
-          <span class="currency">{{ offer.currency_symbol }}</span>
-          {{ offer.price }}
+          <span class="currency">{{ offer.currency_symbol }}</span>{{ offer.price.toFixed(2) }}
         </div>
         <div class="offer-duration">
           {{ duration(offer.duration) }}
         </div>
         <form :action="endpoint" method="post" target="_blank" v-if="offer.product_id">
           <input type="hidden" :name="index" :value="field" v-for="(field, index) in offer.fields" :key="'field-' + index">
-          <button type="submit" class="btn">{{ $t('Upgrade.upgrade') }}</button>
+          <button type="submit" class="btn">{{ $t('Global.upgrade') }}</button>
         </form>
       </div>
     </div>
@@ -28,10 +27,10 @@
     <h2 class="em">{{ $t('Upgrade.history') }}</h2>
     <table class="table-large table-responsive">
       <tr>
-        <th>{{ $t('User.size') }}</th>
+        <th>{{ $t('Tree.size') }}</th>
         <th>{{ $t('Upgrade.price') }}</th>
-        <th>{{ $t('Upgrade.start_date') }}</th>
-        <th>{{ $t('Upgrade.end_date') }}</th>
+        <th>{{ $t('Upgrade.startDate') }}</th>
+        <th>{{ $t('Upgrade.endDate') }}</th>
         <th></th>
       </tr>
       <tr v-for="(row, index) in this.history" :key="'history-' + index">
@@ -77,7 +76,7 @@ export default {
     }
 
     if (typeof this.$route.query.success !== 'undefined') {
-      this.success_msg = 'Upgrade.success_msg'
+      this.success_msg = 'Upgrade.successMsg'
     }
 
     this.$http.get('upgrade/plans').then((res) => {

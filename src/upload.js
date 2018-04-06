@@ -77,7 +77,7 @@ class Encryption {
         {
           type: 'button',
           class: 'btn',
-          value: vue.$t('User.yes'),
+          value: vue.$t('Transfers.yes'),
           clickEvent (e) {
             btnCallback(e, true)
           }
@@ -87,7 +87,7 @@ class Encryption {
         btns.push({
           type: 'button',
           class: 'btn',
-          value: vue.$t('User.yesAll'),
+          value: vue.$t('Transfers.yesAll'),
           clickEvent (e) {
             if (completeFile) {
               yesCompleteAll = true
@@ -101,7 +101,7 @@ class Encryption {
       btns.push({
         type: 'button',
         class: 'btn',
-        value: vue.$t('User.no'),
+        value: vue.$t('Transfers.no'),
         clickEvent (e) {
           btnCallback(e, false)
         }
@@ -110,7 +110,7 @@ class Encryption {
         btns.push({
           type: 'button',
           class: 'btn',
-          value: vue.$t('User.noAll'),
+          value: vue.$t('Transfers.noAll'),
           clickEvent (e) {
             noAll = true
             btnCallback(e, false)
@@ -118,11 +118,11 @@ class Encryption {
         })
       }
       vue.$refs.messageBox.add({
-        title: vue.$t('User.replaceCompleteFile').replace('[filename]', this.dest_filename),
+        title: vue.$t('Transfers.replaceCompleteFile').replace('[filename]', this.dest_filename),
         toggles: [
           {
-            leftTxt: vue.$t('User.complete'),
-            rightTxt: vue.$t('User.replace'),
+            leftTxt: vue.$t('Transfers.complete'),
+            rightTxt: vue.$t('Transfers.replace'),
             clickEvent (e) {
               completeFile = !e.target.checked
             }
@@ -157,7 +157,7 @@ class Encryption {
         {
           type: 'button',
           class: 'btn',
-          value: vue.$t('User.yes'),
+          value: vue.$t('Transfers.yes'),
           clickEvent (e) {
             btnCallback(e, true)
           }
@@ -167,7 +167,7 @@ class Encryption {
         btns.push({
           type: 'button',
           class: 'btn',
-          value: vue.$t('User.yesAll'),
+          value: vue.$t('Transfers.yesAll'),
           clickEvent (e) {
             yesReplaceAll = true
             btnCallback(e, true)
@@ -177,7 +177,7 @@ class Encryption {
       btns.push({
         type: 'button',
         class: 'btn',
-        value: vue.$t('User.no'),
+        value: vue.$t('Transfers.no'),
         clickEvent (e) {
           btnCallback(e, false)
         }
@@ -186,7 +186,7 @@ class Encryption {
         btns.push({
           type: 'button',
           class: 'btn',
-          value: vue.$t('User.noAll'),
+          value: vue.$t('Transfers.noAll'),
           clickEvent (e) {
             noAll = true
             btnCallback(e, false)
@@ -194,7 +194,7 @@ class Encryption {
         })
       }
       vue.$refs.messageBox.add({
-        title: vue.$t('User.replaceFile').replace('[filename]', this.dest_filename),
+        title: vue.$t('Transfers.replaceFile').replace('[filename]', this.dest_filename),
         btns: btns
       })
     } else {
@@ -224,7 +224,7 @@ class Encryption {
     }, (res) => {
       this.halt = true
       if (res.body.message === 'quota') {
-        this.error('User.quotaExceeded')
+        this.error('Transfers.quotaExceeded')
       } else {
         this.error()
       }
@@ -386,7 +386,7 @@ class Upload {
   upFiles (files, v) {
     vue = v
     if (!this.checkAPI()) {
-      alert(vue.$t('User.fileAPI'))
+      alert(vue.$t('Transfers.fileAPI'))
       return false
     }
     store.folder.transfers = true

@@ -7,7 +7,7 @@
         </a>
       </li>
       <li>
-        <a href="#" id="sidebar-trash" @click.prevent="setState('trash')" :title="$t('RightClick.trash')" :class="this.selected === 'trash' ? 'selected' : ''">
+        <a href="#" id="sidebar-trash" @click.prevent="setState('trash')" :title="$t('Selection.trash')" :class="this.selected === 'trash' ? 'selected' : ''">
           <i class="fa fa-trash" aria-hidden="true"></i>
         </a>
       </li>
@@ -22,7 +22,7 @@
         </router-link>
       </li>
       <li>
-        <router-link to="/profile" id="sidebar-profile" :title="$t('UserMenu.settings')" :class="this.selected === 'profile' ? 'selected' : ''">
+        <router-link to="/profile" id="sidebar-profile" :title="$t('Sidebar.settings')" :class="this.selected === 'profile' ? 'selected' : ''">
           <i class="fa fa-cog" aria-hidden="true"></i>
         </router-link>
       </li>
@@ -44,11 +44,13 @@ export default {
   methods: {
     setSelected (e) {
       this.selected = null
-      for (let i of e.path) {
-        if (i.tagName === 'LI') {
-          this.selected = i.querySelector('a').id.replace('sidebar-', '')
+      let el = e.target
+      while (el) {
+        if (el.tagName === 'LI') {
+          this.selected = el.querySelector('a').id.replace('sidebar-', '')
           break
         }
+        el = el.parentElement
       }
     },
     setState (state) {

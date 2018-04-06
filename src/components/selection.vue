@@ -2,96 +2,96 @@
   <div id="selection">
     <div class="fixed">
       <section class="selection" ref="container">
-        <button id="up_btn" class="btn btn-large mbottom" @click.prevent="trigger('UploadDialog')">{{ $t('RightClick.upFiles') }}</button>
+        <button id="up_btn" class="btn btn-large mbottom" @click.prevent="trigger('UploadDialog')">{{ $t('Selection.upFiles') }}</button>
 
-        <a href="#" id="up_icon" class="blue block" @click.prevent="trigger('UploadDialog')" :title="$t('RightClick.upFiles')">
+        <a href="#" id="up_icon" class="blue block" @click.prevent="trigger('UploadDialog')" :title="$t('Selection.upFiles')">
           <i class="fa fa-upload" aria-hidden="true"></i>
         </a>
 
-        <a href="#" id="create_btn" class="blue block" @click="trigger('FolderAdd')" :title="$t('RightClick.nFolder')">
-          <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('RightClick.nFolder') }}
+        <a href="#" id="create_btn" class="blue block" @click="trigger('FolderAdd')" :title="$t('Selection.nFolder')">
+          <i class="fa fa-folder-o" aria-hidden="true"></i> {{ $t('Selection.nFolder') }}
         </a>
 
         <!-- Selection infos -->
         <template v-if="this.fileEl && this.fileId">
-          <strong>Actions</strong>
-          <a class="blue block" @click="trigger('SelectionDl', fileId)" :title="$t('RightClick.dl')">
-            <i class="fa fa-download" aria-hidden="true"></i> {{ $t('RightClick.dl') }}
+          <strong>{{ $t('Selection.actions') }}</strong>
+          <a class="blue block" @click="trigger('SelectionDl', fileId)" :title="$t('Selection.dl')">
+            <i class="fa fa-download" aria-hidden="true"></i> {{ $t('Selection.dl') }}
           </a>
           <template v-if="!isInTrash()">
-            <a class="blue block" @click="move.cut(fileId, 1)" :title="$t('RightClick.cut')">
-              <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+            <a class="blue block" @click="move.cut(fileId, 1)" :title="$t('Selection.cut')">
+              <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('Selection.cut') }}
             </a>
-            <a class="blue block" @click="move.copy(fileId, 1)" :title="$t('RightClick.copy')">
-              <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+            <a class="blue block" @click="move.copy(fileId, 1)" :title="$t('Selection.copy')">
+              <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('Selection.copy') }}
             </a>
-            <a class="blue block" @click="move.toTrash(fileId, 1)" :title="$t('RightClick.trash')">
-              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+            <a class="blue block" @click="move.toTrash(fileId, 1)" :title="$t('Selection.trash')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.trash') }}
             </a>
           </template>
           <template v-else>
-            <a class="blue block" @click="move.fromTrash(fileId, 1)" :title="$t('RightClick.restore')">
-              <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+            <a class="blue block" @click="move.fromTrash(fileId, 1)" :title="$t('Selection.restore')">
+              <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('Selection.restore') }}
             </a>
-            <a class="blue block" @click="rm.rm(fileId, 1)" :title="$t('RightClick.rm')">
-              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+            <a class="blue block" @click="rm.rm(fileId, 1)" :title="$t('Selection.rm')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.rm') }}
             </a>
           </template>
-          <a v-if="!isInTrash() && shared.files.length === 1 && shared.folders.length === 0" class="blue block" @click="move.rename(fileId, 1)" :title="$t('RightClick.mvItem')">
-            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+          <a v-if="!isInTrash() && shared.files.length === 1 && shared.folders.length === 0" class="blue block" @click="move.rename(fileId, 1)" :title="$t('Selection.mvItem')">
+            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('Selection.mvItem') }}
           </a>
-          <a v-if="shared.files.length === 1 && shared.folders.length === 0" class="blue block" @click="trigger('BoxOpen', fileId, 1, null, true)" :title="$t('RightClick.vDetails')">
-            <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
+          <a v-if="shared.files.length === 1 && shared.folders.length === 0" class="blue block" @click="trigger('BoxOpen', fileId, 1, null, true)" :title="$t('Selection.vDetails')">
+            <i class="fa fa-info" aria-hidden="true"></i> {{ $t('Selection.vDetails') }}
           </a>
           <template v-if="shared.files.length > 1 || shared.folders.length > 1 || isShared()">
-            <a class="blue block share-link" @click="share.unshare(fileId)" :title="$t('RightClick.unshare')">
-              <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('RightClick.unshare') }}
+            <a class="blue block share-link" @click="share.unshare(fileId)" :title="$t('Selection.unshare')">
+              <i class="fa fa-ban" aria-hidden="true"></i> {{ $t('Selection.unshare') }}
             </a>
             <template v-if="shared.files.length === 1 && shared.folders.length === 0">
               <input type="text" :value="fileEl.getAttribute('data-url')" class="copy_url">
-              <input id="copy_btn" type="button" class="btn btn-large" :value="$t('RightClick.copy')" @click="copyUrl()">
-              <a id="copy_icon" class="blue block" @click="copyUrl()" :title="$t('RightClick.copy')"><!-- TODO: copyurl instead copy string -->
+              <input id="copy_btn" type="button" class="btn btn-large" :value="$t('Selection.copyLink')" @click="copyUrl()">
+              <a id="copy_icon" class="blue block" @click="copyUrl()" :title="$t('Selection.copyLink')">
                 <i class="fa fa-link"></i>
               </a>
             </template>
           </template>
           <template v-if="shared.files.length > 1 || shared.folders.length > 1 || !isShared()">
-            <a class="blue block share-link" @click="share.share(fileId)" :title="$t('RightClick.share')">
-              <i class="fa fa-share" aria-hidden="true"></i> {{ $t('RightClick.share') }}
+            <a class="blue block share-link" @click="share.share(fileId)" :title="$t('Selection.share')">
+              <i class="fa fa-share" aria-hidden="true"></i> {{ $t('Selection.share') }}
             </a>
           </template>
         </template>
 
         <template v-if="this.folderEl">
           <template v-if="shared.files.length === 0 && shared.folders.length === 1">
-            <a class="blue block" @click="trigger('FolderOpen', folderId)" :title="$t('RightClick.open')">
-              <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('RightClick.open') }}
+            <a class="blue block" @click="trigger('FolderOpen', folderId)" :title="$t('Selection.open')">
+              <i class="fa fa-folder-open" aria-hidden="true"></i> {{ $t('Selection.open') }}
             </a>
           </template>
           <template v-if="!isInTrash()">
-            <a class="blue block" @click="move.cut(folderId, 2)" :title="$t('RightClick.cut')">
-              <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('RightClick.cut') }}
+            <a class="blue block" @click="move.cut(folderId, 2)" :title="$t('Selection.cut')">
+              <i class="fa fa-scissors" aria-hidden="true"></i> {{ $t('Selection.cut') }}
             </a>
-            <a class="blue block" @click="move.copy(folderId, 2)" :title="$t('RightClick.copy')">
-              <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('RightClick.copy') }}
+            <a class="blue block" @click="move.copy(folderId, 2)" :title="$t('Selection.copy')">
+              <i class="fa fa-clone" aria-hidden="true"></i> {{ $t('Selection.copy') }}
             </a>
-            <a class="blue block" @click="move.toTrash(folderId, 2)" :title="$t('RightClick.trash')">
-              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.trash') }}
+            <a class="blue block" @click="move.toTrash(folderId, 2)" :title="$t('Selection.trash')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.trash') }}
             </a>
           </template>
           <template v-else>
-            <a class="blue block" @click="move.fromTrash(folderId, 2)" :title="$t('RightClick.restore')">
-              <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('RightClick.restore') }}
+            <a class="blue block" @click="move.fromTrash(folderId, 2)" :title="$t('Selection.restore')">
+              <i class="fa fa-undo" aria-hidden="true"></i> {{ $t('Selection.restore') }}
             </a>
-            <a class="blue block" @click="rm.rm(folderId, 2)" :title="$t('RightClick.rm')">
-              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('RightClick.rm') }}
+            <a class="blue block" @click="rm.rm(folderId, 2)" :title="$t('Selection.rm')">
+              <i class="fa fa-trash" aria-hidden="true"></i> {{ $t('Selection.rm') }}
             </a>
           </template>
-          <a v-if="!isInTrash() && shared.files.length === 0 && shared.folders.length === 1" class="blue block" @click="move.rename(folderId, 2)" :title="$t('RightClick.mvItem')">
-            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('RightClick.mvItem') }}
+          <a v-if="!isInTrash() && shared.files.length === 0 && shared.folders.length === 1" class="blue block" @click="move.rename(folderId, 2)" :title="$t('Selection.mvItem')">
+            <i class="fa fa-pencil" aria-hidden="true"></i> {{ $t('Selection.mvItem') }}
           </a>
-          <a v-if="shared.files.length === 0 && shared.folders.length === 1" class="blue block" @click="trigger('BoxOpen', folderId, 2, null, true)" :title="$t('RightClick.vDetails')">
-            <i class="fa fa-info" aria-hidden="true"></i> {{ $t('RightClick.vDetails') }}
+          <a v-if="shared.files.length === 0 && shared.folders.length === 1" class="blue block" @click="trigger('BoxOpen', folderId, 2, null, true)" :title="$t('Selection.vDetails')">
+            <i class="fa fa-info" aria-hidden="true"></i> {{ $t('Selection.vDetails') }}
           </a>
         </template>
       </section>
@@ -118,7 +118,7 @@
       </div>
 
       <p class="center">
-        <router-link to="/upgrade" class="mono">{{ $t('Profile.getmore') }}</router-link>
+        <router-link to="/upgrade" class="mono">{{ $t('Profile.getMore') }}</router-link>
       </p>
 
       <div class="selection_bottom">
@@ -358,7 +358,7 @@ export default {
       document.execCommand('copy')
       if (!isVisible) {
         el.classList.remove('cc')
-        alert(this.$t('User.copied'))
+        alert(this.$t('Tree.copied'))
       }
     },
     isInTrash () {
@@ -382,7 +382,7 @@ export default {
       return p > 100 ? 100 : parseFloat(p.toFixed(2))
     },
     quota_html () {
-      return this.$t('User.quota_of')
+      return this.$t('Selection.quotaOf')
         .replace('[used]', '<strong>' + utils.showSize(store.folder.stored) + '</strong>')
         .replace('[total]', '<strong>' + utils.showSize(store.folder.quota) + '</strong>')
     },

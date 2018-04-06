@@ -41,7 +41,7 @@ export default {
         this.message = 'Error.default'
         switch (res.body.message) {
           case 'differentKey':
-            this.message = 'Validate.message'
+            this.message = 'Validate.keyErr'
             break
           case 'alreadyValidated':
             this.$router.push('/login')
@@ -51,13 +51,13 @@ export default {
       // Send a validation mail
       if (typeof this.$route.query.status !== 'undefined' && this.$route.query.status === 'sent') {
         // Already sent
-        this.message = 'Global.mail_sent'
+        this.message = 'Global.mailSent'
       } else {
         this.$http.post('validate/mail', {'uid': this.$route.params.uid}).then((res) => {
           this.message = 'Error.default'
           switch (res.body.message) {
             case 'sent':
-              this.message = 'Global.mail_sent'
+              this.message = 'Global.mailSent'
               break
             case 'wait':
               this.message = 'Validate.wait'
