@@ -29,7 +29,7 @@
               <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('upload', index)"></i>
               <div :class="file.error ? 'transfers_error' : ''">
                 <span class="fileinfo">
-                  <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
+                  <img :src="$root.$children[0].base + 'static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
                   {{ file.name }}
                 </span>
                 <span class="pct">{{ file.pct }}%</span>
@@ -47,7 +47,7 @@
               <i :data-id="index" class="fa fa-times-circle-o btn-abort" aria-hidden="true" @click="abort('download', index)"></i>
               <div :class="file.error ? 'transfers_error' : ''">
                 <span class="fileinfo">
-                  <img :src="'/static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
+                  <img :src="$root.$children[0].base + 'static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon">
                   {{ file.name }}
                 </span>
                 <span class="pct">{{ file.pct }}%</span>

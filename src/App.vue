@@ -3,7 +3,7 @@
     <header>
       <div id="logo">
         <router-link to="/">
-          <img src="/static/img/logos/muonium_H_01.png" :title="$t('Global.home')" :alt="$t('Global.home')">
+          <img :src="this.base + 'static/img/logos/muonium_H_01.png'" :title="$t('Global.home')" :alt="$t('Global.home')">
         </router-link>
       </div>
       <language-selector/>
@@ -37,6 +37,7 @@ export default {
   },
   data () {
     return {
+      base: ROOT, // eslint-disable-line no-undef
       loading: true,
       token: sessionStorage.getItem('token'),
       sidebar: false,
