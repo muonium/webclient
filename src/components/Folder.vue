@@ -102,6 +102,22 @@
                 </td>
               </tr>
             </table>
+
+            <template v-if="this.folder.folders.length === 0 && this.folder.files.length === 0">
+              <div class="info mtop">
+                <a @click="showHelp">{{ $t('Tree.needHelp') }}</a>
+              </div>
+              <div class="bloc-nothing" v-if="!this.shared.trash" @click="uploadDialog">
+                {{ $t('Tree.upNothing') }}<br>
+                <img src="../assets/img/desktop/ic-no-uploads.png"><br>
+                <span>{{ $t('Tree.first') }}</span>
+              </div>
+              <div class="bloc-trash-nothing" v-else>
+                {{ $t('Tree.trashNothing') }}<br>
+                <img src="../assets/img/desktop/ic-no-trash-dark.png" v-if="this.$parent.theme === 'dark'">
+                <img src="../assets/img/desktop/ic-no-trash-light.png" v-else>
+              </div>
+            </template>
           </template>
           <template v-else>
             {{ $t('Global.loading') }}
@@ -290,7 +306,12 @@ export default {
       upload.upFiles(e.target.files, this)
     },
     startDownload (id) {
-      download.dl(id)
+      download.dlFiles([id], this)
+    },
+    showHelp () {
+      this.$refs.messageBox.add({
+        txt: this.$t('Help.shortcuts').join('\n')
+      })
     },
     keyListener (e) {
       let fired = true
@@ -384,9 +405,7 @@ export default {
             }
             break
           case 112: // F1
-            this.$refs.messageBox.add({
-              txt: this.$t('Help.shortcuts').join('\n')
-            })
+            this.showHelp()
             break
           default:
             fired = false

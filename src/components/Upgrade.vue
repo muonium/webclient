@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import bus from '../bus'
 import utils from '../utils'
 
 export default {
@@ -67,6 +68,11 @@ export default {
       if (months % 12 === 0) return (months / 12) + ' ' + this.$t('Upgrade.years')
       if (months === 1) return '1 ' + this.$t('Upgrade.month')
       return months + ' ' + this.$t('Upgrade.months')
+    }
+  },
+  computed: {
+    utils () {
+      return utils
     }
   },
   created () {
@@ -92,10 +98,13 @@ export default {
       console.log(res)
     })
   },
-  computed: {
-    utils () {
-      return utils
-    }
+  mounted () {
+    // Show sidebar and selection div
+    this.$parent.sidebar = true
+    bus.$emit('SidebarReset')
+  },
+  beforeDestroy () {
+    this.$parent.sidebar = false
   }
 }
 </script>

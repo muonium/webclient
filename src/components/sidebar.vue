@@ -73,6 +73,9 @@ export default {
     }
   },
   created () {
+    bus.$on('SidebarReset', () => {
+      this.selected = null
+    })
     bus.$on('SidebarOpenTransfers', () => {
       this.selected = 'transfers'
     })
@@ -86,11 +89,14 @@ export default {
       this.selected = 'profile'
     } else if (store.folder.trash) {
       this.selected = 'trash'
+    } else if (this.$route.path === '/upgrade') {
+      this.selected = null
     } else {
       this.selected = 'folder'
     }
   },
   beforeDestroy () {
+    bus.$off('SidebarReset')
     bus.$off('SidebarOpenTransfers')
     bus.$off('SidebarCloseTransfers')
   }

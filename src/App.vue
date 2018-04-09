@@ -38,6 +38,7 @@ export default {
   data () {
     return {
       base: ROOT, // eslint-disable-line no-undef
+      theme: localStorage.getItem('theme') === 'dark' ? 'dark' : 'light',
       loading: true,
       token: sessionStorage.getItem('token'),
       sidebar: false,
@@ -83,11 +84,13 @@ export default {
     }
     this.loadLanguage(language.current, true)
 
-    if (localStorage.getItem('theme') === 'dark') {
-      require('./assets/css/2018/dark.css')
-    } else {
-      require('./assets/css/2018/light.css')
-    }
+    // Theme
+    let theme = document.querySelector('#theme') || document.createElement('link')
+    theme.id = 'theme'
+    theme.rel = 'stylesheet'
+    theme.type = 'text/css'
+    theme.href = this.base + (localStorage.getItem('theme') === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
+    document.querySelector('head').appendChild(theme)
 
     window.oncontextmenu = (e) => { // Disable right click except in input, textarea
       return this.isInInput(e)

@@ -98,10 +98,10 @@
       <legend>{{ $t('Profile.otherOptions') }}</legend>
       <h3>{{ $t('Profile.theme') }}</h3>
       <p class="input-large">
-        <input type="radio" name="theme" id="light" @click="switchTheme('light')" :checked="theme === 'light'">
+        <input type="radio" name="theme" id="light" @click="switchTheme('light')" :checked="$parent.theme === 'light'">
         <label for="light">Light</label>
 
-        <input type="radio" name="theme" id="dark" @click="switchTheme('dark')" :checked="theme === 'dark'">
+        <input type="radio" name="theme" id="dark" @click="switchTheme('dark')" :checked="$parent.theme === 'dark'">
         <label for="dark">Dark</label>
       </p>
     </fieldset>
@@ -160,7 +160,6 @@ export default {
       email: null,
       doubleAuth: false,
       deleteCheckbox: false,
-      theme: localStorage.getItem('theme') === 'dark' ? 'dark' : 'light',
       sessions: [],
       fields: {
         changeLogin: {
@@ -265,9 +264,9 @@ export default {
       }
     },
     switchTheme (theme) {
-      this.theme = theme
+      this.$parent.theme = theme
       localStorage.setItem('theme', theme)
-      window.location.reload()
+      document.querySelector('#theme').href = this.$parent.base + (theme === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
     },
     changeAuth () {
       this.$http.post('user/changeAuth').then((res) => {

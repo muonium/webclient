@@ -83,7 +83,7 @@ export default {
       }
     },
     sendForm () {
-      if (this.userna.me.length > 0) {
+      if (this.username.length > 0) {
         this.$http.post('lostpass/mail', {'username': this.username}).then((res) => {
           this.err_msg = null
           this.success_msg = null
