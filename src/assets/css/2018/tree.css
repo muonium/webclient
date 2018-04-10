@@ -8,7 +8,6 @@
 #tree.mosaic > tbody { width: calc(100% + 30px); margin-left: -15px; margin-right: -15px; }
 #tree.mosaic, #tree.mosaic > tbody {
 	display: flex; display: -ms-flexbox;
-	flex-wrap: wrap; -ms-flex-wrap: wrap;
 	flex-direction: column; -ms-flex-direction: column;
 	justify-content: flex-start; -ms-flex-pack: start;
 }
@@ -43,7 +42,8 @@
 }
 #tree.mosaic tr {
 	display: block;
-	margin: 0 15px 25px 15px;
+  max-width: 100%;
+  margin: 0 15px 25px 15px;
 	text-align: center;
 	border-radius: 6px;
 	box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
@@ -124,6 +124,7 @@ a[id^="parent-"] .fa-caret-up { font-size: 24px; padding-left: 10px; }
 @media screen and (min-width: 450px) {
 	#tree.mosaic, #tree.mosaic > tbody {
 		flex-direction: row; -ms-flex-direction: row;
+    flex-wrap: wrap; -ms-flex-wrap: wrap;
 	}
 	#tree.mosaic tr {
 		flex-basis: 184px; -ms-flex-preferred-size: 184px;
@@ -156,7 +157,6 @@ a[id^="parent-"] .fa-caret-up { font-size: 24px; padding-left: 10px; }
 
 	#mui, #mui.selected { margin-top: 30px; }
 	#tree:not(.mosaic) tr { height: 54px; }
-	#tree.mosaic #tree_head { margin: 50px 15px; }
 	#tree input[type="radio"] + label, #tree input[type="checkbox"] + label { padding-left: 34px; }
 	#tree.mosaic .btn-actions { display: inline-flex !important; display: -ms-inline-flexbox !important; }
 }

@@ -1,4 +1,5 @@
 import moment from 'moment'
+import base64 from 'hi-base64'
 
 class Utils {
   constructor () {
@@ -34,6 +35,21 @@ class Utils {
     let base = Math.log(size) / Math.log(1000)
     let suffixes = Object.values(this.t.Units)
     return parseFloat(Math.pow(1000, base - Math.floor(base)).toFixed(precision)) + ' ' + suffixes[Math.floor(base)]
+  }
+
+  getJti (token) {
+    if (token === undefined || token === null || token === '') return false
+    token = token.split('.')
+    if (token.length !== 3) return false
+    let payload = null
+    let decoded = true
+    try {
+      payload = JSON.parse(base64.decode(token[1]))
+    } catch (e) {
+      decoded = false
+    }
+    if (!decoded || typeof payload.jti === 'undefined') return false
+    return payload.jti
   }
 }
 

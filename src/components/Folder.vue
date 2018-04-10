@@ -28,12 +28,12 @@
       <transition name="fade">
         <div id="mui" v-show="!this.animate">
           <template v-if="this.folder">
-            <h1 class="inline" :title="this.folder.title">{{ this.folder.title }}</h1>
+            <h1 class="inline" :title="this.folder.title">{{ this.folder.title || $t('Global.home') }}</h1>
             <a :id="'parent-'+ this.folder.parent" @click="open(folder.parent)" v-if="typeof this.folder.parent !== 'undefined'">
               <i class="fa fa-caret-up" aria-hidden="true"></i>
             </a>
             <table id="tree" :class="this.shared.display === 'mosaic' ? 'mosaic' : ''">
-              <tr id="tree_head">
+              <tr id="tree_head" v-show="this.folder.folders.length > 0 || this.folder.files.length > 0">
                 <th width="44px">
                   <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
                 </th>
@@ -103,20 +103,22 @@
               </tr>
             </table>
 
-            <template v-if="this.folder.folders.length === 0 && this.folder.files.length === 0">
-              <div class="info mtop">
-                <a @click="showHelp">{{ $t('Tree.needHelp') }}</a>
-              </div>
-              <div class="bloc-nothing" v-if="!this.shared.trash" @click="uploadDialog">
-                {{ $t('Tree.upNothing') }}<br>
-                <img src="../assets/img/desktop/ic-no-uploads.png"><br>
-                <span>{{ $t('Tree.first') }}</span>
-              </div>
-              <div class="bloc-trash-nothing" v-else>
-                {{ $t('Tree.trashNothing') }}<br>
-                <img src="../assets/img/desktop/ic-no-trash-dark.png" v-if="this.$parent.theme === 'dark'">
-                <img src="../assets/img/desktop/ic-no-trash-light.png" v-else>
-              </div>
+            <template v-if="this.shared.folder_id === 0">
+              <template v-if="this.folder.folders.length === 0 && this.folder.files.length === 0">
+                <div class="info mtop">
+                  <a @click="showHelp">{{ $t('Tree.needHelp') }}</a>
+                </div>
+                <div class="bloc-nothing" v-if="!this.shared.trash" @click="uploadDialog">
+                  {{ $t('Tree.upNothing') }}<br>
+                  <img src="../assets/img/desktop/ic-no-uploads.png"><br>
+                  <span>{{ $t('Tree.first') }}</span>
+                </div>
+                <div class="bloc-trash-nothing" v-else>
+                  {{ $t('Tree.trashNothing') }}<br>
+                  <img src="../assets/img/desktop/ic-no-trash-dark.png" v-if="this.$parent.theme === 'dark'">
+                  <img src="../assets/img/desktop/ic-no-trash-light.png" v-else>
+                </div>
+              </template>
             </template>
           </template>
           <template v-else>
@@ -253,17 +255,14 @@ export default {
           let targetId = null
           let id = parseInt(e.dataTransfer.getData('text').substr(1))
           let type = e.dataTransfer.getData('text').substr(0, 1) === 'f' ? 1 : 2
-          if (target.nodeName === 'TR') {
-            targetId = target.id
-          } else {
-            while (target) {
-              target = target.parentElement
-              if (target.tagName === 'TR') {
-                targetId = target.id
-                break
-              }
+          while (target) {
+            if (target.tagName === 'TR' && (target.classList.contains('file') || target.classList.contains('folder'))) {
+              targetId = target.id
+              break
             }
+            target = target.parentElement
           }
+          target = e.target
 
           if (targetId !== undefined && targetId !== null && targetId.length > 1 && targetId.substr(0, 1) === 'd') {
             targetId = parseInt(targetId.substr(1))
@@ -272,7 +271,7 @@ export default {
             move.reset()
           } else {
             if (target.nodeName === 'I') target = target.parentNode
-            if (target.nodeName === 'A' && target.id !== undefined && target.id !== null && target.id.indexOf('parent-') !== -1) {
+            if (target && target.nodeName === 'A' && target.id !== undefined && target.id !== null && target.id.indexOf('parent-') !== -1) {
               targetId = parseInt(target.id.replace('parent-', ''))
               move.cut(id, type)
               move.paste(targetId)
@@ -283,7 +282,7 @@ export default {
           return false
         }
       } else { // Move file(s) from client to Mui
-        upload.upFiles(e.dataTransfer.files, this)
+        upload.upFiles(e.dataTransfer.files, this, typeof e.dataTransfer.items !== 'undefined' ? e.dataTransfer.items : null)
       }
     },
     selAll (e) {
@@ -309,8 +308,22 @@ export default {
       download.dlFiles([id], this)
     },
     showHelp () {
+      let validate = (e) => {
+        let index = this.$refs.messageBox.getIndexFromEvent(e)
+        if (index !== false) this.$refs.messageBox.close(index)
+      }
       this.$refs.messageBox.add({
-        txt: this.$t('Help.shortcuts').join('\n')
+        txt: this.$t('Help.shortcuts').join('\n'),
+        btns: [
+          {
+            type: 'button',
+            class: 'btn',
+            value: 'OK',
+            clickEvent (e) {
+              validate(e)
+            }
+          }
+        ]
       })
     },
     keyListener (e) {

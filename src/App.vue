@@ -73,6 +73,10 @@ export default {
       return false
     },
     logout () {
+      let jti = utils.getJti(this.token)
+      if (jti !== false && jti !== null) {
+        this.$http.delete('session/jti/' + jti)
+      }
       this.token = null
       sessionStorage.clear()
       this.$router.push('/login')

@@ -383,7 +383,7 @@ class Upload {
     return window.File && window.FileReader && window.FileList && window.Blob
   }
 
-  upFiles (files, v) {
+  upFiles (data, v, items) { // items is optionnal, used for webkit folder detection
     vue = v
     if (!this.checkAPI()) {
       alert(vue.$t('Transfers.fileAPI'))
@@ -397,9 +397,31 @@ class Upload {
     yesCompleteAll = false
     noAll = false
 
-    for (let i = 0; i < files.length; i++) {
-      let open = i === files.length - 1
-      this.enc.push(new Encryption(files[i], store.folder.folder_id, this.enc.length, open))
+    let files = []
+    for (let i = 0; i < data.length; i++) {
+      // Folder detection
+      if (typeof data[i].type !== 'undefined' && data[i].type !== null && data[i].type.length > 0) {
+        files.push(data[i])
+      } else {
+        if (items !== undefined && items !== null && typeof items[i].webkitGetAsEntry === 'function') { // Chrome, Edge, Firefox 50+
+          let entry = items[i].webkitGetAsEntry()
+          if (entry.isDirectory) {
+            continue
+          }
+        } else { // Try with FileReader but does not always detect a folder
+          try {
+            new FileReader().readAsBinaryString(data[i].slice(0, 5))
+          } catch (e) { // could not access contents, is a directory, skip
+            continue
+          }
+        }
+        files.push(data[i])
+      }
+    }
+
+    for (let j = 0; j < files.length; j++) {
+      let open = j === files.length - 1
+      this.enc.push(new Encryption(files[j], store.folder.folder_id, this.enc.length, open))
     }
   }
 

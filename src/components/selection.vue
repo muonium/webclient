@@ -379,7 +379,7 @@ export default {
   computed: {
     pct () {
       let p = store.folder.stored / store.folder.quota * 100
-      return isNaN(p) ? 0 : (p > 100 ? 100 : parseFloat(p.toFixed(2)))
+      return isNaN(p) || p < 0 ? 0 : (p > 100 ? 100 : parseFloat(p.toFixed(2)))
     },
     quota_html () {
       return this.$t('Selection.quotaOf')

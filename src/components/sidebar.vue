@@ -2,7 +2,7 @@
   <div class="sidebar">
     <ul @click="setSelected">
       <li>
-        <a href="#" id="sidebar-folder" @click.prevent="setState()" :class="this.selected === 'folder' ? 'selected' : ''">
+        <a href="#" id="sidebar-folder" @click.prevent="setState('folder')" :class="this.selected === 'folder' ? 'selected' : ''">
           <i class="fa fa-file" aria-hidden="true"></i>
         </a>
       </li>
@@ -56,12 +56,18 @@ export default {
     setState (state) {
       switch (state) {
         case 'trash':
+          store.folder.folder_id = 0
           store.folder.trash = true
           break
         case 'transfers':
           store.folder.transfers = true
           break
         case 'transfersExit':
+          store.folder.transfers = false
+          break
+        case 'folder':
+          store.folder.folder_id = 0
+          store.folder.trash = false
           store.folder.transfers = false
           break
         default:
