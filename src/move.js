@@ -1,5 +1,6 @@
 import bus from './bus'
 import store from './store'
+import utils from './utils'
 
 class Move {
   // type: 1: file, 2: folder
@@ -114,7 +115,7 @@ class Move {
       return false
     }
     let target = type === 1 ? 'files/rename' : 'folders/rename'
-    let oldName = row.getAttribute('data-title')
+    let oldName = utils.htmlspecialcharsDecode(row.getAttribute('data-title'))
 
     let validate = (e) => {
       let exclude = '/\\:*?<>|"'

@@ -25,7 +25,7 @@ class Encryption {
     this.enc = new sjcl.cipher.aes(this.key) // eslint-disable-line new-cap
 
     this.file = file
-    this.dest_filename = file.name.replace(/<\/?[^>]+(>|$)/g, '')
+    this.dest_filename = file.name.replace(/<\/?[^>]+(>|$)/g, '').replace('"', '')
     this.dest_folder = destFolder
     this.id = id
     this.open = open
@@ -383,15 +383,12 @@ class Upload {
     return window.File && window.FileReader && window.FileList && window.Blob
   }
 
-  upFiles (data, v, items) { // items is optionnal, used for webkit folder detection
+  upFiles (data, v, items) { // 'items' is optionnal, used for webkit folder detection
     vue = v
     if (!this.checkAPI()) {
       alert(vue.$t('Transfers.fileAPI'))
       return false
     }
-    store.folder.transfers = true
-    store.transfers.upSelected = true
-    bus.$emit('SidebarOpenTransfers')
 
     yesReplaceAll = false
     yesCompleteAll = false
@@ -419,9 +416,15 @@ class Upload {
       }
     }
 
-    for (let j = 0; j < files.length; j++) {
-      let open = j === files.length - 1
-      this.enc.push(new Encryption(files[j], store.folder.folder_id, this.enc.length, open))
+    if (files.length > 0) {
+      store.folder.transfers = true
+      store.transfers.upSelected = true
+      bus.$emit('SidebarOpenTransfers')
+
+      for (let j = 0; j < files.length; j++) {
+        let open = j === files.length - 1
+        this.enc.push(new Encryption(files[j], store.folder.folder_id, this.enc.length, open))
+      }
     }
   }
 

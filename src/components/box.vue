@@ -119,8 +119,8 @@
         <div class="details">
           <strong>{{ $t('Tree.details') }}</strong>
           <ul>
-            <li><span class="label">{{ $t('Tree.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
-            <li><span class="label">{{ $t('Tree.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
+            <li><span class="label">{{ $t('Tree.name') }}:</span> {{ utils.htmlspecialcharsDecode(el.getAttribute('data-title')) }}</li>
+            <li><span class="label">{{ $t('Tree.path') }}:</span> {{ utils.htmlspecialcharsDecode(el.getAttribute('data-path')) }}/</li>
             <li><span class="label">{{ $t('Tree.type') }}:</span> {{ $t('Selection.file') }}</li>
             <li><span class="label">{{ $t('Tree.size') }}:</span> {{ el.querySelector('.file_size').textContent }}</li>
             <li><span class="label">{{ $t('Tree.lastmod') }}:</span> {{ el.querySelector('.file_lastmod').textContent }}</li>
@@ -154,8 +154,8 @@
         <div class="details">
           <strong>{{ $t('Tree.details') }}</strong>
           <ul>
-            <li><span class="label">{{ $t('Tree.name') }}:</span> {{ el.getAttribute('data-title') }}</li>
-            <li><span class="label">{{ $t('Tree.path') }}:</span> {{ el.getAttribute('data-path') }}/</li>
+            <li><span class="label">{{ $t('Tree.name') }}:</span> {{ utils.htmlspecialcharsDecode(el.getAttribute('data-title')) }}</li>
+            <li><span class="label">{{ $t('Tree.path') }}:</span> {{ utils.htmlspecialcharsDecode(el.getAttribute('data-path')) }}/</li>
             <li><span class="label">{{ $t('Tree.type') }}:</span> {{ $t('Selection.folder') }}</li>
             <li><span class="label">{{ $t('Tree.size') }}:</span> {{ el.getAttribute('title') }}</li>
           </ul>
@@ -168,6 +168,7 @@
 <script>
 import store from '../store'
 import bus from '../bus'
+import utils from '../utils'
 import move from '../move'
 import rm from '../rm'
 import share from '../share'
@@ -274,6 +275,9 @@ export default {
   computed: {
     style () {
       return this.css
+    },
+    utils () {
+      return utils
     },
     move () {
       return move

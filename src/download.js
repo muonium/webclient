@@ -1,5 +1,6 @@
 import store from './store'
 import bus from './bus'
+import utils from './utils'
 import sjcl from 'sjcl'
 import 'idb.filesystem.js'
 
@@ -255,7 +256,7 @@ class Download {
     let dl = (i) => {
       let row = document.querySelector('#f' + files[i]) // Get filename
       if (row !== null && row.getAttribute('data-title') !== null && row.getAttribute('data-title') !== '') {
-        this.dec.push(new Decryption(files[i], row.getAttribute('data-title'), store.folder.folder_id, this.dec.length))
+        this.dec.push(new Decryption(files[i], utils.htmlspecialcharsDecode(row.getAttribute('data-title')), store.folder.folder_id, this.dec.length))
       }
     }
 

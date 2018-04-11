@@ -1,5 +1,6 @@
 import bus from './bus'
 import store from './store'
+import utils from './utils'
 
 class Rm {
   constructor () {
@@ -65,7 +66,7 @@ class Rm {
   }
 
   rmFromFilename (filename, callback = false) {
-    let f = document.querySelector('tr.file[data-title="' + filename + '"]')
+    let f = document.querySelector('tr.file[data-title="' + utils.htmlspecialchars(filename) + '"]')
     if (f) {
       this.vue.$http.post('rm', {
         files: [{id: parseInt(f.id.substr(1)), folder_id: store.folder.folder_id}]

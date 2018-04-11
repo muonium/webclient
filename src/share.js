@@ -1,4 +1,6 @@
+import bus from './bus'
 import store from './store'
+import utils from './utils'
 import sjcl from 'sjcl'
 
 class Share {
@@ -38,7 +40,7 @@ class Share {
           for (let file of files) {
             let el = document.querySelector('#f' + file)
             if (el) {
-              this.vue.$http.post('files/chunk', {filename: el.getAttribute('data-title'), folder_id: store.folder.folder_id, line: 0}).then((res) => {
+              this.vue.$http.post('files/chunk', {filename: utils.htmlspecialcharsDecode(el.getAttribute('data-title')), folder_id: store.folder.folder_id, line: 0}).then((res) => {
                 // Get the first chunk
                 let chk = res.body.data.split(':')
                 if (chk.length === 4) {
@@ -94,6 +96,7 @@ class Share {
                               if (index !== false) {
                                 document.querySelector('.MessageBox[data-index="' + index + '"] input.copy_url').select()
                                 document.execCommand('copy')
+                                this.vue.$refs.messageBox.close(index)
                               }
                             }
                           }
@@ -160,6 +163,7 @@ class Share {
         console.log(res)
       })
     }
+    bus.$emit('SelectionRemoveAll')
   }
 }
 

@@ -28,7 +28,7 @@
       <transition name="fade">
         <div id="mui" v-show="!this.animate">
           <template v-if="this.folder">
-            <h1 class="inline" :title="this.folder.title">{{ this.folder.title || $t('Global.home') }}</h1>
+            <h1 class="inline" :title="this.folder.title">{{ this.folder.title !== null ? utils.htmlspecialcharsDecode(this.folder.title) : $t('Global.home') }}</h1>
             <a :id="'parent-'+ this.folder.parent" @click="open(folder.parent)" v-if="typeof this.folder.parent !== 'undefined'">
               <i class="fa fa-caret-up" aria-hidden="true"></i>
             </a>
@@ -62,7 +62,7 @@
                 </td>
                 <td><img :src="$parent.base + 'static/img/desktop/extensions/folder.svg'" class="icon"></td>
                 <td>
-                  <strong>{{ folder.name }}</strong>
+                  <strong>{{ utils.htmlspecialcharsDecode(folder.name) }}</strong>
                   [{{ folder.nb_elements }} {{ folder.nb_elements > 1 ? $t('Tree.elements') : $t('Tree.element') }}]
                 </td>
                 <td></td>
@@ -93,7 +93,7 @@
                 </td>
                 <td><img :src="$parent.base + 'static/img/desktop/extensions/' + getIcon(file.name) + '.svg'" class="icon"></td>
                 <td>
-                  <strong>{{ file.name }}</strong>
+                  <strong>{{ utils.htmlspecialcharsDecode(file.name) }}</strong>
                 </td>
                 <td class="file_size">{{ utils.showSize(file.size) }}</td>
                 <td class="file_lastmod">{{ utils.getDate(file.lastmod) }}</td>
@@ -308,10 +308,6 @@ export default {
       download.dlFiles([id], this)
     },
     showHelp () {
-      let validate = (e) => {
-        let index = this.$refs.messageBox.getIndexFromEvent(e)
-        if (index !== false) this.$refs.messageBox.close(index)
-      }
       this.$refs.messageBox.add({
         txt: this.$t('Help.shortcuts').join('\n'),
         btns: [
@@ -319,8 +315,9 @@ export default {
             type: 'button',
             class: 'btn',
             value: 'OK',
-            clickEvent (e) {
-              validate(e)
+            clickEvent: (e) => {
+              let index = this.$refs.messageBox.getIndexFromEvent(e)
+              if (index !== false) this.$refs.messageBox.close(index)
             }
           }
         ]
