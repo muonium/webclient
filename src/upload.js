@@ -376,7 +376,7 @@ class Encryption {
 
 class Upload {
   constructor () {
-    this.enc = []
+    this.enc = {}
   }
 
   checkAPI () {
@@ -423,7 +423,9 @@ class Upload {
 
       for (let j = 0; j < files.length; j++) {
         let open = j === files.length - 1
-        this.enc.push(new Encryption(files[j], store.folder.folder_id, this.enc.length, open))
+        // Transfers ID is a random string
+        let id = sjcl.codec.base64.fromBits(sjcl.random.randomWords(3)).replace(/\s/g, '').replace(/\n$/, '')
+        this.enc[id] = new Encryption(files[j], store.folder.folder_id, id, open)
       }
     }
   }

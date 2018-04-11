@@ -236,7 +236,7 @@ class Decryption {
 
 class Download {
   constructor () {
-    this.dec = []
+    this.dec = {}
   }
 
   checkAPI () {
@@ -256,7 +256,9 @@ class Download {
     let dl = (i) => {
       let row = document.querySelector('#f' + files[i]) // Get filename
       if (row !== null && row.getAttribute('data-title') !== null && row.getAttribute('data-title') !== '') {
-        this.dec.push(new Decryption(files[i], utils.htmlspecialcharsDecode(row.getAttribute('data-title')), store.folder.folder_id, this.dec.length))
+        // Transfers ID is a random string
+        let id = sjcl.codec.base64.fromBits(sjcl.random.randomWords(3)).replace(/\s/g, '').replace(/\n$/, '')
+        this.dec[id] = new Decryption(files[i], utils.htmlspecialcharsDecode(row.getAttribute('data-title')), store.folder.folder_id, id)
       }
     }
 
@@ -279,7 +281,9 @@ class Download {
       alert(vue.$t('Transfers.fileAPI'))
       return false
     }
-    this.dec.push(new Decryption(fileId, filename, fromFolder, this.dec.length, uid, fek))
+    // Transfers ID is a random string
+    let id = sjcl.codec.base64.fromBits(sjcl.random.randomWords(3)).replace(/\s/g, '').replace(/\n$/, '')
+    this.dec[id] = new Decryption(fileId, filename, fromFolder, id, uid, fek)
   }
 
   abort (id) {

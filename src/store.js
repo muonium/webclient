@@ -17,8 +17,8 @@ var store = {
   },
   transfers: {
     upSelected: true,
-    upload: [],
-    download: []
+    upload: {},
+    download: {}
   }
 }
 
