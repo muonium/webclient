@@ -6,6 +6,7 @@
         v-for="(box, index) in this.boxes"
         :key="'box-' + index"
         :data-index="index"
+        :data-type="typeof box.type !== 'undefined' ? box.type : ''"
         v-on:mousedown="dragStart(index, $event)"
       >
         <div class="MessageBoxClose" @click="close(index)">x</div>
@@ -75,6 +76,7 @@ export default {
           }
         })
       }
+      data.type = typeof data.type === 'undefined' ? '' : data.type
       this.boxes.push(data)
       this.$nextTick(() => {
         // Once DOM has been refreshed, place cursor at the end of value if autofocus
@@ -143,6 +145,9 @@ export default {
         }
       }
       return false
+    },
+    hasType (type) {
+      return this.boxes.find(box => box.type === type) !== undefined
     },
     attributes (input) {
       // Keep only HTML attributes to set in input

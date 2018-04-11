@@ -308,20 +308,23 @@ export default {
       download.dlFiles([id], this)
     },
     showHelp () {
-      this.$refs.messageBox.add({
-        txt: this.$t('Help.shortcuts').join('\n'),
-        btns: [
-          {
-            type: 'button',
-            class: 'btn',
-            value: 'OK',
-            clickEvent: (e) => {
-              let index = this.$refs.messageBox.getIndexFromEvent(e)
-              if (index !== false) this.$refs.messageBox.close(index)
+      if (!this.$refs.messageBox.hasType('help')) {
+        this.$refs.messageBox.add({
+          type: 'help',
+          txt: this.$t('Help.shortcuts').join('\n'),
+          btns: [
+            {
+              type: 'button',
+              class: 'btn',
+              value: 'OK',
+              clickEvent: (e) => {
+                let index = this.$refs.messageBox.getIndexFromEvent(e)
+                if (index !== false) this.$refs.messageBox.close(index)
+              }
             }
-          }
-        ]
-      })
+          ]
+        })
+      }
     },
     keyListener (e) {
       let fired = true
