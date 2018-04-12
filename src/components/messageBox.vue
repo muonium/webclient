@@ -91,6 +91,9 @@ export default {
     close (index) {
       this.$delete(this.boxes, index)
     },
+    closeType (type) {
+      this.boxes = this.boxes.filter(box => box.type !== type)
+    },
     closeAll () {
       this.boxes = []
     },
@@ -173,6 +176,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.MessageBox[data-type="upload"]:not(:first-child) {
+  display: none;
+}
 .fade-enter-active, .fade-leave-active {
   transition: opacity .4s;
 }

@@ -208,35 +208,38 @@ export default {
         }
         return true
       }
-      this.$refs.messageBox.add({
-        title: this.$t('Selection.nFolder'),
-        inputs: [
-          {
-            type: 'text',
-            name: 'folder_name',
-            id: 'nFolder',
-            placeholder: this.$t('Tree.foldername'),
-            autocomplete: 'off',
-            autofocus: true,
-            icon: 'fa fa-folder-o',
-            keyDownEvent (e) {
-              if (!validate(e)) {
-                e.preventDefault()
+      if (!this.$refs.messageBox.hasType('nFolder')) {
+        this.$refs.messageBox.add({
+          type: 'nFolder',
+          title: this.$t('Selection.nFolder'),
+          inputs: [
+            {
+              type: 'text',
+              name: 'folder_name',
+              id: 'nFolder',
+              placeholder: this.$t('Tree.foldername'),
+              autocomplete: 'off',
+              autofocus: true,
+              icon: 'fa fa-folder-o',
+              keyDownEvent (e) {
+                if (!validate(e)) {
+                  e.preventDefault()
+                }
               }
             }
-          }
-        ],
-        btns: [
-          {
-            type: 'button',
-            class: 'btn',
-            value: 'OK',
-            clickEvent (e) {
-              validate(e)
+          ],
+          btns: [
+            {
+              type: 'button',
+              class: 'btn',
+              value: 'OK',
+              clickEvent (e) {
+                validate(e)
+              }
             }
-          }
-        ]
-      })
+          ]
+        })
+      }
     },
     changeDisplay (d) {
       if (d === 'mosaic' || d === 'list') {
@@ -249,6 +252,7 @@ export default {
     },
     drop (e) {
       e.preventDefault()
+      e.stopPropagation()
       if (e.dataTransfer.files.length === 0) {
         if (e.dataTransfer.getData('text') !== '') { // Move file/folder with drag/drop
           let target = e.target

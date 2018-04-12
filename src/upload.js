@@ -17,6 +17,8 @@ class Encryption {
     this.est = 1.335 // Estimation of the difference between the file and encrypted file
     this.yes = false
     this.halt = false
+    this.status = null
+    this.line = 0
 
     if (this.cek === null) return false
 
@@ -48,6 +50,7 @@ class Encryption {
   }
 
   complete (line) {
+    if (line === null) this.abort()
     let nbTransfers = Object.keys(store.transfers.upload).length
     let completeFile = true // Initial state
     let btnCallback = (e, yes) => {
@@ -94,7 +97,7 @@ class Encryption {
             } else {
               yesReplaceAll = true
             }
-            btnCallback(e, true)
+            bus.$emit('uploadRerun')
           }
         })
       }
@@ -113,11 +116,12 @@ class Encryption {
           value: vue.$t('Transfers.noAll'),
           clickEvent (e) {
             noAll = true
-            btnCallback(e, false)
+            bus.$emit('uploadRerun')
           }
         })
       }
       vue.$refs.messageBox.add({
+        type: 'upload',
         title: vue.$t('Transfers.replaceCompleteFile').replace('[filename]', this.dest_filename),
         toggles: [
           {
@@ -171,7 +175,7 @@ class Encryption {
           value: vue.$t('Transfers.yesAll'),
           clickEvent (e) {
             yesReplaceAll = true
-            btnCallback(e, true)
+            bus.$emit('uploadRerun')
           }
         })
       }
@@ -190,11 +194,12 @@ class Encryption {
           value: vue.$t('Transfers.noAll'),
           clickEvent (e) {
             noAll = true
-            btnCallback(e, false)
+            bus.$emit('uploadRerun')
           }
         })
       }
       vue.$refs.messageBox.add({
+        type: 'upload',
         title: vue.$t('Transfers.replaceFile').replace('[filename]', this.dest_filename),
         btns: btns
       })
@@ -204,36 +209,47 @@ class Encryption {
   }
 
   checkStatus () {
-    vue.$http.post('files/status', {filename: this.dest_filename, folder_id: this.dest_folder, filesize: this.file.size}).then((res) => {
-      if (typeof res.body.data.status !== 'undefined') {
-        switch (res.body.data.status) {
-          case 0: // Not exists
-            this.read()
-            break
-          case 1: // Not completed
-            this.complete(res.body.data.line)
-            break
-          case 2: // Completed
-            this.replace()
-            break
-          default:
-            this.error()
+    let action = () => {
+      switch (this.status) {
+        case 0: // Not exists
+          this.read()
+          break
+        case 1: // Not completed
+          this.complete(this.line)
+          break
+        case 2: // Completed
+          this.replace()
+          break
+        default:
+          this.error()
+      }
+    }
+
+    if (this.status === null) {
+      vue.$http.post('files/status', {filename: this.dest_filename, folder_id: this.dest_folder, filesize: this.file.size}).then((res) => {
+        if (typeof res.body.data.status !== 'undefined') {
+          this.status = res.body.data.status
+          if (this.status === 1) this.line = res.body.data.line
+          action()
+        } else {
+          this.error()
         }
-      } else {
-        this.error()
-      }
-    }, (res) => {
-      this.halt = true
-      if (res.body.message === 'quota') {
-        this.error('Transfers.quotaExceeded')
-      } else {
-        this.error()
-      }
-    })
+      }, (res) => {
+        this.halt = true
+        if (res.body.message === 'quota') {
+          this.error('Transfers.quotaExceeded')
+        } else {
+          this.error()
+        }
+      })
+    } else {
+      action()
+    }
   }
 
   read (start = 0) {
     this.start = start
+    this.status = 3 // Uploading
     if (debug) console.log('start reading')
 
     let readChunk = () => {
@@ -379,6 +395,17 @@ class Encryption {
 class Upload {
   constructor () {
     this.enc = {}
+
+    bus.$on('uploadRerun', () => {
+      vue.$refs.messageBox.closeType('upload')
+      let transfers = Object.keys(store.transfers.upload)
+      for (let h of transfers) {
+        if (typeof this.enc[h] !== 'undefined' && this.enc[h].status !== null && this.enc[h].status !== 3) {
+          // Rerun files that are not currently uploading
+          this.enc[h].checkStatus()
+        }
+      }
+    })
   }
 
   checkAPI () {
@@ -399,7 +426,9 @@ class Upload {
     let files = []
     for (let i = 0; i < data.length; i++) {
       // Folder detection
-      if (typeof data[i].type !== 'undefined' && data[i].type !== null && data[i].type.length > 0) {
+      if (files.find(f => f.name === data[i].name) !== undefined) {
+        continue
+      } else if (typeof data[i].type !== 'undefined' && data[i].type !== null && data[i].type.length > 0) {
         files.push(data[i])
       } else {
         if (items !== undefined && items !== null && typeof items[i].webkitGetAsEntry === 'function') { // Chrome, Edge, Firefox 50+
