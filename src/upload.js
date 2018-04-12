@@ -12,7 +12,7 @@ let yesCompleteAll = false
 let noAll = false
 
 class Encryption {
-  constructor (file, destFolder, id, open) {
+  constructor (file, destFolder, id) {
     this.cek = sessionStorage.getItem('cek')
     this.est = 1.335 // Estimation of the difference between the file and encrypted file
     this.yes = false
@@ -28,7 +28,6 @@ class Encryption {
     this.dest_filename = file.name.replace(/<\/?[^>]+(>|$)/g, '').replace('"', '')
     this.dest_folder = destFolder
     this.id = id
-    this.open = open
     this.est_size = Math.round(file.size * this.est) // Estimation of encrypted file size
 
     this.start = 0 // Start to write at chunk x
@@ -49,6 +48,7 @@ class Encryption {
   }
 
   complete (line) {
+    let nbTransfers = Object.keys(store.transfers.upload).length
     let completeFile = true // Initial state
     let btnCallback = (e, yes) => {
       let index = vue.$refs.messageBox.getIndexFromEvent(e)
@@ -83,7 +83,7 @@ class Encryption {
           }
         }
       ]
-      if (!this.open) {
+      if (nbTransfers > 1) {
         btns.push({
           type: 'button',
           class: 'btn',
@@ -106,7 +106,7 @@ class Encryption {
           btnCallback(e, false)
         }
       })
-      if (!this.open) {
+      if (nbTransfers > 1) {
         btns.push({
           type: 'button',
           class: 'btn',
@@ -136,6 +136,7 @@ class Encryption {
   }
 
   replace () {
+    let nbTransfers = Object.keys(store.transfers.upload).length
     let btnCallback = (e, yes) => {
       let index = vue.$refs.messageBox.getIndexFromEvent(e)
       if (index !== false) {
@@ -163,7 +164,7 @@ class Encryption {
           }
         }
       ]
-      if (!this.open) { // Not the last file
+      if (nbTransfers > 1) { // Not the last file
         btns.push({
           type: 'button',
           class: 'btn',
@@ -182,7 +183,7 @@ class Encryption {
           btnCallback(e, false)
         }
       })
-      if (!this.open) { // Not the last file
+      if (nbTransfers > 1) { // Not the last file
         btns.push({
           type: 'button',
           class: 'btn',
@@ -266,7 +267,8 @@ class Encryption {
       if (this.chWritten >= this.chRead) { // Done, write "EOF" at the end of file
         clearInterval(timer)
         vue.$http.post('files/write', {filename: this.dest_filename, folder_id: this.dest_folder, data: 'EOF'}).then((res) => {
-          if (this.open) {
+          vue.$delete(store.transfers.upload, this.id)
+          if (Object.keys(store.transfers.upload).length === 0) {
             bus.$emit('FolderOpen')
           }
         }, (res) => {
@@ -422,10 +424,9 @@ class Upload {
       bus.$emit('SidebarOpenTransfers')
 
       for (let j = 0; j < files.length; j++) {
-        let open = j === files.length - 1
         // Transfers ID is a random string
         let id = sjcl.codec.base64.fromBits(sjcl.random.randomWords(3)).replace(/\s/g, '').replace(/\n$/, '')
-        this.enc[id] = new Encryption(files[j], store.folder.folder_id, id, open)
+        this.enc[id] = new Encryption(files[j], store.folder.folder_id, id)
       }
     }
   }
