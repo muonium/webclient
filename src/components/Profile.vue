@@ -288,7 +288,7 @@ export default {
     },
     terminate (index) {
       if (typeof this.sessions[index] !== 'undefined') {
-        this.$http.delete('session/jti/' + this.sessions[index].jti).then((res) => {
+        this.$http.delete('session/jti/' + this.sessions[index].jti.replace(/\+/g, '-').replace(/\//g, '_')).then((res) => { // base64url
           this.$delete(this.sessions, index)
         }, (res) => {
           console.log(res)

@@ -199,11 +199,13 @@ export default {
           if (index !== false) {
             let name = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="folder_name"]').value
             this.$refs.messageBox.close(index)
-            this.$http.post('folders/add', {name: name, folder_id: this.shared.folder_id}).then((res) => {
-              this.open(this.shared.folder_id)
-            }, (res) => {
-              console.log('Exists')
-            })
+            if (/\S/.test(name)) { // not empty
+              this.$http.post('folders/add', {name: name, folder_id: this.shared.folder_id}).then((res) => {
+                this.open(this.shared.folder_id)
+              }, (res) => {
+                console.log('Exists')
+              })
+            }
           }
         }
         return true

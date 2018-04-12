@@ -13,7 +13,9 @@
     </header>
     <div id="main">
       <sidebar v-if="this.sidebar"/>
-      <router-view/>
+      <transition name="fade">
+        <router-view/>
+      </transition>
       <selection v-if="this.selection"/>
       <a href="#" id="dl_decrypted"></a>
     </div>
@@ -75,7 +77,7 @@ export default {
     logout () {
       let jti = utils.getJti(this.token)
       if (jti !== false && jti !== null) {
-        this.$http.delete('session/jti/' + jti)
+        this.$http.delete('session/jti/' + jti.replace(/\+/g, '-').replace(/\//g, '_')) // base64url
       }
       this.token = null
       sessionStorage.clear()
@@ -103,5 +105,14 @@ export default {
 }
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.fade-enter-active {
+  transition: opacity .4s;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0;
+}
+</style>
 <style src="./assets/css/2018/style.css"></style>
 <style src="./assets/css/Interface/tooltip.css"></style>
