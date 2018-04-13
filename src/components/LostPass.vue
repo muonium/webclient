@@ -36,6 +36,7 @@
 
     <p class="red return" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
     <p class="green return" v-if="this.success_msg">{{ $t(this.success_msg) }}</p>
+    <img src="../assets/img/index/loader.svg" class="loader" v-if="loading">
   </div>
 </template>
 
@@ -46,6 +47,7 @@ export default {
   name: 'LostPass',
   data () {
     return {
+      loading: false,
       change_form: false,
       send_form: true,
       err_msg: null,
@@ -67,15 +69,18 @@ export default {
       } else if (this.fields.pass.length < 6) {
         this.err_msg = 'Register.passLength'
       } else {
+        this.loading = true
         this.success_msg = null
         this.err_msg = null
         this.$http.post('lostpass', {uid: this.uid, key: this.key, password: muiHash(this.fields.pass)}).then((res) => {
+          this.loading = false
           this.change_form = false
           this.success_msg = 'LostPass.updateOk'
           setTimeout(function () {
             this.$router.push('/login')
           }, 1000)
         }, (res) => {
+          this.loading = false
           this.err_msg = 'LostPass.keyErr'
           this.change_form = false
           this.send_form = true
@@ -84,7 +89,9 @@ export default {
     },
     sendForm () {
       if (this.username.length > 0) {
+        this.loading = true
         this.$http.post('lostpass/mail', {'username': this.username}).then((res) => {
+          this.loading = false
           this.err_msg = null
           this.success_msg = null
           if (res.body.message === 'sent') {
@@ -95,6 +102,7 @@ export default {
             this.err_msg = 'Error.default'
           }
         }, (res) => {
+          this.loading = false
           if (res.body.message === 'unknownUser') {
             this.err_msg = 'LostPass.notFound'
           } else {

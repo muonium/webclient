@@ -119,7 +119,7 @@ export default {
         }).then((res) => {
           this.loading = false
           this.success_msg = 'Register.ok'
-          this.$router.push({path: '/validate', params: {uid: res.body.data}, query: {status: 'sent'}}) // all is good -> redirect the user
+          this.$router.push({path: '/validate/' + res.body.data, query: {status: 'sent'}}) // all is good -> redirect the user
         }, (res) => {
           this.loading = false
           this.err_msg = 'Error.default'

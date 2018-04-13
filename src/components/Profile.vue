@@ -29,22 +29,22 @@
           <form>
             <h3>{{ $t('Profile.changeLogin') }}</h3>
             <p class="input-large">
-              <input type="text" id="new_login" :placeholder="$t('Profile.newLogin')" v-model="fields.changeLogin.login" required>
+              <input type="text" id="new_login" :placeholder="$t('Profile.newLogin')" v-model="fields.changeLogin.login" @focus="reset('changeLoginReturn')" required>
               <label class="fa fa-user" for="new_login" aria-hidden="true"></label>
             </p>
+            <div v-if="this.changeLoginReturn" class="preturn">{{ $t(this.changeLoginReturn) }}</div>
             <input type="submit" class="btn btn-required btn-profile" @click.prevent="changeLogin" :value="$t('Global.submit')" :disabled="!isComplete('changeLogin')">
-            <div v-if="this.changeLoginReturn">{{ $t('this.changeLoginReturn') }}</div>
           </form>
         </div>
         <div>
           <form>
             <h3>{{ $t('Profile.changeMail') }}</h3>
             <p class="input-large">
-              <input type="text" id="new_mail" :placeholder="$t('Profile.changeMail')" v-model="fields.changeMail.mail" required>
+              <input type="text" id="new_mail" :placeholder="$t('Profile.changeMail')" v-model="fields.changeMail.mail" @focus="reset('changeMailReturn')" required>
               <label class="fa fa-envelope" for="new_mail" aria-hidden="true"></label>
             </p>
+            <div v-if="this.changeMailReturn" class="preturn">{{ $t(this.changeMailReturn) }}</div>
             <input type="submit" class="btn btn-required btn-profile" @click.prevent="changeMail" :value="$t('Global.submit')" :disabled="!isComplete('changeMail')">
-            <div v-if="this.changeMailReturn">{{ $t('this.changeMailReturn') }}</div>
           </form>
         </div>
       </div>
@@ -57,38 +57,38 @@
           <form>
             <h3>{{ $t('Profile.changePwd') }}</h3>
             <p class="input-large">
-              <input type="password" id="old_pwd" :placeholder="$t('Profile.oldPwd')" v-model="fields.changePassword.old_pwd" required>
+              <input type="password" id="old_pwd" :placeholder="$t('Profile.oldPwd')" v-model="fields.changePassword.old_pwd" @focus="reset('changePasswordReturn')" required>
               <label class="fa fa-lock" for="old_pwd" aria-hidden="true"></label>
             </p>
             <p class="input-large">
-              <input type="password" id="new_pwd" :placeholder="$t('Profile.newPwd')" v-model="fields.changePassword.new_pwd" required>
+              <input type="password" id="new_pwd" :placeholder="$t('Profile.newPwd')" v-model="fields.changePassword.new_pwd" @focus="reset('changePasswordReturn')" required>
               <label class="fa fa-lock" for="new_pwd" aria-hidden="true"></label>
             </p>
             <p class="input-large">
-              <input type="password" id="pwd_confirm" :placeholder="$t('Register.confirm')" v-model="fields.changePassword.pwd_confirm" required>
+              <input type="password" id="pwd_confirm" :placeholder="$t('Register.confirm')" v-model="fields.changePassword.pwd_confirm" @focus="reset('changePasswordReturn')" required>
               <label class="fa fa-lock" for="pwd_confirm" aria-hidden="true"></label>
             </p>
+            <div v-if="this.changePasswordReturn" class="preturn">{{ $t(this.changePasswordReturn) }}</div>
             <input type="submit" class="btn btn-required btn-profile" @click.prevent="changePassword" :value="$t('Global.submit')" :disabled="!isComplete('changePassword')">
-            <div v-if="this.changePasswordReturn">{{ $t('this.changePasswordReturn') }}</div>
           </form>
         </div>
         <div>
           <form>
             <h3>{{ $t('Profile.changePp') }}</h3>
             <p class="input-large">
-              <input type="password" id="old_pp" :placeholder="$t('Profile.oldPp')" v-model="fields.changeCek.old_pp" required>
+              <input type="password" id="old_pp" :placeholder="$t('Profile.oldPp')" v-model="fields.changeCek.old_pp" @focus="reset('changeCekReturn')" required>
               <label class="fa fa-lock" for="old_pp" aria-hidden="true"></label>
             </p>
             <p class="input-large">
-              <input type="password" id="new_pp" :placeholder="$t('Profile.newPp')" v-model="fields.changeCek.new_pp" required>
+              <input type="password" id="new_pp" :placeholder="$t('Profile.newPp')" v-model="fields.changeCek.new_pp" @focus="reset('changeCekReturn')" required>
               <label class="fa fa-lock" for="new_pp" aria-hidden="true"></label>
             </p>
             <p class="input-large">
-              <input type="password" id="pp_confirm" :placeholder="$t('Register.confirm')" v-model="fields.changeCek.pp_confirm" required>
+              <input type="password" id="pp_confirm" :placeholder="$t('Register.confirm')" v-model="fields.changeCek.pp_confirm" @focus="reset('changeCekReturn')" required>
               <label class="fa fa-lock" for="pp_confirm" aria-hidden="true"></label>
             </p>
+            <div v-if="this.changeCekReturn" class="preturn">{{ $t(this.changeCekReturn) }}</div>
             <input type="submit" class="btn btn-required btn-profile" @click.prevent="changeCek" :value="$t('Global.submit')" :disabled="!isComplete('changeCek')">
-            <div v-if="this.changeCekReturn">{{ $t('this.changeCekReturn') }}</div>
           </form>
         </div>
       </div>
@@ -109,10 +109,10 @@
     <fieldset>
       <h3>{{ $t('Profile.doubleAuth') }}</h3>
       <p class="input-large">
-        <input type="checkbox" @click.prevent="changeAuth" id="doubleAuth" v-model="doubleAuth">
+        <input type="checkbox" @click="changeAuth" id="doubleAuth" v-model="doubleAuth">
         <label for="doubleAuth">{{ $t('Register.doubleAuth') }}</label>
       </p>
-      <div v-if="this.changeAuthReturn">{{ $t('this.changeAuthReturn') }}</div>
+      <div v-if="this.changeAuthReturn">{{ $t(this.changeAuthReturn) }}</div>
     </fieldset>
 
     <fieldset>
@@ -138,9 +138,9 @@
           <input type="checkbox" id="delete" v-model="deleteCheckbox" required>
           <label for="delete">{{ $t('Profile.iwant') }}</label>
         </p>
+        <div v-if="this.confirmDeleteReturn" class="preturn">{{ $t(this.confirmDeleteReturn) }}</div>
         <input type="submit" class="btn btn-required btn-warning" @click.prevent="confirmDelete" :value="$t('Profile.deleteAccount')" :disabled="!deleteCheckbox">
       </form>
-      <div v-if="this.confirmDeleteReturn">{{ $t('this.confirmDeleteReturn') }}</div>
     </fieldset>
   </div>
 </template>
@@ -269,7 +269,7 @@ export default {
       document.querySelector('#theme').href = this.$parent.base + (theme === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
     },
     changeAuth () {
-      this.$http.post('user/changeAuth').then((res) => {
+      this.$http.post('user/changeAuth', {doubleAuth: !this.doubleAuth}).then((res) => {
         this.changeAuthReturn = 'Profile.updateOk'
       }, (res) => {
         this.changeAuthReturn = 'Profile.updateErr'
@@ -277,11 +277,9 @@ export default {
     },
     confirmDelete () {
       if (confirm(this.$t('Profile.accountDeletionConfirm'))) {
-        this.$http.delete('user').then((res) => {
-          // Deleted
+        this.$http.delete('user').then((res) => { // Deleted
           this.$parent.logout()
-        }, (res) => {
-          // Error
+        }, (res) => { // Error
           this.confirmDeleteReturn = 'Profile.updateErr'
         })
       }
@@ -301,6 +299,9 @@ export default {
       }, (res) => {
         console.log(res)
       })
+    },
+    reset (v) {
+      this[v] = null
     },
     isComplete (section) {
       let complete = true
@@ -328,7 +329,7 @@ export default {
       this.id = res.body.data.id
       this.login = res.body.data.login
       this.email = res.body.data.email
-      this.doubleAuth = res.body.data.doubleAuth
+      this.doubleAuth = res.body.data.double_auth
     }, (res) => {
       // Error
       this.$parent.logout()
@@ -352,6 +353,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.preturn { margin-bottom: 10px; }
 .sessions {
   display: inline-block;
   margin-top: 24px;

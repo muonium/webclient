@@ -32,7 +32,7 @@
       <router-link to="/register" class="mono center">{{ $t('Login.register') }}</router-link>
     </form>
 
-    <form method="post" v-else>
+    <form method="post" v-on:submit.prevent="sendCode" v-else>
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
@@ -78,14 +78,7 @@ export default {
         this.err_msg = null
         this.$http.post('session', {username: this.fields.username, password: muiHash(this.fields.password)}).then((res) => {
           this.loading = false
-          if (res.body.message === 'doubleAuth') {
-            this.login_form = false
-            this.uid = res.body.data
-          } else if (res.body.message === 'wait') {
-            this.login_form = false
-            this.uid = res.body.data
-            this.err_msg = 'Validate.wait'
-          } else if (res.body.data !== null && typeof res.body.data.cek !== 'undefined') {
+          if (res.body.data !== null && typeof res.body.data.cek !== 'undefined') {
             let cek = decodeURIComponent(res.body.data.cek)
             let fail = false
             try { // we try to decrypt the CEK with the passphrase
@@ -97,11 +90,20 @@ export default {
               this.err_msg = 'Login.badPassphrase'
             }
             if (!fail) {
-              this.success_msg = 'Login.success'
-              sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
-              sessionStorage.setItem('cek', cek) // we store locally the CEK
-              this.$parent.token = res.body.token
-              this.$router.push('/') // all is good -> redirect the user
+              if (res.body.message === 'doubleAuth') {
+                this.login_form = false
+                this.uid = res.body.data.uid
+              } else if (res.body.message === 'wait') {
+                this.login_form = false
+                this.uid = res.body.data.uid
+                this.err_msg = 'Login.wait'
+              } else {
+                this.success_msg = 'Login.success'
+                sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
+                sessionStorage.setItem('cek', cek) // we store locally the CEK
+                this.$parent.token = res.body.token
+                this.$router.push('/') // all is good -> redirect the user
+              }
             }
           } else {
             this.err_msg = 'Error.default'
@@ -113,7 +115,7 @@ export default {
             if (res.body.message === 'badPass') {
               this.err_msg = 'Login.badPass'
             } else if (res.body.message === 'validate') {
-              this.$router.push({path: '/validate', params: {uid: res.body.data}})
+              this.$router.push({path: '/validate/' + res.body.data})
             }
           }
         })
@@ -158,7 +160,7 @@ export default {
             } else if (res.body.message === 'badCode') {
               this.err_msg = 'Login.invalidCode'
             } else if (res.body.message === 'validate') {
-              this.$router.push({path: '/validate', params: {uid: this.uid}})
+              this.$router.push({path: '/validate/' + this.uid})
             }
           }
         })
