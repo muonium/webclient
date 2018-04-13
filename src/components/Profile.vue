@@ -190,6 +190,7 @@ export default {
   methods: {
     changeLogin () {
       this.$http.post('user/changeLogin', {login: this.fields.changeLogin.login}).then((res) => {
+        this.login = this.fields.changeLogin.login
         this.changeLoginReturn = 'Profile.updateOk'
       }, (res) => {
         this.changeLoginReturn = 'Profile.updateErr'
@@ -204,6 +205,7 @@ export default {
     },
     changeMail () {
       this.$http.post('user/changeMail', {mail: this.fields.changeMail.mail}).then((res) => {
+        this.email = this.fields.changeMail.mail
         this.changeMailReturn = 'Profile.updateOk'
       }, (res) => {
         this.changeMailReturn = 'Profile.updateErr'
