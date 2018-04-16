@@ -1,9 +1,10 @@
 #transfers {
-    width: 100%; min-height: 20px;
-    position: fixed;
-    bottom: 55px;
-    overflow: hidden;
-    z-index: 4;
+  width: 100%; min-height: 20px;
+  position: fixed;
+  left: 0;
+  bottom: 55px;
+  overflow: hidden;
+  z-index: 4;
 }
 
 #transfers > .top {
@@ -76,7 +77,7 @@
 #transfers .progress_bar, #transfers .progress_bar .used { display: block; }
 
 @media screen and (min-width: 600px) {
-    #transfers { width: 500px; right: 0; bottom: 0; border-radius: 10px 10px 0 0; }
+  #transfers { width: 500px; left: auto; right: 0; bottom: 0; border-radius: 10px 10px 0 0; }
 	#transfers > .toggle { font-size: 16px; }
 }
 

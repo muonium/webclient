@@ -1,6 +1,7 @@
 var store = {
   folder: {
     folder_id: 0,
+    loading: false,
     trash: false,
     transfers: false,
     display: 'mosaic',

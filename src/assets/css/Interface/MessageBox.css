@@ -1,13 +1,13 @@
 .MessageBox {
-    padding: 10px;
-    position: fixed;
-    z-index: 5;
-    box-shadow: 0 8px 16px 0 rgba(82, 97, 115, 0.18);
-    font-family: Roboto;
-    width: 100%; max-width: 100%;
-    -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-    bottom: 55px;
-    display: block;
+  padding: 10px;
+  position: fixed;
+  z-index: 5;
+  box-shadow: 0 8px 16px 0 rgba(82, 97, 115, 0.18);
+  font-family: Roboto;
+  width: 100%; max-width: 100%;
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+  bottom: 55px;
+  display: block;
 	cursor: default;
 }
 
@@ -29,7 +29,9 @@
 }
 
 .MessageBox .MessageBoxBtns { text-align: right; margin-top: 5px; }
-.MessageBox .MessageBoxBtns input, .MessageBox .MessageBoxBtns button { margin-left: 15px; }
+.MessageBox .MessageBoxBtns input, .MessageBox .MessageBoxBtns button {
+  margin: 5px 0 5px 15px;
+}
 
 .MessageBox .MessageBoxToggle { margin: 10px 0; }
 .MessageBox .MessageBoxToggle > span {
@@ -79,20 +81,20 @@
 }
 
 @media screen and (max-width: 599px) {
-    .MessageBox {
-        left: auto !important; top: auto !important;
+  .MessageBox {
+    left: 0 !important; top: auto !important;
 		width: 100% !important;
-    }
+  }
 }
 
 @media screen and (min-width: 600px) {
-    .MessageBox {
-        min-width: 20%;
-        width: auto;
-        bottom: auto; left: 50%; top: 50%;
-        transform: translate(-50%, -50%);
+  .MessageBox {
+    min-width: 20%;
+    width: auto;
+    bottom: auto; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
 		cursor: move;
-    }
+  }
 
-    .MessageBox .MessageBoxClose { font-size: 18px; }
+  .MessageBox .MessageBoxClose { font-size: 18px; }
 }

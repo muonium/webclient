@@ -52,6 +52,12 @@
                 :data-title="folder.name"
                 @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
                 @dblclick.stop.prevent="open(folder.id)"
+                @mousedown.stop.prevent="startLongClick"
+                @touchstart.stop.prevent="startLongClick"
+                @mouseleave.stop.prevent="stopLongClick(folder.id, 2, $event)"
+                @mouseup.stop.prevent="stopLongClick(folder.id, 2, $event)"
+                @touchend.stop.prevent="stopLongClick(folder.id, 2, $event)"
+                @touchcancel.stop.prevent="stopLongClick(folder.id, 2, $event)"
                 @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
                 @dragstart="drag($event)"
                 draggable="true"
@@ -83,6 +89,12 @@
                 :data-url="file.url"
                 @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
                 @dblclick.stop.prevent="startDownload(file.id)"
+                @mousedown.stop.prevent="startLongClick"
+                @touchstart.stop.prevent="startLongClick"
+                @mouseleave.stop.prevent="stopLongClick(file.id, 1, $event)"
+                @mouseup.stop.prevent="stopLongClick(file.id, 1, $event)"
+                @touchend.stop.prevent="stopLongClick(file.id, 1, $event)"
+                @touchcancel.stop.prevent="stopLongClick(file.id, 1, $event)"
                 @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
                 @dragstart="drag($event)"
                 draggable="true"
@@ -158,14 +170,18 @@ export default {
     return {
       shared: store.folder,
       folder: null,
-      animate: true
+      animate: true,
+      longClickTimer: null,
+      longClickCounter: 0
     }
   },
   methods: {
-    open (folderId) {
+    open (folderId, trashState = false) {
       this.$router.push('/u/' + folderId)
-      this.animate = this.shared.folder_id !== parseInt(folderId)
+      this.shared.loading = true
+      this.animate = trashState ? true : this.shared.folder_id !== parseInt(folderId)
       this.$http.post('folders/open', {folder_id: folderId, trash: (this.shared.trash ? 1 : 0)}).then((res) => {
+        this.shared.loading = false
         this.animate = false
         bus.$emit('SelectionRemoveAll')
         bus.$emit('BoxClose')
@@ -247,6 +263,26 @@ export default {
       if (d === 'mosaic' || d === 'list') {
         this.shared.display = d
         localStorage.setItem('display', d)
+      }
+    },
+    startLongClick () {
+      if (window.innerWidth < 600 && this.longClickTimer === null) {
+        this.longClickCounter = 0
+        this.longClickTimer = setInterval(() => this.longClickCounter++, 30)
+      }
+    },
+    stopLongClick (id, type, e) {
+      if (this.longClickTimer !== null) {
+        clearInterval(this.longClickTimer)
+        if (this.longClickCounter >= 10) { // 300ms+ is a long click
+          if (type === 1) {
+            this.startDownload(id)
+          } else if (type === 2) {
+            this.open(id)
+          }
+        }
+        this.longClickCounter = 0
+        this.longClickTimer = null
       }
     },
     drag (e) {
@@ -452,16 +488,18 @@ export default {
 
     document.addEventListener('keydown', this.keyListener)
 
-    bus.$on('FolderOpen', (id = this.shared.folder_id) => {
-      this.open(id)
+    bus.$on('FolderOpen', (id = this.shared.folder_id, trashState = false) => {
+      this.open(id, trashState)
     })
     bus.$on('FolderOpenCurrent', () => {
+      let trashState = this.shared.trash
       this.shared.trash = false
-      this.open(this.shared.folder_id)
+      this.open(this.shared.folder_id, trashState)
     })
     bus.$on('FolderOpenTrash', () => {
+      let trashState = !this.shared.trash
       this.shared.trash = true
-      this.open(this.shared.folder_id)
+      this.open(this.shared.folder_id, trashState)
     })
     bus.$on('FolderAdd', this.add)
     bus.$on('UploadDialog', this.uploadDialog)

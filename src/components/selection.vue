@@ -398,10 +398,12 @@ export default {
   },
   created () {
     bus.$on('SelectionAddFile', (id, e) => {
+      if (store.folder.loading) return false
       if (e !== null) bus.$emit('BoxClose')
       this.addFile(id, e, true)
     })
     bus.$on('SelectionAddFolder', (id, e) => {
+      if (store.folder.loading) return false
       if (e !== null) bus.$emit('BoxClose')
       this.addFolder(id, e, true)
     })

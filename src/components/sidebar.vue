@@ -54,10 +54,12 @@ export default {
       }
     },
     setState (state) {
+      let trashState = false
       switch (state) {
         case 'trash':
           store.folder.folder_id = 0
           store.folder.trash = true
+          trashState = true
           break
         case 'transfers':
           store.folder.transfers = true
@@ -69,12 +71,13 @@ export default {
           store.folder.folder_id = 0
           store.folder.trash = false
           store.folder.transfers = false
+          trashState = true
           break
         default:
           store.folder.trash = false
           store.folder.transfers = false
       }
-      bus.$emit('FolderOpen')
+      if (trashState) bus.$emit('FolderOpen', store.folder.folder_id, trashState)
       this.$router.push('/u/' + store.folder.folder_id)
     }
   },
