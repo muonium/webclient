@@ -18,7 +18,7 @@
       <fieldset>
         <legend>{{ $t('Bug.message') }}*</legend>
         <p class="input-large">
-          <textarea v-model="fields.message.value" cols="50" rows="5" required></textarea>
+          <textarea v-model="fields.message.value" cols="50" rows="5" required autofocus></textarea>
         </p>
       </fieldset>
 

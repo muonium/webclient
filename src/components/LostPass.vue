@@ -24,7 +24,7 @@
 
     <form method="post" v-on:submit.prevent="sendForm" v-if="send_form">
       <p class="input-large">
-        <input type="text" id="user" :placeholder="$t('LostPass.user')" v-model="username" required>
+        <input type="text" id="user" :placeholder="$t('LostPass.user')" v-model="username" required autofocus>
         <label class="fa fa-user" for="user" aria-hidden="true"></label>
       </p>
 

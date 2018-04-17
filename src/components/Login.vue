@@ -36,7 +36,7 @@
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" name="code" class="noicon" :placeholder="$t('Login.codeMail')" v-model="code" required>
+        <input type="text" name="code" class="noicon" :placeholder="$t('Login.codeMail')" v-model="code" required autofocus>
       </p>
       <input type="submit" class="btn" :value="$t('Global.submit')">
     </form>

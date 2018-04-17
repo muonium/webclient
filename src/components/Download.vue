@@ -16,7 +16,7 @@
 
       <form v-if="!isDownloading" v-on:submit.prevent="dl">
         <p class="input-small">
-          <input type="password" id="password" v-model="password" :placeholder="$t('Register.password')">
+          <input type="password" id="password" v-model="password" :placeholder="$t('Register.password')" autofocus>
           <label class="fa fa-lock" for="password"></label>
         </p>
         <p>
