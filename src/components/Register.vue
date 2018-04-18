@@ -8,7 +8,7 @@
       <h1>{{ $t('Global.register') }}</h1>
 
       <p class="input-large">
-        <input type="text" id="field_mail" :placeholder="$t('Register.email')" v-model="fields.mail.value" required autofocus>
+        <input type="text" id="field_mail" :placeholder="$t('Register.email')" v-model="fields.mail.value" required v-focus>
         <label class="fa fa-envelope" for="field_mail" aria-hidden="true"></label>
       </p>
 

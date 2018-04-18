@@ -1,12 +1,10 @@
 <template>
   <div class="container-large">
+    <vue-headful
+      v-if="!this.$parent.loading"
+      :title="$t('Global.Bug')"
+    />
     <form method="post" class="form-bug" v-on:submit.prevent="sendForm">
-
-	<vue-headful
-	  v-if="!this.$parent.loading"
-	  :title="Muonium - $t('Global.Bug')"
-	/>
-
       <h1>{{ $t('Global.bug') }}</h1>
 
       <p class="input-large">
@@ -24,7 +22,7 @@
       <fieldset>
         <legend>{{ $t('Bug.message') }}*</legend>
         <p class="input-large">
-          <textarea v-model="fields.message.value" cols="50" rows="5" required autofocus></textarea>
+          <textarea v-model="fields.message.value" cols="50" rows="5" required v-focus></textarea>
         </p>
       </fieldset>
 

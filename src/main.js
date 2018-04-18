@@ -47,6 +47,10 @@ const i18n = new VueI18n({
   silentTranslationWarn: true
 })
 
+Vue.directive('focus', {
+  inserted: el => el.focus()
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

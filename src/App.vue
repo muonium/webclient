@@ -1,5 +1,5 @@
 <template>
-  <body v-show="!this.loading">
+  <body :style="{opacity: this.loading ? 0 : 1}">
     <header>
       <div id="logo">
         <router-link to="/">

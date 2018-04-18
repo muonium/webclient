@@ -1,11 +1,9 @@
 <template>
   <div class="container-large" v-if="this.loaded">
-
-  <vue-headful
-	v-if="!this.$parent.loading"
-	:title="Muonium - $t('Global.shared')"
-  />
-
+    <vue-headful
+      v-if="!this.$parent.loading"
+      :title="$t('Global.shared')"
+    />
     <div class="info" v-if="!this.$parent.isLogged()">
       {{ $t('Register.dontHaveAccount') }}
       <router-link to="/register">{{ $t('Register.create') }}</router-link>
@@ -22,7 +20,7 @@
 
       <form v-if="!isDownloading" v-on:submit.prevent="dl">
         <p class="input-small">
-          <input type="password" id="password" v-model="password" :placeholder="$t('Register.password')" autofocus>
+          <input type="password" id="password" v-model="password" :placeholder="$t('Register.password')" v-focus>
           <label class="fa fa-lock" for="password"></label>
         </p>
         <p>

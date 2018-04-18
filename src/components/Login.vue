@@ -2,7 +2,7 @@
   <div class="container-small">
     <vue-headful
       v-if="!this.$parent.loading"
-      :title="Muonium - $t('Global.login')"
+      :title="$t('Global.login')"
     />
     <div class="info green" v-if="this.val">{{ $t('Validate.done') }}</div>
 
@@ -10,7 +10,7 @@
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" id="field_username" :placeholder="$t('Login.username')" v-model="fields.username" required autofocus>
+        <input type="text" id="field_username" :placeholder="$t('Login.username')" v-model="fields.username" required v-focus>
         <label class="fa fa-user" for="field_username" aria-hidden="true"></label>
       </p>
 
@@ -36,7 +36,7 @@
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" name="code" class="noicon" :placeholder="$t('Login.codeMail')" v-model="code" required autofocus>
+        <input type="text" name="code" class="noicon" :placeholder="$t('Login.codeMail')" v-model="code" required v-focus>
       </p>
       <input type="submit" class="btn" :value="$t('Global.submit')">
     </form>

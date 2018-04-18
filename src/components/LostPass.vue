@@ -2,7 +2,7 @@
   <div class="container-small">
     <vue-headful
       v-if="!this.$parent.loading"
-      :title="Muonium - $t('Login.forgot')"
+      :title="$t('Login.forgot')"
     />
     <h1>{{ $t('Login.forgot') }}</h1>
 
@@ -10,7 +10,7 @@
       <strong>{{ $t('Profile.changePwd') }}</strong>
 
       <p class="input-large">
-        <input type="password" id="pwd" :placeholder="$t('Profile.newPwd')" v-model="fields.pass" required autofocus>
+        <input type="password" id="pwd" :placeholder="$t('Profile.newPwd')" v-model="fields.pass" required v-focus>
         <label class="fa fa-lock" for="pwd" aria-hidden="true"></label>
       </p>
 
@@ -24,7 +24,7 @@
 
     <form method="post" v-on:submit.prevent="sendForm" v-if="send_form">
       <p class="input-large">
-        <input type="text" id="user" :placeholder="$t('LostPass.user')" v-model="username" required autofocus>
+        <input type="text" id="user" :placeholder="$t('LostPass.user')" v-model="username" required v-focus>
         <label class="fa fa-user" for="user" aria-hidden="true"></label>
       </p>
 

@@ -1,11 +1,9 @@
 <template>
   <div class="container-large">
-
-  <vue-headful
-	v-if="!this.$parent.loading"
-	:title="Muonium - $t('Global.profile')"
-  />
-
+    <vue-headful
+      v-if="!this.$parent.loading"
+      :title="$t('Global.profile')"
+    />
     <div class="info mono">
       {{ $t('Profile.upgrade') }}
       <router-link to="/upgrade">{{ $t('Profile.getMore') }}</router-link>

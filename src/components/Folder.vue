@@ -35,7 +35,7 @@
             <table id="tree" :class="this.shared.display === 'mosaic' ? 'mosaic' : ''">
               <tr id="tree_head" v-show="this.folder.folders.length > 0 || this.folder.files.length > 0">
                 <th width="44px">
-                  <input type="checkbox" id="sel_all" @click.stop="selAll"><label for="sel_all"></label>
+                  <input type="checkbox" id="sel_all"><label for="sel_all" @click.stop.prevent="selAll"></label>
                 </th>
                 <th></th>
                 <th>{{ $t('Tree.name') }}</th>
@@ -52,12 +52,6 @@
                 :data-title="folder.name"
                 @click.stop.prevent="trigger('SelectionAddFolder', folder.id, $event)"
                 @dblclick.stop.prevent="open(folder.id)"
-                @mousedown.stop.prevent="startLongClick"
-                @touchstart.stop.prevent="startLongClick"
-                @mouseleave.stop.prevent="stopLongClick(folder.id, 2, $event)"
-                @mouseup.stop.prevent="stopLongClick(folder.id, 2, $event)"
-                @touchend.stop.prevent="stopLongClick(folder.id, 2, $event)"
-                @touchcancel.stop.prevent="stopLongClick(folder.id, 2, $event)"
                 @contextmenu.stop.prevent="trigger('BoxOpen', folder.id, 2, $event)"
                 @dragstart="drag($event)"
                 draggable="true"
@@ -89,12 +83,6 @@
                 :data-url="file.url"
                 @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
                 @dblclick.stop.prevent="startDownload(file.id)"
-                @mousedown.stop.prevent="startLongClick"
-                @touchstart.stop.prevent="startLongClick"
-                @mouseleave.stop.prevent="stopLongClick(file.id, 1, $event)"
-                @mouseup.stop.prevent="stopLongClick(file.id, 1, $event)"
-                @touchend.stop.prevent="stopLongClick(file.id, 1, $event)"
-                @touchcancel.stop.prevent="stopLongClick(file.id, 1, $event)"
                 @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"
                 @dragstart="drag($event)"
                 draggable="true"
@@ -265,26 +253,6 @@ export default {
         localStorage.setItem('display', d)
       }
     },
-    startLongClick () {
-      if (window.innerWidth < 600 && this.longClickTimer === null) {
-        this.longClickCounter = 0
-        this.longClickTimer = setInterval(() => this.longClickCounter++, 30)
-      }
-    },
-    stopLongClick (id, type, e) {
-      if (this.longClickTimer !== null) {
-        clearInterval(this.longClickTimer)
-        if (this.longClickCounter >= 10) { // 300ms+ is a long click
-          if (type === 1) {
-            this.startDownload(id)
-          } else if (type === 2) {
-            this.open(id)
-          }
-        }
-        this.longClickCounter = 0
-        this.longClickTimer = null
-      }
-    },
     drag (e) {
       e.dataTransfer.setData('text', e.target.id)
     },
@@ -328,10 +296,10 @@ export default {
       }
     },
     selAll (e) {
-      if (e.target.checked) {
-        bus.$emit('SelectionAddAll')
-      } else {
+      if (document.querySelector('#sel_all').checked) {
         bus.$emit('SelectionRemoveAll')
+      } else {
+        bus.$emit('SelectionAddAll')
       }
     },
     getIcon (filename) {
@@ -432,7 +400,7 @@ export default {
             break
           case 13: // Enter
             if (!this.$parent.isInInput(e)) {
-              if (store.selection.files.length === 1 && store.selection.folders.length === 0) {
+              if (store.selection.files.length > 0 && store.selection.folders.length === 0) {
                 download.dlFiles(store.selection.files, this)
               } else if (store.selection.files.length === 0 && store.selection.folders.length === 1) {
                 this.open(store.selection.folders[0])
