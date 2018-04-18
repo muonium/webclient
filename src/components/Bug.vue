@@ -1,6 +1,12 @@
 <template>
   <div class="container-large">
     <form method="post" class="form-bug" v-on:submit.prevent="sendForm">
+
+	<vue-headful
+	  v-if="!this.$parent.loading"
+	  :title="Muonium - $t('Global.Bug')"
+	/>
+
       <h1>{{ $t('Global.bug') }}</h1>
 
       <p class="input-large">

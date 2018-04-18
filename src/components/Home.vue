@@ -1,8 +1,9 @@
 <template>
   <div class="container-small">
-    <vue-headful
-      title="Muonium"
-    />
+  <vue-headful
+	v-if="!this.$parent.loading"
+	:title="Muonium - $t('Global.home')"
+  />
   </div>
 </template>
 

@@ -1,5 +1,11 @@
 <template>
   <div class="container-large">
+
+  <vue-headful
+	v-if="!this.$parent.loading"
+	:title="Muonium - $t('Global.upgrade')"
+  />
+
     <h1>{{ $t('Upgrade.upgradeMui') }}</h1>
 
     <div class="green" v-if="this.success_msg">{{ $t(this.success_msg) }}</div>

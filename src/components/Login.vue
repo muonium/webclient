@@ -2,7 +2,7 @@
   <div class="container-small">
     <vue-headful
       v-if="!this.$parent.loading"
-      :title="$t('Global.login')"
+      :title="Muonium - $t('Global.login')"
     />
     <div class="info green" v-if="this.val">{{ $t('Validate.done') }}</div>
 

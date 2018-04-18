@@ -2,7 +2,7 @@
   <div class="container-small">
     <vue-headful
       v-if="!this.$parent.loading"
-      :title="$t('Login.forgot')"
+      :title="Muonium - $t('Login.forgot')"
     />
     <h1>{{ $t('Login.forgot') }}</h1>
 

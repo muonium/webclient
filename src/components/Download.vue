@@ -1,5 +1,11 @@
 <template>
   <div class="container-large" v-if="this.loaded">
+
+  <vue-headful
+	v-if="!this.$parent.loading"
+	:title="Muonium - $t('Global.shared')"
+  />
+
     <div class="info" v-if="!this.$parent.isLogged()">
       {{ $t('Register.dontHaveAccount') }}
       <router-link to="/register">{{ $t('Register.create') }}</router-link>
