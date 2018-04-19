@@ -305,9 +305,9 @@ export default {
         this.$refs.messageBox.add({
           type: 'delete',
           title: this.$t('Profile.accountDeletionConfirm'),
-          txt: '<p class="warning hide">...</p>',
+          txt: '<p class="warning">' + this.$t('Profile.deleteWarning') + '</p>',
           btns: [
-            {type: 'button', class: 'btn btn-warning', value: 'OK', clickEvent: (e) => del(e, true)},
+            {type: 'button', class: 'btn btn-warning', value: 'OK', style: 'float:left', clickEvent: (e) => del(e, true)},
             {type: 'button', class: 'btn btn', value: this.$t('Global.cancel'), clickEvent: (e) => del(e, false)}
           ]
         })

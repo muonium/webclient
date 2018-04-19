@@ -28,7 +28,9 @@
       <transition name="fade">
         <div id="mui" v-show="!this.animate">
           <template v-if="this.folder">
-            <h1 class="inline" :title="this.folder.title">{{ this.folder.title !== null ? utils.htmlspecialcharsDecode(this.folder.title) : $t('Global.home') }}</h1>
+            <h1 class="inline" :title="this.folder.title">
+              {{ this.folder.title !== null ? utils.htmlspecialcharsDecode(this.folder.title) : (this.shared.trash ? $t('Selection.trash') : $t('Global.home')) }}
+            </h1>
             <a :id="'parent-'+ this.folder.parent" @click="open(folder.parent)" v-if="typeof this.folder.parent !== 'undefined'">
               <i class="fa fa-caret-up" aria-hidden="true"></i>
             </a>
