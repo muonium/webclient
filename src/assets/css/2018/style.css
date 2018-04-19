@@ -1,19 +1,19 @@
 * {
-    box-sizing: border-box;
-    margin: 0; padding: 0;
-    -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
-    cursor: default;
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+  cursor: default;
 }
 
 html, body {
-    height: 100%;
-    max-width: 100%;
+  height: 100%;
+  max-width: 100%;
 }
 body {
-    min-height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: Roboto, Helvetica, sans-serif;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, Helvetica, sans-serif;
 	font-size: 14px;
 	overflow-x: hidden;
 }
@@ -202,20 +202,20 @@ input:not([type="radio"]):not([type="checkbox"]):not([type="button"]):not([type=
 }
 /* Yes, we need separate rules for each browser. Otherwise the whole group would be ignored by all browsers. */
 [class^="input-"] input::-webkit-input-placeholder {
-    opacity: 1; -webkit-appearance: textfield; appearance: textfield;
+  opacity: 1; -webkit-appearance: textfield; appearance: textfield;
 	font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
 }
 [class^="input-"] input:-moz-placeholder {
-    opacity: 1; -moz-appearance: textfield; appearance: textfield;
+  opacity: 1; -moz-appearance: textfield; appearance: textfield;
 	font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
 }
 [class^="input-"] input::-moz-placeholder {
-    opacity: 1; -moz-appearance: textfield; appearance: textfield;
-    font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
+  opacity: 1; -moz-appearance: textfield; appearance: textfield;
+  font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
 }
 [class^="input-"] input:-ms-input-placeholder {
-    opacity: 1; appearance: textfield;
-    font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
+  opacity: 1; appearance: textfield;
+  font-family: RobotoMono; font-size: 14px; font-weight: 500; text-transform: uppercase;
 }
 
 [class^="input-"] > .fa.fa-question-circle {
@@ -232,8 +232,8 @@ input:not([type="radio"]):not([type="checkbox"]):not([type="button"]):not([type=
 
 input[type="radio"], input[type="checkbox"] { display: none; }
 input[type="radio"] + label, input[type="checkbox"] + label {
-    cursor: pointer;
-    -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+  cursor: pointer;
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
 	display: inline-block;
 	position: relative;
 	padding-left: 34px;
@@ -245,14 +245,14 @@ input[type="radio"] + label + input[type="checkbox"] + label, input[type="checkb
 }
 
 input[type="radio"] + label::before, input[type="checkbox"] + label::before {
-    display: inline-block;
+  display: inline-block;
 	position: absolute;
 	left: 0;
-    content: "";
+  content: "";
 	font-family: FontAwesome;
-    width: 14px; height: 14px;
+  width: 14px; height: 14px;
 	font-size: 14px;
-    border-width: 2px; border-style: solid; border-color: #b4bac6;
+  border-width: 2px; border-style: solid; border-color: #b4bac6;
 	border-radius: 2px;
 	transition: 0.15s linear;
 	transition-property: background-color, border-color;
@@ -271,7 +271,7 @@ select {
 	background-repeat: no-repeat; background-position: right center;
 	border: none;
 	-webkit-appearance: none; -moz-appearance: none; appearance: none;
-    padding-right: 20px;
+  padding-right: 20px;
 	cursor: pointer;
 }
 
@@ -392,9 +392,9 @@ a.blue:hover, a.blue:active, a.blue:focus {
 	font-family: RobotoMono;
 	font-size: 12px; font-weight: bold;
 	letter-spacing: .1px;
-  	transform: rotate(-45deg);
+  transform: rotate(-45deg);
 	color: #fff;
-  	background-color: #16c1f3;
+  background-color: #16c1f3;
 	top: 15px; left: -40px;
 }
 .offer-size { height: 29px; }
@@ -438,6 +438,15 @@ a.blue:hover, a.blue:active, a.blue:focus {
 	border-radius: 10px;
 	box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
 	margin: 10px 0;
+}
+
+.warning {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+  margin: 15px 0;
+  padding: 10px 15px;
+  border-radius: 3px;
 }
 
 .story {
@@ -495,7 +504,7 @@ table.table-responsive tr { display: block; margin: 10px 0; }
 th { text-align: left; }
 
 section#desktop {
-    width: 100%; height: 100%;
+  width: 100%; height: 100%;
 }
 
 section#desktop img.arrow { height: 5vh; width: 5vh; }

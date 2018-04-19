@@ -112,7 +112,9 @@ export default {
           this.loading = false
           this.err_msg = 'Error.default'
           if (res.body.code === 401) {
-            if (res.body.message === 'badPass') {
+            if (res.body.message === 'badUser') {
+              this.err_msg = 'LostPass.notFound'
+            } else if (res.body.message === 'badPass') {
               this.err_msg = 'Login.badPass'
             } else if (res.body.message === 'validate') {
               this.$router.push({path: '/validate/' + res.body.data})

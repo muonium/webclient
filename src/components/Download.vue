@@ -44,7 +44,7 @@ import sjcl from 'sjcl'
 import utils from '../utils'
 
 export default {
-  name: 'download',
+  name: 'Download',
   components: {
     transfers
   },

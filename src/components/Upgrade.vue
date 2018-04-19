@@ -55,7 +55,7 @@ import bus from '../bus'
 import utils from '../utils'
 
 export default {
-  name: 'upgrade',
+  name: 'Upgrade',
   data () {
     return {
       endpoint: null,

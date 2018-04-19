@@ -146,17 +146,23 @@
         <input type="submit" class="btn btn-required btn-warning" @click.prevent="confirmDelete" :value="$t('Profile.deleteAccount')" :disabled="!deleteCheckbox">
       </form>
     </fieldset>
+
+    <messageBox ref="messageBox"/>
   </div>
 </template>
 
 <script>
 import utils from '../utils'
+import messageBox from './messageBox'
 import sjcl from 'sjcl'
 import base64 from 'hi-base64'
 import muiHash from '../mui_hash'
 
 export default {
-  name: 'profile',
+  name: 'Profile',
+  components: {
+    messageBox
+  },
   data () {
     return {
       id: null,
@@ -282,11 +288,28 @@ export default {
       })
     },
     confirmDelete () {
-      if (confirm(this.$t('Profile.accountDeletionConfirm'))) {
-        this.$http.delete('user').then((res) => { // Deleted
-          this.$parent.logout()
-        }, (res) => { // Error
-          this.confirmDeleteReturn = 'Profile.updateErr'
+      let del = (e, yes) => {
+        let index = this.$refs.messageBox.getIndexFromEvent(e)
+        if (index !== false) {
+          this.$refs.messageBox.close(index)
+          if (yes) {
+            this.$http.delete('user').then((res) => { // Deleted
+              this.$parent.logout()
+            }, (res) => { // Error
+              this.confirmDeleteReturn = 'Profile.updateErr'
+            })
+          }
+        }
+      }
+      if (!this.$refs.messageBox.hasType('delete')) {
+        this.$refs.messageBox.add({
+          type: 'delete',
+          title: this.$t('Profile.accountDeletionConfirm'),
+          txt: '<p class="warning hide">...</p>',
+          btns: [
+            {type: 'button', class: 'btn btn-warning', value: 'OK', clickEvent: (e) => del(e, true)},
+            {type: 'button', class: 'btn btn', value: this.$t('Global.cancel'), clickEvent: (e) => del(e, false)}
+          ]
         })
       }
     },

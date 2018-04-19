@@ -2,7 +2,7 @@
   <div class="container-large">
     <vue-headful
       v-if="!this.$parent.loading"
-      :title="$t('Global.Bug')"
+      :title="$t('Global.bug')"
     />
     <form method="post" class="form-bug" v-on:submit.prevent="sendForm">
       <h1>{{ $t('Global.bug') }}</h1>
@@ -39,7 +39,7 @@
 import ua from 'ua-parser-js'
 
 export default {
-  name: 'bug',
+  name: 'Bug',
   data () {
     return {
       err_msg: null,
