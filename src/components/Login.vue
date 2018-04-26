@@ -30,6 +30,18 @@
       </div>
 
       <router-link to="/register" class="mono center">{{ $t('Login.register') }}</router-link>
+
+      <div class="mtop" v-if="!server_form">
+        <a href="#" @click.prevent="toggleChangeServer">{{ $t('Login.server') }}</a>
+      </div>
+
+      <div class="right" v-if="server_form">
+        <p class="input-large">
+          <input type="text" id="field_url" placeholder="URL" v-model="server_url" required>
+          <label class="fa fa-server" for="field_url" aria-hidden="true"></label>
+        </p>
+        <input type="button" class="btn" value="OK" @click.prevent="toggleChangeServer" :disabled="!isUrl">
+      </div>
     </form>
 
     <form method="post" v-on:submit.prevent="sendCode" v-else>
@@ -51,6 +63,8 @@
 import sjcl from 'sjcl'
 import base64 from 'hi-base64'
 import muiHash from '../mui_hash'
+import Vue from 'vue'
+import { isWebUri } from 'valid-url'
 
 export default {
   name: 'Login',
@@ -61,6 +75,8 @@ export default {
       err_msg: null,
       success_msg: null,
       login_form: true,
+      server_form: false,
+      server_url: null,
       uid: null,
       code: '',
       fields: {
@@ -125,6 +141,15 @@ export default {
         this.err_msg = 'Register.form'
       }
     },
+    toggleChangeServer () {
+      this.server_form = !this.server_form
+      if (this.server_url !== null && isWebUri(this.server_url)) {
+        let s = this.server_url.trim()
+        if (s.substr(-1, 1) === '/') s = s.substr(0, s.length - 1)
+        this.server_url = s
+        Vue.http.options.root = s
+      }
+    },
     sendCode () {
       if (this.code.length > 0 && this.uid !== null) {
         this.success_msg = null
@@ -179,9 +204,13 @@ export default {
         }
       }
       return complete
+    },
+    isUrl () {
+      return isWebUri(this.server_url)
     }
   },
   created () {
+    this.server_url = this.$http.options.root
     if (this.$parent.isLogged()) {
       this.$router.push('/')
       return false

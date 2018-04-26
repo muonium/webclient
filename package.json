@@ -18,6 +18,7 @@
     "sjcl": "^1.0.7",
     "ua-parser-js": "^0.7.17",
     "v-tooltip": "^2.0.0-rc.31",
+    "valid-url": "^1.0.9",
     "vue": "^2.5.2",
     "vue-headful": "^1.0.0",
     "vue-i18n": "^7.4.2",
