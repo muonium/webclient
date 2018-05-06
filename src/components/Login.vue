@@ -64,7 +64,7 @@ import sjcl from 'sjcl'
 import base64 from 'hi-base64'
 import muiHash from '../mui_hash'
 import Vue from 'vue'
-import { isWebUri } from 'valid-url'
+import validUrl from 'valid-url'
 
 export default {
   name: 'Login',
@@ -143,11 +143,17 @@ export default {
     },
     toggleChangeServer () {
       this.server_form = !this.server_form
-      if (this.server_url !== null && isWebUri(this.server_url)) {
-        let s = this.server_url.trim()
-        if (s.substr(-1, 1) === '/') s = s.substr(0, s.length - 1)
-        this.server_url = s
-        Vue.http.options.root = s
+      if (this.server_url !== null && validUrl.isWebUri(this.server_url)) {
+        if (window.location.protocol === 'https:' && !validUrl.isHttpsUri(this.server_url)) {
+          alert(this.$t('Login.insecureHttp'))
+          this.server_url = Vue.http.options.root
+        } else {
+          let s = this.server_url.trim()
+          if (s.substr(-1, 1) === '/') s = s.substr(0, s.length - 1)
+          this.server_url = s
+          Vue.http.options.root = s
+          localStorage.setItem('server_url', s)
+        }
       }
     },
     sendCode () {
@@ -206,7 +212,7 @@ export default {
       return complete
     },
     isUrl () {
-      return isWebUri(this.server_url)
+      return validUrl.isWebUri(this.server_url)
     }
   },
   created () {

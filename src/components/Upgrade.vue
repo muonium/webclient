@@ -23,6 +23,8 @@
         </div>
         <form :action="endpoint" method="post" target="_blank" v-if="offer.product_id">
           <input type="hidden" :name="index" :value="field" v-for="(field, index) in offer.fields" :key="'field-' + index">
+          <input type="hidden" name="success_url" :value="$parent.absBase + '#/upgrade/?success=ok'">
+          <input type="hidden" name="cancel_url" value="">
           <button type="submit" class="btn">{{ $t('Global.upgrade') }}</button>
         </form>
       </div>

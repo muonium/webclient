@@ -82,7 +82,7 @@
                 :data-path="file.path"
                 :data-title="file.name"
                 :data-shared="file.is_shared ? 1 : 0"
-                :data-url="file.url"
+                :data-url="$parent.absBase + '#/dl/' + file.url"
                 @click.stop.prevent="trigger('SelectionAddFile', file.id, $event)"
                 @dblclick.stop.prevent="startDownload(file.id)"
                 @contextmenu.stop.prevent="trigger('BoxOpen', file.id, 1, $event)"

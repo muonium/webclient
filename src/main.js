@@ -13,7 +13,7 @@ Vue.use(VueResource)
 Vue.use(VueI18n)
 Vue.use(VTooltip, {defaultPlacement: 'left', defaultOffset: 5})
 Vue.component('vue-headful', vueHeadful)
-Vue.http.options.root = 'https://mui.cloud/core' // Server
+Vue.http.options.root = localStorage.getItem('server_url') || 'https://mui.cloud/core' // Server
 
 // Token management middleware
 Vue.http.interceptors.push(function (request, next) {

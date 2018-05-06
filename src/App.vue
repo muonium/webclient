@@ -40,6 +40,7 @@ export default {
   data () {
     return {
       base: ROOT, // eslint-disable-line no-undef
+      absBase: window.location.protocol + '//' + window.location.host + ROOT, // eslint-disable-line no-undef
       theme: localStorage.getItem('theme') === 'dark' ? 'dark' : 'light',
       loading: true,
       token: sessionStorage.getItem('token'),
