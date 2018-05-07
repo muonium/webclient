@@ -18,11 +18,11 @@ Vue.http.options.root = localStorage.getItem('server_url') || 'https://mui.cloud
 // Token management middleware
 Vue.http.interceptors.push(function (request, next) {
   // Request processing
+  request.headers.set('Client-Language', language.current)
   let token = sessionStorage.getItem('token')
   if (token !== null && request.url.indexOf('.json') === -1) {
     // If a token is stored and requested file is not a json, then, send the token
     request.headers.set('Authorization', 'Bearer ' + token)
-    request.headers.set('Client-Language', language.current)
   }
 
   return function (resp) {
