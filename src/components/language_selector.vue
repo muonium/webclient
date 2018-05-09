@@ -30,6 +30,7 @@ export default {
         this.activeLocale = locale
         this.$i18n.locale = locale
         utils.t = this.$i18n.messages[this.$i18n.locale]
+        language.current = locale
         localStorage.setItem('lang', locale)
       } else {
         this.$http.get(`public/translations/${locale}.json?v=${utils.hash}`).then((res) => {
@@ -38,6 +39,7 @@ export default {
           this.activeLocale = locale
           this.$i18n.locale = locale
           utils.t = this.$i18n.messages[this.$i18n.locale]
+          language.current = locale
           localStorage.setItem('lang', locale)
         })
       }
