@@ -36,7 +36,7 @@ export default {
     },
     successCallback (locale) {
       Vue.config.lang = locale
-      this.activeLocale = locale
+      activeLocale = locale
       this.$i18n.locale = locale
       utils.t = this.$i18n.messages[this.$i18n.locale]
       language.current = locale
