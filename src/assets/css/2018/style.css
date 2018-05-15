@@ -72,12 +72,9 @@ header {
 #logo { flex: 1; -ms-flex: 1 1 0%; }
 #logo img { height: 30px; }
 
-#language-selector select {
-	background-color: transparent;
-	font-weight: bold; font-family: OpenSans;
-    margin: 0 auto;
-	letter-spacing: .1px;
-}
+#main #language-selector { margin: 24px 0; }
+header #language-selector select { margin: 0 auto; }
+#language-selector select { font-weight: bold; font-family: OpenSans; letter-spacing: .1px; }
 #language-selector option { color: #212121; }
 
 .sidebar {
@@ -268,6 +265,7 @@ input[type="radio"]:checked + label::before, input[type="checkbox"]:checked + la
 }
 
 select {
+  background-color: transparent;
 	background-repeat: no-repeat; background-position: right center;
 	border: none;
 	-webkit-appearance: none; -moz-appearance: none; appearance: none;

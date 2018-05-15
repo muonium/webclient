@@ -26,22 +26,23 @@ export default {
     setLocale () {
       let locale = this.selectedLanguage
       if (locale in this.$i18n.messages) {
-        Vue.config.lang = locale
-        this.activeLocale = locale
-        this.$i18n.locale = locale
-        utils.t = this.$i18n.messages[this.$i18n.locale]
-        language.current = locale
-        localStorage.setItem('lang', locale)
+        this.successCallback(locale)
       } else {
         this.$http.get(`public/translations/${locale}.json?v=${utils.hash}`).then((res) => {
           this.$i18n.setLocaleMessage(locale, res.body)
-          Vue.config.lang = locale
-          this.activeLocale = locale
-          this.$i18n.locale = locale
-          utils.t = this.$i18n.messages[this.$i18n.locale]
-          language.current = locale
-          localStorage.setItem('lang', locale)
+          this.successCallback(locale)
         })
+      }
+    },
+    successCallback (locale) {
+      Vue.config.lang = locale
+      this.activeLocale = locale
+      this.$i18n.locale = locale
+      utils.t = this.$i18n.messages[this.$i18n.locale]
+      language.current = locale
+      localStorage.setItem('lang', locale)
+      if (this.$root.$children[0].isLogged()) {
+        this.$http.post('user/changeLang')
       }
     }
   }

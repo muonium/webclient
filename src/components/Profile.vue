@@ -120,6 +120,11 @@
     </fieldset>
 
     <fieldset>
+      <h3>{{ $t('Profile.lang') }}</h3>
+      <languageSelector/>
+    </fieldset>
+
+    <fieldset>
       <h3>{{ $t('Profile.sessions') }}</h3>
       <div class="sessions">
         <table>
@@ -157,11 +162,12 @@ import messageBox from './messageBox'
 import sjcl from 'sjcl'
 import base64 from 'hi-base64'
 import muiHash from '../mui_hash'
+import languageSelector from './language_selector'
 
 export default {
   name: 'Profile',
   components: {
-    messageBox
+    messageBox, languageSelector
   },
   data () {
     return {

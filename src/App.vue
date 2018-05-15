@@ -6,7 +6,7 @@
           <img :src="this.base + 'static/img/logos/muonium_H_01.png'" :title="$t('Global.home')" :alt="$t('Global.home')">
         </router-link>
       </div>
-      <language-selector/>
+      <language-selector v-if="!this.token"/>
       <a href="#" class="logout" :title="$t('Global.logout')" v-if="this.token" @click.prevent="logout">
         <i class="fa fa-sign-out" aria-hidden="true"></i>
       </a>
