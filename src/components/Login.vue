@@ -47,8 +47,14 @@
     <form method="post" v-on:submit.prevent="sendCode" v-else>
       <h1>{{ $t('Global.login') }}</h1>
 
+      <div v-if="doubleAuthMethod === 2 && qrcode">
+        <p v-html="$t('Login.scan')"></p>
+        <p class="input-large">{{ $t('Login.manually') }} <input type="text" v-model="secret" readonly></p>
+        <img :src="'data:image/png;base64,' + this.qrcode" style="display:block;margin:auto">
+      </div>
+
       <p class="input-large">
-        <input type="text" name="code" class="noicon" :placeholder="$t('Login.codeMail')" v-model="code" required v-focus>
+        <input type="text" name="code" class="noicon" :placeholder="$t('Login.code')" v-model="code" required v-focus>
       </p>
       <input type="submit" class="btn" :value="$t('Global.submit')">
     </form>
@@ -77,6 +83,9 @@ export default {
       login_form: true,
       server_form: false,
       server_url: null,
+      doubleAuthMethod: 1,
+      qrcode: null,
+      secret: null,
       uid: null,
       code: '',
       fields: {
@@ -107,12 +116,25 @@ export default {
             }
             if (!fail) {
               if (res.body.message === 'doubleAuth') {
+                this.doubleAuthMethod = res.body.data.doubleAuthMethod
+                this.qrcode = null
+                if (this.doubleAuthMethod === 2) { // get the QR Code
+                  this.loading = true
+                  this.$http.post('GoogleAuthenticator/generateQRcode', {username: this.fields.username}).then((res) => {
+                    this.loading = false
+                    this.qrcode = res.body.data.QRcode
+                    this.secret = res.body.data.secretKey
+                  }, (res) => {
+                    this.loading = false
+                  })
+                }
                 this.login_form = false
                 this.uid = res.body.data.uid
               } else if (res.body.message === 'wait') {
                 this.login_form = false
                 this.uid = res.body.data.uid
                 this.err_msg = 'Login.wait'
+                this.doubleAuthMethod = 1
               } else {
                 this.success_msg = 'Login.success'
                 sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase

@@ -40,9 +40,17 @@
 
       <fieldset class="nomargin">
         <legend>{{ $t('Profile.doubleAuth') }}</legend>
+        <p class="input-large i2fa">
+          <input type="radio" name="2fa" id="2fa_0" :checked="fields.double_auth.value === 0">
+          <label for="2fa_0" @click.prevent="setAuth(0)">{{ $t('Profile.2fa_0') }}</label>
+        </p>
+        <p class="input-large i2fa">
+          <input type="radio" name="2fa" id="2fa_1" :checked="fields.double_auth.value === 1">
+          <label for="2_fa1" @click.prevent="setAuth(1)">{{ $t('Profile.2fa_1') }}</label>
+        </p>
         <p class="input-large">
-          <input type="checkbox" id="double_auth" v-model="fields.double_auth.value">
-          <label for="double_auth">{{ $t('Register.doubleAuth') }}</label>
+          <input type="radio" name="2fa" id="2fa_2" :checked="fields.double_auth.value === 2">
+          <label for="2fa_2" @click.prevent="setAuth(2)">{{ $t('Profile.2fa_2') }}</label>
         </p>
       </fieldset>
 
@@ -150,6 +158,9 @@ export default {
         mode: 'gcm', iv: i, salt: s, iter: 7000, ks: 256, adata: a, ts: 128
       })
       return base64.encode(cek) // don't store a Json in DB...
+    },
+    setAuth (type) {
+      this.fields.double_auth.value = type
     }
   },
   computed: {
@@ -174,4 +185,6 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.i2fa { margin-bottom: 5px; }
+</style>

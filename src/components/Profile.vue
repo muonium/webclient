@@ -113,8 +113,14 @@
     <fieldset>
       <h3>{{ $t('Profile.doubleAuth') }}</h3>
       <p class="input-large">
-        <input type="checkbox" @click="changeAuth" id="doubleAuth" v-model="doubleAuth">
-        <label for="doubleAuth">{{ $t('Register.doubleAuth') }}</label>
+        <input type="radio" name="2fa" id="2fa_0" :checked="doubleAuth === 0">
+        <label for="2fa_0" @click.prevent="switchAuth(0)">{{ $t('Profile.2fa_0') }}</label>
+
+        <input type="radio" name="2fa" id="2fa_1" :checked="doubleAuth === 1">
+        <label for="2_fa1" @click.prevent="switchAuth(1)">{{ $t('Profile.2fa_1') }}</label>
+
+        <input type="radio" name="2fa" id="2fa_2" :checked="doubleAuth === 2">
+        <label for="2fa_2" @click.prevent="switchAuth(2)">{{ $t('Profile.2fa_2') }}</label>
       </p>
       <div v-if="this.changeAuthReturn">{{ $t(this.changeAuthReturn) }}</div>
     </fieldset>
@@ -174,7 +180,7 @@ export default {
       id: null,
       login: null,
       email: null,
-      doubleAuth: false,
+      doubleAuth: 0,
       deleteCheckbox: false,
       sessions: [],
       fields: {
@@ -286,12 +292,15 @@ export default {
       localStorage.setItem('theme', theme)
       document.querySelector('#theme').href = this.$parent.base + (theme === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
     },
-    changeAuth () {
-      this.$http.post('user/changeAuth', {doubleAuth: !this.doubleAuth}).then((res) => {
-        this.changeAuthReturn = 'Profile.updateOk'
-      }, (res) => {
-        this.changeAuthReturn = 'Profile.updateErr'
-      })
+    switchAuth (type) {
+      if (type !== this.doubleAuth && type >= 0 && type <= 2) {
+        this.$http.post('user/changeAuth', {doubleAuth: type}).then((res) => {
+          this.doubleAuth = type
+          this.changeAuthReturn = 'Profile.updateOk'
+        }, (res) => {
+          this.changeAuthReturn = 'Profile.updateErr'
+        })
+      }
     },
     confirmDelete () {
       let del = (e, yes) => {
