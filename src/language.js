@@ -6,7 +6,8 @@ let languages = {
   'it': 'Italiano',
   'pl': 'Polskie',
   'ru': 'Русский',
-  'zh-cn': '简体中文'
+  'zh-cn': '简体中文',
+  'kr': '한국어'
 }
 
 let current = localStorage.getItem('lang')
