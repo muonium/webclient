@@ -182,7 +182,13 @@ export default {
       email: null,
       doubleAuth: 0,
       deleteCheckbox: false,
+      loading: false,
       sessions: [],
+      ga: {
+        qrcode: null,
+        secret: null,
+        backupCodes: []
+      },
       fields: {
         changeLogin: {
           login: ''
@@ -293,13 +299,55 @@ export default {
       document.querySelector('#theme').href = this.$parent.base + (theme === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
     },
     switchAuth (type) {
-      if (type !== this.doubleAuth && type >= 0 && type <= 2) {
-        this.$http.post('user/changeAuth', {doubleAuth: type}).then((res) => {
-          this.doubleAuth = type
-          this.changeAuthReturn = 'Profile.updateOk'
-        }, (res) => {
+      let changeAuth = (type) => {
+        // Change auth method only after requirements are done (QRCode for ga method)
+        if (type !== 2 || (type === 2 && this.ga.qrcode !== null)) {
+          this.$http.post('user/changeAuth', {doubleAuth: type}).then((res) => {
+            this.doubleAuth = type
+            this.changeAuthReturn = 'Profile.updateOk'
+            if (type === 2) {
+              // GA QRCode popup
+              this.$refs.messageBox.closeType('qrcode')
+              this.$refs.messageBox.add({
+                type: 'qrcode',
+                title: '',
+                txt: `
+                  <p>${this.$t('Login.scan')}</p>
+                  <p class="input-large">${this.$t('Login.manually')} <input type="text" value="${this.ga.secret}" readonly></p>
+                  <img src="data:image/png;base64,${this.ga.qrcode}">
+                  <p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${this.ga.backupCodes}" readonly></p>`,
+                btns: [
+                  {type: 'button', class: 'btn', value: 'OK', clickEvent: (e) => this.$refs.messageBox.closeType('qrcode')}
+                ]
+              })
+            }
+          }, (res) => {
+            this.changeAuthReturn = 'Profile.updateErr'
+          })
+        } else {
           this.changeAuthReturn = 'Profile.updateErr'
-        })
+        }
+      }
+
+      if (type !== this.doubleAuth && type >= 0 && type <= 2) { // Send request only for a change
+        this.ga.qrcode = null
+        if (type === 2 && this.login !== null) { // For ga, get QRCode first (and secret + backupCodes)
+          this.loading = true
+          this.$http.post('GoogleAuthenticator/generateQRcode', {username: this.login}).then((res) => {
+            this.loading = false
+            this.ga.qrcode = res.body.data.QRcode
+            this.ga.secret = res.body.data.secretKey
+            this.ga.backupCodes = res.body.data.backupCodes
+            changeAuth(type)
+          }, (res) => {
+            this.loading = false
+            this.changeAuthReturn = 'Profile.updateErr'
+          })
+        } else if (type !== 2) { // For mail or none, no requirements needed
+          changeAuth(type)
+        } else {
+          this.changeAuthReturn = 'Profile.updateErr'
+        }
       }
     },
     confirmDelete () {

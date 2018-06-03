@@ -38,22 +38,6 @@
         <label class="fa fa-lock" for="field_passphrase_confirm" aria-hidden="true"></label>
       </p>
 
-      <fieldset class="nomargin">
-        <legend>{{ $t('Profile.doubleAuth') }}</legend>
-        <p class="input-large i2fa">
-          <input type="radio" name="2fa" id="2fa_0" :checked="fields.double_auth.value === 0">
-          <label for="2fa_0" @click.prevent="setAuth(0)">{{ $t('Profile.2fa_0') }}</label>
-        </p>
-        <p class="input-large i2fa">
-          <input type="radio" name="2fa" id="2fa_1" :checked="fields.double_auth.value === 1">
-          <label for="2_fa1" @click.prevent="setAuth(1)">{{ $t('Profile.2fa_1') }}</label>
-        </p>
-        <p class="input-large">
-          <input type="radio" name="2fa" id="2fa_2" :checked="fields.double_auth.value === 2">
-          <label for="2fa_2" @click.prevent="setAuth(2)">{{ $t('Profile.2fa_2') }}</label>
-        </p>
-      </fieldset>
-
       <div class="bloc-links">
         <router-link to="/login" class="mono blue">{{ $t('Register.alreadyRegistered') }}</router-link>
         <input type="submit" class="btn btn-required" :value="$t('Global.register')" :disabled="!isComplete">
@@ -97,8 +81,7 @@ export default {
         pass: {value: '', required: true},
         pass_confirm: {value: '', required: true},
         passphrase: {value: '', required: true},
-        passphrase_confirm: {value: '', required: true},
-        double_auth: {value: false, required: false}
+        passphrase_confirm: {value: '', required: true}
       }
     }
   },
@@ -122,8 +105,7 @@ export default {
           login: this.fields.login.value,
           password: muiHash(this.fields.pass.value),
           mail: this.fields.mail.value,
-          cek: this.generateCEK(),
-          doubleAuth: this.fields.double_auth.value
+          cek: this.generateCEK()
         }).then((res) => {
           this.loading = false
           this.success_msg = 'Register.ok'
@@ -158,9 +140,6 @@ export default {
         mode: 'gcm', iv: i, salt: s, iter: 7000, ks: 256, adata: a, ts: 128
       })
       return base64.encode(cek) // don't store a Json in DB...
-    },
-    setAuth (type) {
-      this.fields.double_auth.value = type
     }
   },
   computed: {
@@ -185,6 +164,4 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.i2fa { margin-bottom: 5px; }
-</style>
+<style scoped></style>
