@@ -82,7 +82,7 @@
 
 .MessageBox[data-type="qrcode"] { padding: 20px; }
 .MessageBox[data-type="qrcode"] .MessageBoxTxt img { display: block; margin: auto auto 10px auto; }
-.MessageBox[data-type="qrcode"] .MessageBoxTxt input { padding: 0 12px; text-align: center; }
+.MessageBox[data-type="qrcode"] .MessageBoxTxt input, .MessageBox[data-type="backupCodes"] .MessageBoxTxt input { padding: 0 12px; text-align: center; }
 
 @media screen and (max-width: 599px) {
   .MessageBox {

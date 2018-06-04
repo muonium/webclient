@@ -119,7 +119,7 @@
         <label for="2fa_2" @click.prevent="switchAuth(2)">{{ $t('Profile.2fa_2') }}</label>
       </p>
       <p v-if="doubleAuth === 2" class="fw-normal">
-        <a href="#">{{ $t('Login.backupCodes') }}</a>
+        <a href="#" @click.prevent="getCode(getBackupCodes)">{{ $t('Login.backupCodes') }}</a>
       </p>
       <div v-if="this.changeAuthReturn">{{ $t(this.changeAuthReturn) }}</div>
     </fieldset>
@@ -180,6 +180,7 @@ export default {
       login: null,
       email: null,
       doubleAuth: 0,
+      type: 0,
       deleteCheckbox: false,
       loading: false,
       sessions: [],
@@ -298,63 +299,186 @@ export default {
       document.querySelector('#theme').href = this.$parent.base + (theme === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
     },
     switchAuth (type) {
-      let changeAuth = (type, code = null) => {
-        // Change auth method only after requirements are done (QRCode for ga method)
-        if (type !== 2 || (type === 2 && this.ga.qrcode !== null)) {
-          this.$http.post('user/changeAuth', {doubleAuth: type, code: code}).then((res) => {
-            this.doubleAuth = type
+      this.type = type
+      let changeAuth = (code = null) => {
+        // Change auth method only after requirements are done (QRCode for ga method and verification)
+        if (this.type !== 2 || (this.type === 2 && this.ga.qrcode !== null)) {
+          this.$http.post('user/changeAuth', {doubleAuth: this.type, code: code}).then((res) => {
+            this.doubleAuth = this.type
             this.changeAuthReturn = 'Profile.updateOk'
-            if (type === 2) {
-              // GA QRCode popup
-              this.$refs.messageBox.closeType('qrcode')
-              this.$refs.messageBox.add({
-                type: 'qrcode',
-                title: '',
-                txt: `
-                  <p>${this.$t('Login.scan')}</p>
-                  <p class="input-large">${this.$t('Login.manually')} <input type="text" value="${this.ga.secret}" readonly></p>
-                  <img src="data:image/png;base64,${this.ga.qrcode}">
-                  <p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${this.ga.backupCodes}" readonly></p>`,
-                btns: [
-                  {type: 'button', class: 'btn', value: 'OK', clickEvent: (e) => this.$refs.messageBox.closeType('qrcode')}
-                ]
-              })
-            }
           }, (res) => {
-            this.changeAuthReturn = 'Profile.updateErr'
+            if (code !== null && res.body.message === 'badCode') { // Wrong code, ask again
+              if (this.type === 2) {
+                showQRCode(true)
+              } else {
+                this.getCode(changeAuth, true)
+              }
+            } else {
+              this.changeAuthReturn = 'Profile.updateErr'
+            }
           })
         } else {
           this.changeAuthReturn = 'Profile.updateErr'
         }
       }
 
+      let showQRCode = (error = false) => { // Show QRCode and ask for a code verification before enabling ga
+        let validate = (e) => {
+          if (e.type === 'keydown' && e.keyCode !== 13) {
+            return true
+          }
+          if (e.type === 'click' || e.keyCode === 13) {
+            let index = this.$refs.messageBox.getIndexFromEvent(e)
+            if (index !== false) {
+              let code = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="code"]').value
+              if (code.length > 0) {
+                changeAuth(code)
+                this.$refs.messageBox.close(index)
+              }
+            }
+          }
+          return true
+        }
+        let txt = `
+          <p>${this.$t('Login.scan')}</p>
+          <p class="input-large">${this.$t('Login.manually')} <input type="text" value="${this.ga.secret}" readonly></p>
+          <img src="data:image/png;base64,${this.ga.qrcode}">
+          <p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${this.ga.backupCodes}" readonly></p>
+          <p>${this.$t('Login.enterCode')}</p>`
+        if (error) txt += '<p class="red">' + this.$t('Login.invalidCode') + '</p>'
+
+        this.$refs.messageBox.closeType('qrcode')
+        this.$refs.messageBox.add({
+          type: 'qrcode',
+          title: '',
+          txt: txt,
+          inputs: [{
+            type: 'text',
+            name: 'code',
+            placeholder: this.$t('Login.code'),
+            autocomplete: 'off',
+            autofocus: true,
+            keyDownEvent (e) {
+              if (!validate(e)) {
+                e.preventDefault()
+              }
+            }
+          }],
+          btns: [
+            {type: 'button', class: 'btn', value: 'OK', clickEvent: (e) => validate(e)}
+          ]
+        })
+      }
+
       if (type !== this.doubleAuth && type >= 0 && type <= 2) { // Send request only for a change
         this.ga.qrcode = null
-        if (type === 2 && this.login !== null) { // For ga, get QRCode first (and secret + backupCodes)
+        if (type === 2 && this.login !== null) { // For ga, get QRCode first (and secret + backupCodes), then proceed to verification
           this.loading = true
-          this.$http.post('GoogleAuthenticator/generateQRcode', {username: this.login}).then((res) => {
+          this.$http.post('GoogleAuthenticator/generate', {username: this.login}).then((res) => {
             this.loading = false
             this.ga.qrcode = res.body.data.QRcode
             this.ga.secret = res.body.data.secretKey
             this.ga.backupCodes = res.body.data.backupCodes
-            // In order to enable ga, a first code verification is needed
-            let code = null
-            // ...
-            changeAuth(type, code)
+            showQRCode()
           }, (res) => {
             this.loading = false
             this.changeAuthReturn = 'Profile.updateErr'
           })
-        } else if (this.doubleAuth === 2) { // In order to disable ga, a code is needed
-          let code = null
-          // ...
-          changeAuth(type, code)
+        } else if (this.doubleAuth === 2) { // Proceed to verification by asking a code before disabling ga
+          this.getCode(changeAuth)
         } else if (type !== 2) { // For mail or none, no requirements needed
-          changeAuth(type)
+          changeAuth()
         } else {
           this.changeAuthReturn = 'Profile.updateErr'
         }
       }
+    },
+    getCode (callback, error = false) {
+      // Ask user for a ga code
+      let validate = (e) => {
+        if (e.type === 'keydown' && e.keyCode !== 13) {
+          return true
+        }
+        if (e.type === 'click' || e.keyCode === 13) {
+          let index = this.$refs.messageBox.getIndexFromEvent(e)
+          if (index !== false) {
+            let code = document.querySelector('.MessageBox[data-index="' + index + '"] input[name="code"]').value
+            if (code.length > 0) {
+              if (typeof callback === 'function') callback(code)
+              this.$refs.messageBox.close(index)
+            }
+          }
+        }
+        return true
+      }
+      let txt = ''
+      if (error) txt += '<p class="red">' + this.$t('Login.invalidCode') + '</p>'
+
+      this.$refs.messageBox.closeType('ga_verification')
+      this.$refs.messageBox.add({
+        type: 'ga_verification',
+        title: '',
+        txt: txt,
+        inputs: [{
+          type: 'text',
+          name: 'code',
+          placeholder: this.$t('Login.code'),
+          autocomplete: 'off',
+          autofocus: true,
+          keyDownEvent (e) {
+            if (!validate(e)) {
+              e.preventDefault()
+            }
+          }
+        }],
+        btns: [
+          {type: 'button', class: 'btn', value: 'OK', clickEvent: (e) => validate(e)}
+        ]
+      })
+    },
+    getBackupCodes (code = null, regenerate = false) {
+      let regenerateCodes = () => {
+        this.$refs.messageBox.closeType('backupCodes')
+        this.getCode(this.regenerateBackupCodes)
+      }
+
+      let successCallback = (res) => {
+        this.$refs.messageBox.closeType('backupCodes')
+        this.$refs.messageBox.add({
+          type: 'backupCodes',
+          title: '',
+          txt: `<p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${res.body.data.backupCodes.join(' ')}" readonly></p>`,
+          btns: [
+            {type: 'button', class: 'btn', value: 'OK', clickEvent: (e) => this.$refs.messageBox.closeType('backupCodes')},
+            {type: 'button', class: 'btn', value: this.$t('Login.regenerate'), clickEvent: (e) => regenerateCodes()}
+          ]
+        })
+      }
+
+      let errorCallback = (res) => {
+        if (code !== null && res.body.message === 'badCode') { // Wrong code, ask again
+          if (regenerate) {
+            this.getCode(this.regenerateBackupCodes, true)
+          } else {
+            this.getCode(this.getBackupCodes, true)
+          }
+        }
+      }
+
+      if (regenerate) {
+        this.$http.post('GoogleAuthenticator/regenerateBackupCodes', {code: code}).then(
+          (res) => successCallback(res),
+          (res) => errorCallback(res)
+        )
+      } else {
+        this.$http.get('GoogleAuthenticator/backupCodes/?code=' + code).then(
+          (res) => successCallback(res),
+          (res) => errorCallback(res)
+        )
+      }
+    },
+    regenerateBackupCodes (code = null) {
+      this.getBackupCodes(code, true)
     },
     confirmDelete () {
       let del = (e, yes) => {
