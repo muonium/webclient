@@ -20,10 +20,6 @@
         <span class="label">{{ $t('Register.email') }}:</span>
         <span id="email">{{ this.email }}</span>
       </p>
-      <p>
-        <span class="label">ID:</span>
-        {{ this.id }}
-      </p>
     </fieldset>
 
     <fieldset>
@@ -121,6 +117,9 @@
 
         <input type="radio" name="2fa" id="2fa_2" :checked="doubleAuth === 2">
         <label for="2fa_2" @click.prevent="switchAuth(2)">{{ $t('Profile.2fa_2') }}</label>
+      </p>
+      <p v-if="doubleAuth === 2" class="fw-normal">
+        <a href="#">{{ $t('Login.backupCodes') }}</a>
       </p>
       <div v-if="this.changeAuthReturn">{{ $t(this.changeAuthReturn) }}</div>
     </fieldset>
@@ -299,10 +298,10 @@ export default {
       document.querySelector('#theme').href = this.$parent.base + (theme === 'dark' ? 'static/css/2018/dark.css' : 'static/css/2018/light.css')
     },
     switchAuth (type) {
-      let changeAuth = (type) => {
+      let changeAuth = (type, code = null) => {
         // Change auth method only after requirements are done (QRCode for ga method)
         if (type !== 2 || (type === 2 && this.ga.qrcode !== null)) {
-          this.$http.post('user/changeAuth', {doubleAuth: type}).then((res) => {
+          this.$http.post('user/changeAuth', {doubleAuth: type, code: code}).then((res) => {
             this.doubleAuth = type
             this.changeAuthReturn = 'Profile.updateOk'
             if (type === 2) {
@@ -338,11 +337,18 @@ export default {
             this.ga.qrcode = res.body.data.QRcode
             this.ga.secret = res.body.data.secretKey
             this.ga.backupCodes = res.body.data.backupCodes
-            changeAuth(type)
+            // In order to enable ga, a first code verification is needed
+            let code = null
+            // ...
+            changeAuth(type, code)
           }, (res) => {
             this.loading = false
             this.changeAuthReturn = 'Profile.updateErr'
           })
+        } else if (this.doubleAuth === 2) { // In order to disable ga, a code is needed
+          let code = null
+          // ...
+          changeAuth(type, code)
         } else if (type !== 2) { // For mail or none, no requirements needed
           changeAuth(type)
         } else {

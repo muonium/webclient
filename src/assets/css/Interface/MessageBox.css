@@ -93,7 +93,8 @@
 
 @media screen and (min-width: 600px) {
   .MessageBox {
-    min-width: 20%;
+    min-width: 25%;
+    max-width: 50%;
     width: auto;
     bottom: auto; left: 50%; top: 50%;
     transform: translate(-50%, -50%);
