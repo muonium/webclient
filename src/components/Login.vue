@@ -48,9 +48,9 @@
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" name="code" class="noicon" :placeholder="$t('Login.code')" v-model="code" required v-focus>
+        <input type="text" name="code" class="noicon" :placeholder="$t('Login.code')" v-model="code" ref="code" required>
       </p>
-      <input type="submit" class="btn" :value="$t('Global.submit')">
+      <input type="submit" class="btn" :value="$t('Global.submit')" :disabled="!isCode">
     </form>
 
     <p class="red return" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
@@ -109,13 +109,13 @@ export default {
             if (!fail) {
               if (res.body.message === 'doubleAuth') {
                 this.doubleAuthMethod = res.body.data.doubleAuthMethod
-                this.login_form = false
+                this.changeForm()
                 this.uid = res.body.data.uid
               } else if (res.body.message === 'wait') {
-                this.login_form = false
+                this.doubleAuthMethod = 1
+                this.changeForm()
                 this.uid = res.body.data.uid
                 this.err_msg = 'Login.wait'
-                this.doubleAuthMethod = 1
               } else {
                 this.success_msg = 'Login.success'
                 sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
@@ -201,6 +201,12 @@ export default {
           }
         })
       }
+    },
+    changeForm () {
+      this.login_form = false
+      this.$nextTick(() => { // Once DOM updated
+        this.$refs.code.focus()
+      })
     }
   },
   computed: {
@@ -213,6 +219,9 @@ export default {
         }
       }
       return complete
+    },
+    isCode () {
+      return this.code.length > 0
     },
     isUrl () {
       return validUrl.isWebUri(this.server_url)

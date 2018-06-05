@@ -468,6 +468,7 @@ a.blue:hover, a.blue:active, a.blue:focus {
 .nopadding { padding: 0 !important; }
 .red, .error { color: red; }
 .green, .success { color: green; }
+.fw-normal { font-weight: normal; }
 
 .logout { font-size: 20px; margin-left: 25px; }
 
