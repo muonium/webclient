@@ -374,7 +374,7 @@ export default {
         this.ga.qrcode = null
         if (type === 2 && this.login !== null) { // For ga, get QRCode first (and secret + backupCodes), then proceed to verification
           this.loading = true
-          this.$http.post('GoogleAuthenticator/generate', {username: this.login}).then((res) => {
+          this.$http.post('GoogleAuthenticator/generate').then((res) => {
             this.loading = false
             if (res.body.data.length === 0) { // wait 30s before requesting again
               this.ga.qrcode = sessionStorage.getItem('ga_qrcode')

@@ -13,13 +13,11 @@ import Vue from 'vue'
 import language from '../language'
 import utils from '../utils'
 
-var activeLocale = language.current
-
 export default {
   data () {
     return {
       languages: language.languages,
-      selectedLanguage: activeLocale
+      selectedLanguage: language.current
     }
   },
   methods: {
@@ -36,7 +34,6 @@ export default {
     },
     successCallback (locale) {
       Vue.config.lang = locale
-      activeLocale = locale
       this.$i18n.locale = locale
       utils.t = this.$i18n.messages[this.$i18n.locale]
       language.current = locale

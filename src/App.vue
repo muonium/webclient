@@ -6,7 +6,7 @@
           <img :src="this.base + 'static/img/logos/muonium_H_01.png'" :title="$t('Global.home')" :alt="$t('Global.home')">
         </router-link>
       </div>
-      <language-selector v-if="!this.token"/>
+      <language-selector v-if="!this.token && !this.reloadLanguageSelector"/>
       <a href="#" class="logout" :title="$t('Global.logout')" v-if="this.token" @click.prevent="logout">
         <i class="fa fa-sign-out" aria-hidden="true"></i>
       </a>
@@ -45,7 +45,8 @@ export default {
       loading: true,
       token: sessionStorage.getItem('token'),
       sidebar: false,
-      selection: false
+      selection: false,
+      reloadLanguageSelector: false
     }
   },
   methods: {
@@ -57,6 +58,11 @@ export default {
           this.$i18n.locale = lang
           Vue.config.lang = lang
           utils.t = this.$i18n.messages[this.$i18n.locale]
+          language.current = lang
+          this.reloadLanguageSelector = true
+          this.$nextTick(() => { // Force reloading the component
+            this.reloadLanguageSelector = false
+          })
         }
       })
     },

@@ -107,6 +107,14 @@ export default {
               this.err_msg = 'Login.badPassphrase'
             }
             if (!fail) {
+              // Apply user language
+              if (typeof res.body.data.lang !== 'undefined') {
+                if (!(res.body.data.lang in this.$i18n.messages)) {
+                  this.$parent.loadLanguage(res.body.data.lang, true)
+                  localStorage.setItem('lang', res.body.data.lang)
+                }
+              }
+
               if (res.body.message === 'doubleAuth') {
                 this.doubleAuthMethod = res.body.data.doubleAuthMethod
                 this.changeForm()
@@ -178,6 +186,13 @@ export default {
               this.err_msg = 'Login.badPassphrase'
             }
             if (!fail) {
+              // Apply user language
+              if (typeof res.body.data.lang !== 'undefined') {
+                if (!(res.body.data.lang in this.$i18n.messages)) {
+                  this.$parent.loadLanguage(res.body.data.lang, true)
+                  localStorage.setItem('lang', res.body.data.lang)
+                }
+              }
               this.success_msg = 'Login.success'
               sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
               sessionStorage.setItem('cek', cek) // we store locally the CEK
