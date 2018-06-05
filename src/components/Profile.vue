@@ -344,7 +344,7 @@ export default {
           <p class="input-large">${this.$t('Login.manually')} <input type="text" value="${this.ga.secret}" readonly></p>
           <img src="data:image/png;base64,${this.ga.qrcode}">
           <p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${this.ga.backupCodes}" readonly></p>
-          <p>${this.$t('Login.enterCode')}</p>`
+          <p>${this.$t('Login.enterCodeEnable')}</p>`
         if (error) txt += '<p class="red">' + this.$t('Login.invalidCode') + '</p>'
 
         this.$refs.messageBox.closeType('qrcode')
@@ -411,7 +411,7 @@ export default {
         }
         return true
       }
-      let txt = ''
+      let txt = '<p>' + this.$t('Login.enterCodePerform') + '</p>'
       if (error) txt += '<p class="red">' + this.$t('Login.invalidCode') + '</p>'
 
       this.$refs.messageBox.closeType('ga_verification')
