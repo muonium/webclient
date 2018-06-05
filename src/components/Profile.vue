@@ -343,7 +343,7 @@ export default {
           <p>${this.$t('Login.scan')}</p>
           <p class="input-large">${this.$t('Login.manually')} <input type="text" value="${this.ga.secret}" readonly></p>
           <img src="data:image/png;base64,${this.ga.qrcode}">
-          <p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${this.ga.backupCodes}" readonly></p>
+          <p class="input-large">${this.$t('Login.backupCodes')} <input type="text" value="${this.ga.backupCodes.join(' ')}" readonly></p>
           <p>${this.$t('Login.enterCodeEnable')}</p>`
         if (error) txt += '<p class="red">' + this.$t('Login.invalidCode') + '</p>'
 
@@ -376,10 +376,24 @@ export default {
           this.loading = true
           this.$http.post('GoogleAuthenticator/generate', {username: this.login}).then((res) => {
             this.loading = false
-            this.ga.qrcode = res.body.data.QRcode
-            this.ga.secret = res.body.data.secretKey
-            this.ga.backupCodes = res.body.data.backupCodes
-            showQRCode()
+            if (res.body.data.length === 0) { // wait 30s before requesting again
+              this.ga.qrcode = sessionStorage.getItem('ga_qrcode')
+              this.ga.secret = sessionStorage.getItem('ga_secret')
+              this.ga.backupCodes = sessionStorage.getItem('ga_backupCodes')
+              this.ga.backupCodes = this.ga.backupCodes !== null ? this.ga.backupCodes.split(',') : null
+            } else {
+              this.ga.qrcode = res.body.data.QRcode
+              this.ga.secret = res.body.data.secretKey
+              this.ga.backupCodes = res.body.data.backupCodes
+            }
+            if (this.ga.qrcode !== null && this.ga.secret !== null && this.ga.backupCodes !== null) {
+              sessionStorage.setItem('ga_qrcode', this.ga.qrcode)
+              sessionStorage.setItem('ga_secret', this.ga.secret)
+              sessionStorage.setItem('ga_backupCodes', this.ga.backupCodes.join(','))
+              showQRCode()
+            } else {
+              this.changeAuthReturn = 'Profile.updateErr'
+            }
           }, (res) => {
             this.loading = false
             this.changeAuthReturn = 'Profile.updateErr'
