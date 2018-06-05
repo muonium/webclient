@@ -119,7 +119,7 @@
         <label for="2fa_2" @click.prevent="switchAuth(2)">{{ $t('Profile.2fa_2') }}</label>
       </p>
       <p v-if="doubleAuth === 2" class="fw-normal">
-        <a href="#" @click.prevent="getCode(getBackupCodes)">{{ $t('Login.backupCodes') }}</a>
+        <a href="#" @click.prevent="getCode(getBackupCodes)">{{ $t('Login.showBackupCodes') }}</a>
       </p>
       <div v-if="this.changeAuthReturn">{{ $t(this.changeAuthReturn) }}</div>
     </fieldset>
