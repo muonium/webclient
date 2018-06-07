@@ -6,22 +6,17 @@
     />
     <div class="info green" v-if="this.val">{{ $t('Validate.done') }}</div>
 
-    <form class="form-login" method="post" v-on:submit.prevent="sendForm" v-if="login_form">
+    <form class="form-login" method="post" v-on:submit.prevent="sendCredentials" v-if="login_form">
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" id="field_username" :placeholder="$t('Login.username')" v-model="fields.username" required v-focus>
+        <input type="text" id="field_username" :placeholder="$t('Login.username')" v-model="fields.username" ref="login" required v-focus>
         <label class="fa fa-user" for="field_username" aria-hidden="true"></label>
       </p>
 
       <p class="input-large">
         <input type="password" id="field_password" :placeholder="$t('Register.password')" v-model="fields.password" required>
         <label class="fa fa-lock" for="field_password" aria-hidden="true"></label>
-      </p>
-
-      <p class="input-large">
-        <input type="password" id="field_passphrase" :placeholder="$t('Register.passphrase')" v-model="fields.passphrase" required>
-        <label class="fa fa-lock" for="field_passphrase" aria-hidden="true"></label>
       </p>
 
       <div class="bloc-links">
@@ -44,13 +39,23 @@
       </div>
     </form>
 
+    <form method="post" v-on:submit.prevent="sendPassphrase" v-else-if="passphrase_form">
+      <h1>{{ $t('Global.login') }}</h1>
+
+      <p class="input-large">
+        <input type="password" id="field_passphrase" :placeholder="$t('Register.passphrase')" v-model="fields.passphrase" ref="passphrase" required>
+        <label class="fa fa-lock" for="field_passphrase" aria-hidden="true"></label>
+      </p>
+      <input type="submit" class="btn btn-required" :value="$t('Login.signIn')" :disabled="!isComplete">
+    </form>
+
     <form method="post" v-on:submit.prevent="sendCode" v-else>
       <h1>{{ $t('Global.login') }}</h1>
 
       <p class="input-large">
-        <input type="text" name="code" class="noicon" :placeholder="$t('Login.code')" v-model="code" ref="code" required>
+        <input type="text" name="code" class="noicon" :placeholder="$t('Login.code')" v-model="fields.code" ref="code" required>
       </p>
-      <input type="submit" class="btn" :value="$t('Global.submit')" :disabled="!isCode">
+      <input type="submit" class="btn" :value="$t('Global.submit')" :disabled="!isComplete">
     </form>
 
     <p class="red return" v-if="this.err_msg">{{ $t(this.err_msg) }}</p>
@@ -75,62 +80,50 @@ export default {
       err_msg: null,
       success_msg: null,
       login_form: true,
+      passphrase_form: false,
       server_form: false,
       server_url: null,
       doubleAuthMethod: 1,
       uid: null,
-      code: '',
+      cek: null,
       fields: {
         username: '',
         password: '',
-        passphrase: ''
+        passphrase: '',
+        code: ''
       }
     }
   },
   methods: {
-    sendForm () {
+    sendCredentials () {
       this.success_msg = null
-      if (this.fields.username.length > 2 && this.fields.password.length > 5 && this.fields.passphrase.length > 0) {
+      if (this.fields.username.length > 2 && this.fields.password.length > 5) {
         this.loading = true
         this.err_msg = null
         this.$http.post('session', {username: this.fields.username, password: muiHash(this.fields.password)}).then((res) => {
           this.loading = false
           if (res.body.data !== null && typeof res.body.data.cek !== 'undefined') {
-            let cek = decodeURIComponent(res.body.data.cek)
-            let fail = false
-            try { // we try to decrypt the CEK with the passphrase
-              cek = base64.decode(cek) // the CEK is base64encoded in the database, then we decode it
-              cek = sjcl.decrypt(this.fields.passphrase, cek) // the CEK is now a JSON, we decrypt it
-            } catch (e) { // the passphrase is wrong
-              fail = true
-              sessionStorage.clear()
-              this.err_msg = 'Login.badPassphrase'
+            this.cek = base64.decode(decodeURIComponent(res.body.data.cek))
+            // Apply user language
+            if (typeof res.body.data.lang !== 'undefined') {
+              if (!(res.body.data.lang in this.$i18n.messages)) {
+                this.$parent.loadLanguage(res.body.data.lang, true)
+                localStorage.setItem('lang', res.body.data.lang)
+              }
             }
-            if (!fail) {
-              // Apply user language
-              if (typeof res.body.data.lang !== 'undefined') {
-                if (!(res.body.data.lang in this.$i18n.messages)) {
-                  this.$parent.loadLanguage(res.body.data.lang, true)
-                  localStorage.setItem('lang', res.body.data.lang)
-                }
-              }
 
-              if (res.body.message === 'doubleAuth') {
-                this.doubleAuthMethod = res.body.data.doubleAuthMethod
-                this.changeForm()
-                this.uid = res.body.data.uid
-              } else if (res.body.message === 'wait') {
-                this.doubleAuthMethod = 1
-                this.changeForm()
-                this.uid = res.body.data.uid
-                this.err_msg = 'Login.wait'
-              } else {
-                this.success_msg = 'Login.success'
-                sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
-                sessionStorage.setItem('cek', cek) // we store locally the CEK
-                this.$parent.token = res.body.token
-                this.$router.push('/') // all is good -> redirect the user
-              }
+            if (res.body.message === 'doubleAuth') {
+              this.doubleAuthMethod = res.body.data.doubleAuthMethod
+              this.uid = res.body.data.uid
+              this.changeForm('code')
+            } else if (res.body.message === 'wait') {
+              this.doubleAuthMethod = 1
+              this.uid = res.body.data.uid
+              this.err_msg = 'Login.wait'
+              this.changeForm('code')
+            } else {
+              this.$parent.token = res.body.token
+              this.changeForm('passphrase')
             }
           } else {
             this.err_msg = 'Error.default'
@@ -152,53 +145,43 @@ export default {
         this.err_msg = 'Register.form'
       }
     },
-    toggleChangeServer () {
-      this.server_form = !this.server_form
-      if (this.server_url !== null && validUrl.isWebUri(this.server_url)) {
-        if (window.location.protocol === 'https:' && !validUrl.isHttpsUri(this.server_url)) {
-          alert(this.$t('Login.insecureHttp'))
-          this.server_url = Vue.http.options.root
-        } else {
-          let s = this.server_url.trim()
-          if (s.substr(-1, 1) === '/') s = s.substr(0, s.length - 1)
-          this.server_url = s
-          Vue.http.options.root = s
-          localStorage.setItem('server_url', s)
+    sendPassphrase () {
+      if (this.fields.passphrase.length > 0) {
+        let fail = false
+        let cek = null
+        try { // we try to decrypt the CEK with the passphrase
+          cek = sjcl.decrypt(this.fields.passphrase, this.cek) // the CEK is now a JSON, we decrypt it
+        } catch (e) { // the passphrase is wrong
+          fail = true
+          this.err_msg = 'Login.badPassphrase'
+        }
+        if (!fail) {
+          this.success_msg = 'Login.success'
+          sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
+          sessionStorage.setItem('cek', cek) // we store locally the CEK
+          this.$router.push('/') // all is good -> redirect the user
         }
       }
     },
     sendCode () {
-      if (this.code.length > 0 && this.uid !== null) {
+      if (this.fields.code.length > 0 && this.uid !== null) {
         this.success_msg = null
         this.err_msg = null
         this.loading = true
-        this.$http.post('session/authcode', {uid: this.uid, password: muiHash(this.fields.password), code: this.code}).then((res) => {
+        this.$http.post('session/authcode', {uid: this.uid, password: muiHash(this.fields.password), code: this.fields.code}).then((res) => {
           this.loading = false
           if (res.body.data !== null && typeof res.body.data.cek !== 'undefined') {
-            let cek = decodeURIComponent(res.body.data.cek)
-            let fail = false
-            try { // we try to decrypt the CEK with the passphrase
-              cek = base64.decode(cek) // the CEK is base64encoded in the database, then we decode it
-              cek = sjcl.decrypt(this.fields.passphrase, cek) // the CEK is now a JSON, we decrypt it
-            } catch (e) { // the passphrase is wrong
-              fail = true
-              sessionStorage.clear()
-              this.err_msg = 'Login.badPassphrase'
-            }
-            if (!fail) {
-              // Apply user language
-              if (typeof res.body.data.lang !== 'undefined') {
-                if (!(res.body.data.lang in this.$i18n.messages)) {
-                  this.$parent.loadLanguage(res.body.data.lang, true)
-                  localStorage.setItem('lang', res.body.data.lang)
-                }
+            this.cek = base64.decode(decodeURIComponent(res.body.data.cek))
+            // Apply user language
+            if (typeof res.body.data.lang !== 'undefined') {
+              if (!(res.body.data.lang in this.$i18n.messages)) {
+                this.$parent.loadLanguage(res.body.data.lang, true)
+                localStorage.setItem('lang', res.body.data.lang)
               }
-              this.success_msg = 'Login.success'
-              sessionStorage.setItem('kek', this.fields.passphrase) // we store locally the passphrase
-              sessionStorage.setItem('cek', cek) // we store locally the CEK
-              this.$parent.token = res.body.token
-              this.$router.push('/') // all is good -> redirect the user
             }
+
+            this.$parent.token = res.body.token
+            this.changeForm('passphrase')
           } else {
             this.err_msg = 'Error.default'
           }
@@ -217,26 +200,51 @@ export default {
         })
       }
     },
-    changeForm () {
-      this.login_form = false
+    toggleChangeServer () {
+      this.server_form = !this.server_form
+      if (this.server_url !== null && validUrl.isWebUri(this.server_url)) {
+        if (window.location.protocol === 'https:' && !validUrl.isHttpsUri(this.server_url)) {
+          alert(this.$t('Login.insecureHttp'))
+          this.server_url = Vue.http.options.root
+        } else {
+          let s = this.server_url.trim()
+          if (s.substr(-1, 1) === '/') s = s.substr(0, s.length - 1)
+          this.server_url = s
+          Vue.http.options.root = s
+          localStorage.setItem('server_url', s)
+        }
+      }
+    },
+    changeForm (type) {
+      let focus = 'code'
+      if (type === 'login') {
+        this.login_form = true
+        this.passphrase_form = false
+        focus = 'login'
+      } else if (type === 'passphrase') {
+        this.login_form = false
+        this.passphrase_form = true
+        focus = 'passphrase'
+      } else { // code
+        this.login_form = false
+        this.passphrase_form = false
+      }
       this.$nextTick(() => { // Once DOM updated
-        this.$refs.code.focus()
+        this.$refs[focus].focus()
       })
     }
   },
   computed: {
     isComplete () {
       let complete = true
-      for (let key of Object.keys(this.fields)) {
+      let keys = this.login_form ? ['username', 'password'] : (this.passphrase_form ? ['passphrase'] : ['code'])
+      for (let key of keys) {
         if (this.fields[key] === '') {
           complete = false
           break
         }
       }
       return complete
-    },
-    isCode () {
-      return this.code.length > 0
     },
     isUrl () {
       return validUrl.isWebUri(this.server_url)
